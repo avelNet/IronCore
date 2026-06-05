@@ -27,16 +27,11 @@ public class SuitHUD {
                 String tierText = "Suit: " + suit.getSuitTier().toUpperCase();
                 String durabilityText = "Armor: " + suit.getFrameDurability() + "%";
                 
-                // Calculate speed in km/h
-                net.minecraft.world.phys.Vec3 movement = minecraft.player.getDeltaMovement();
-                double speedKmH = 0.0;
-                
-                // If on ground and barely moving (gravity ticks), force to 0
-                if (minecraft.player.onGround() && Math.abs(movement.x) < 0.01 && Math.abs(movement.z) < 0.01) {
-                    speedKmH = 0.0;
-                } else {
-                    speedKmH = movement.length() * 20.0 * 3.6;
-                }
+                // Calculate speed in km/h using absolute position delta
+                net.minecraft.world.phys.Vec3 pos = minecraft.player.position();
+                net.minecraft.world.phys.Vec3 prevPos = new net.minecraft.world.phys.Vec3(minecraft.player.xo, minecraft.player.yo, minecraft.player.zo);
+                double distMoved = pos.distanceTo(prevPos);
+                double speedKmH = distMoved * 20.0 * 3.6;
                 
                 String speedText = "SPEED: " + String.format("%.1f", speedKmH) + " km/h";
 
