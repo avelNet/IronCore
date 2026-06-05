@@ -13,6 +13,7 @@ public class SuitCapability implements INBTSerializable<CompoundTag> {
     private int palladiumPoisoning = 0;
     private float icingLevel = 0.0f;
     private boolean isFlying = false;
+    private double failureYPos = -1.0; // Y pos when systems freeze
 
     public int getEnergy() { return energy; }
     public void setEnergy(int energy) { this.energy = Math.max(0, Math.min(energy, maxEnergy)); }
@@ -38,6 +39,9 @@ public class SuitCapability implements INBTSerializable<CompoundTag> {
     public boolean isFlying() { return isFlying; }
     public void setFlying(boolean flying) { this.isFlying = flying; }
 
+    public double getFailureYPos() { return failureYPos; }
+    public void setFailureYPos(double yPos) { this.failureYPos = yPos; }
+
     public void saveNBTData(CompoundTag nbt) {
         nbt.putInt("energy", energy);
         nbt.putInt("maxEnergy", maxEnergy);
@@ -48,6 +52,7 @@ public class SuitCapability implements INBTSerializable<CompoundTag> {
         nbt.putInt("poisoning", palladiumPoisoning);
         nbt.putFloat("icing", icingLevel);
         nbt.putBoolean("flying", isFlying);
+        nbt.putDouble("failureY", failureYPos);
     }
 
     public void loadNBTData(CompoundTag nbt) {
@@ -60,6 +65,7 @@ public class SuitCapability implements INBTSerializable<CompoundTag> {
         palladiumPoisoning = nbt.getInt("poisoning");
         icingLevel = nbt.getFloat("icing");
         isFlying = nbt.getBoolean("flying");
+        failureYPos = nbt.getDouble("failureY");
     }
 
     @Override

@@ -127,12 +127,26 @@ public class Mk2FrameItem extends ArmorItem {
                             
                             player.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 60, 1, false, false, true));
                             
+                            // Record the Y position when failure starts if not already recorded
+                            if (suit.getFailureYPos() < 0) {
+                                suit.setFailureYPos(player.getY());
+                            }
+
+                            // Calculate actual distance fallen since failure
+                            double distanceFallen = suit.getFailureYPos() - player.getY();
+
                             // Свободное падение 20 блоков перед экстренным планированием
-                            if (player.fallDistance >= 20.0f) {
+                            // Убедимся, что игрок не стоит на земле (чтобы парашют не открывался, если он просто поднялся пешком)
+                            if (distanceFallen >= 20.0 && !player.onGround()) {
                                 if (!player.hasEffect(MobEffects.SLOW_FALLING)) {
                                     player.displayClientMessage(net.minecraft.network.chat.Component.literal("§eAUTO-DEPLOY: EMERGENCY GLIDE INITIATED!"), true);
                                 }
                                 player.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING, 60, 0, false, false, true));
+                            }
+                        } else {
+                            // Reset failure Y pos when systems thaw enough
+                            if (suit.getFailureYPos() >= 0) {
+                                suit.setFailureYPos(-1.0);
                             }
                         }
 
