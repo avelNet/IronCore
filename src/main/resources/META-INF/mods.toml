@@ -1,0 +1,24 @@
+modLoader="javafml"
+loaderVersion="[47,)"
+license="MIT"
+
+[[mods]]
+modId="ironcore"
+version="alpha"
+displayName="IronCore"
+authors="Pavel"
+description='''Iron Man mod for Minecraft. Engineering-focused, hardcore gameplay.'''
+
+[[dependencies.ironcore]]
+    modId="forge"
+    mandatory=true
+    versionRange="[47.2.0,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.ironcore]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.20.1, 1.21)"
+    ordering="NONE"
+    side="BOTH"
