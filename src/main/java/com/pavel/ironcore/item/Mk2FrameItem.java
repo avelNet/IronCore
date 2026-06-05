@@ -58,9 +58,23 @@ public class Mk2FrameItem extends ArmorItem {
                                     // Fast horizontal flight if sprinting
                                     if (player.isSprinting()) {
                                         Vec3 look = player.getLookAngle();
-                                        // Apply thrust mostly horizontally, with a slight vertical component
-                                        Vec3 boost = new Vec3(look.x, look.y * 0.5, look.z).normalize().scale(1.5);
-                                        player.setDeltaMovement(boost);
+                                        Vec3 currentMovement = player.getDeltaMovement();
+
+                                        // 60 km/h = 16.66 m/s = 0.833 m/tick
+                                        double maxSpeed = 0.833;
+                                        double acceleration = 0.08; // Gradual acceleration
+
+                                        // Target velocity is look direction * max speed
+                                        Vec3 targetMovement = look.scale(maxSpeed);
+
+                                        // Interpolate current movement towards target movement
+                                        Vec3 newMovement = new Vec3(
+                                            currentMovement.x + (targetMovement.x - currentMovement.x) * acceleration,
+                                            currentMovement.y + (targetMovement.y - currentMovement.y) * acceleration,
+                                            currentMovement.z + (targetMovement.z - currentMovement.z) * acceleration
+                                        );
+
+                                        player.setDeltaMovement(newMovement);
                                         player.hurtMarked = true; // Tell client to update velocity
                                         suit.setEnergy(suit.getEnergy() - 6); // Extra energy for boosting
                                     }

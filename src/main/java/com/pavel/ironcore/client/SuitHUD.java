@@ -26,12 +26,17 @@ public class SuitHUD {
                 String energyText = "Energy: " + suit.getEnergy() + " / " + suit.getMaxEnergy() + " FE";
                 String tierText = "Suit: " + suit.getSuitTier().toUpperCase();
                 String durabilityText = "Armor: " + suit.getFrameDurability() + "%";
+                
+                // Calculate speed in km/h
+                double speedKmH = minecraft.player.getDeltaMovement().length() * 20.0 * 3.6;
+                String speedText = "SPEED: " + String.format("%.1f", speedKmH) + " km/h";
 
                 guiGraphics.drawString(minecraft.font, tierText, x, y, 0xFFFFFF);
                 guiGraphics.drawString(minecraft.font, energyText, x, y + 10, 0x00AAFF);
                 guiGraphics.drawString(minecraft.font, durabilityText, x, y + 20, 0xFFAA00);
+                guiGraphics.drawString(minecraft.font, speedText, x, y + 30, 0x00FF00); // Green speed
                 
-                int currentY = y + 30;
+                int currentY = y + 40;
 
                 if (suit.isFlying()) {
                     if (minecraft.player.getAbilities().flying) {
