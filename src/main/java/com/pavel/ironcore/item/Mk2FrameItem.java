@@ -90,37 +90,38 @@ public class Mk2FrameItem extends ArmorItem {
                             if (suit.getIcingLevel() < 100.0f) {
                                 suit.setIcingLevel(suit.getIcingLevel() + icingRate);
                             }
-
-                            // Apply vanilla freezing visual effect (max 140 ticks is fully frozen screen)
-                            int freezeTicks = (int) ((suit.getIcingLevel() / 100.0f) * 140);
-                            player.setTicksFrozen(freezeTicks);
-
-                            // Effects of icing
-                            if (suit.getIcingLevel() > 50.0f) {
-                                player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 40, 0, false, false, true));
-                            }
-                            if (suit.getIcingLevel() >= 100.0f) {
-                                // Freeze systems - Critical Failure
-                                if (suit.isFlying()) {
-                                    suit.setFlying(false);
-                                }
-                                // Экстренное планирование (Аварийная посадка)
-                                player.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING, 60, 0, false, false, true));
-                                // Убираем слепоту, чтобы игрок мог найти место для посадки,
-                                // но оставляем дебафф, чтобы показать, что всё плохо.
-                                player.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 60, 1, false, false, true));
-                                if (player.tickCount % 40 == 0) {
-                                    player.displayClientMessage(net.minecraft.network.chat.Component.literal("§4CRITICAL ICE BUILDUP: EMERGENCY GLIDE INITIATED!"), true);
-                                }
-                            }
                         } else {
-                            // Thaw if low enough
+                            // Thaw if low enough (slower thaw so they stay frozen for a few seconds)
                             if (suit.getIcingLevel() > 0.0f) {
-                                suit.setIcingLevel(suit.getIcingLevel() - 1.0f); // Thawing rate
+                                suit.setIcingLevel(suit.getIcingLevel() - 0.2f); 
                             }
-                            // Sync thawing to vanilla visual
-                            int freezeTicks = (int) ((suit.getIcingLevel() / 100.0f) * 140);
-                            player.setTicksFrozen(freezeTicks);
+                        }
+
+                        // Apply vanilla freezing visual effect
+                        int freezeTicks = (int) ((suit.getIcingLevel() / 100.0f) * 140);
+                        player.setTicksFrozen(freezeTicks);
+
+                        // Effects of icing (applied regardless of current Y pos, strictly based on icing %)
+                        if (suit.getIcingLevel() > 50.0f) {
+                            player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 40, 0, false, false, true));
+                        }
+                        
+                        if (suit.getIcingLevel() >= 100.0f) {
+                            // Freeze systems - Critical Failure
+                            if (suit.isFlying()) {
+                                suit.setFlying(false);
+                                player.displayClientMessage(net.minecraft.network.chat.Component.literal("§cSYSTEM FAILURE: ENGINES FROZEN!"), true);
+                            }
+                            
+                            player.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 60, 1, false, false, true));
+                            
+                            // Свободное падение 20 блоков перед экстренным планированием
+                            if (player.fallDistance >= 20.0f) {
+                                if (!player.hasEffect(MobEffects.SLOW_FALLING)) {
+                                    player.displayClientMessage(net.minecraft.network.chat.Component.literal("§eAUTO-DEPLOY: EMERGENCY GLIDE INITIATED!"), true);
+                                }
+                                player.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING, 60, 0, false, false, true));
+                            }
                         }
 
                         changed = true; // Constantly ticking energy/icing
