@@ -57,6 +57,18 @@ public class Mk2FrameItem extends ArmorItem {
                                 );
                                 
                                 player.setDeltaMovement(newMovement);
+                            } else if (suit.getEnergy() >= 4 && suit.getIcingLevel() < 100.0f) {
+                                // Если игрок летит, но НЕ на спринте - жестко ограничиваем скорость парения
+                                // Ванильный креативный полет слишком быстрый, режем его до ~20 км/ч (0.28 blocks/tick)
+                                Vec3 current = player.getDeltaMovement();
+                                double hoverMaxSpeed = 0.28;
+                                
+                                // Ограничиваем горизонтальную скорость
+                                double horizontalLength = Math.sqrt(current.x * current.x + current.z * current.z);
+                                if (horizontalLength > hoverMaxSpeed) {
+                                    double scale = hoverMaxSpeed / horizontalLength;
+                                    player.setDeltaMovement(current.x * scale, current.y, current.z * scale);
+                                }
                             }
                         }
                     }
