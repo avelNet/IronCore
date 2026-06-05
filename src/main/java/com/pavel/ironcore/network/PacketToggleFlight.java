@@ -34,6 +34,7 @@ public class PacketToggleFlight {
                 }
             });
         });
+        context.setPacketHandled(true);
         return true;
     }
 }

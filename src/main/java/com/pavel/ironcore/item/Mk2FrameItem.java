@@ -46,44 +46,40 @@ public class Mk2FrameItem extends ArmorItem {
                         // Каноничный бафф (наследуется от Mk1)
                         player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 40, 0, false, false, true));
 
-                        // Автоматическое отключение полёта при касании земли
-                        if (suit.isFlying() && player.onGround()) {
-                            suit.setFlying(false);
-                            player.getAbilities().mayfly = false;
-                            player.getAbilities().flying = false;
-                            player.onUpdateAbilities();
-                            changed = true;
-                        }
-
                         // Flight mechanics
                         if (suit.isFlying()) {
-                            // Reduced consumption: 4 FE per tick (80 FE/s). 50k FE = ~10.4 minutes of continuous flight.
-                            if (suit.getEnergy() >= 4 && suit.getIcingLevel() < 100.0f) {
-                                suit.setEnergy(suit.getEnergy() - 4); 
-                                player.getAbilities().mayfly = true;
-                                player.getAbilities().flying = true;
-                                player.onUpdateAbilities();
-
-                                // Server-side particles for thrusters (visual feedback for multiplayer)
-                                ServerLevel serverLevel = (ServerLevel) level;
-                                Vec3 pos = player.position();
-                                if (player.tickCount % 2 == 0) {
-                                    serverLevel.sendParticles(ParticleTypes.FLAME, pos.x, pos.y + 0.1, pos.z, 1, 0.1, 0.0, 0.1, 0.02);
+                            player.getAbilities().mayfly = true;
+                            
+                            // Расход энергии только когда игрок АКТИВНО летит (в воздухе)
+                            if (player.getAbilities().flying) {
+                                if (suit.getEnergy() >= 4 && suit.getIcingLevel() < 100.0f) {
+                                    suit.setEnergy(suit.getEnergy() - 4); 
+                                    
+                                    // Server-side particles for thrusters
+                                    ServerLevel serverLevel = (ServerLevel) level;
+                                    Vec3 pos = player.position();
+                                    if (player.tickCount % 2 == 0) {
+                                        serverLevel.sendParticles(ParticleTypes.FLAME, pos.x, pos.y + 0.1, pos.z, 1, 0.1, 0.0, 0.1, 0.02);
+                                    }
+                                } else {
+                                    // Отказ систем
+                                    suit.setFlying(false);
+                                    if (!player.isCreative() && !player.isSpectator()) {
+                                        player.getAbilities().mayfly = false;
+                                        player.getAbilities().flying = false;
+                                    }
+                                    player.displayClientMessage(net.minecraft.network.chat.Component.literal("§cSYSTEM FAILURE: Flight disabled!"), true);
+                                    changed = true;
                                 }
-                            } else {
-                                // Out of energy or system failure due to icing
-                                suit.setFlying(false);
-                                player.getAbilities().mayfly = false;
-                                player.getAbilities().flying = false;
-                                player.onUpdateAbilities();
-                                player.displayClientMessage(net.minecraft.network.chat.Component.literal("§cSYSTEM FAILURE: Flight disabled!"), true);
-                                changed = true;
                             }
+                            player.onUpdateAbilities();
                         } else {
-                            if (player.getAbilities().mayfly && !player.isCreative() && !player.isSpectator()) {
-                                player.getAbilities().mayfly = false;
-                                player.getAbilities().flying = false;
-                                player.onUpdateAbilities();
+                            if (!player.isCreative() && !player.isSpectator()) {
+                                if (player.getAbilities().mayfly) {
+                                    player.getAbilities().mayfly = false;
+                                    player.getAbilities().flying = false;
+                                    player.onUpdateAbilities();
+                                }
                             }
                         }
 

@@ -9,6 +9,7 @@ import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.event.TickEvent;
 import org.lwjgl.glfw.GLFW;
 
 public class KeyBindings {
@@ -26,12 +27,14 @@ public class KeyBindings {
     }
 
     @SubscribeEvent
-    public void onKeyInput(InputEvent.Key event) {
-        if (flamethrowerKey.isDown()) {
+    public void onClientTick(TickEvent.ClientTickEvent event) {
+        if (event.phase != TickEvent.Phase.END) return;
+        
+        while (flamethrowerKey.consumeClick()) {
             ModMessages.sendToServer(new PacketFlamethrower());
         }
         
-        if (event.getKey() == toggleFlightKey.getKey().getValue() && event.getAction() == GLFW.GLFW_PRESS) {
+        while (toggleFlightKey.consumeClick()) {
             ModMessages.sendToServer(new PacketToggleFlight());
         }
     }

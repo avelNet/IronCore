@@ -46,6 +46,7 @@ public class PacketFlamethrower {
                 }
             });
         });
+        context.setPacketHandled(true);
         return true;
     }
 }
