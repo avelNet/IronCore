@@ -4,6 +4,7 @@ import com.pavel.ironcore.capability.SuitCapability;
 import com.pavel.ironcore.capability.SuitCapabilityProvider;
 import com.pavel.ironcore.client.KeyBindings;
 import com.pavel.ironcore.client.SuitHUD;
+import com.pavel.ironcore.item.ModCreativeTabs;
 import com.pavel.ironcore.item.ModItems;
 import com.pavel.ironcore.network.ModMessages;
 import net.minecraft.resources.ResourceLocation;
@@ -26,6 +27,7 @@ public class IronCore {
     public IronCore() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         ModItems.register(modEventBus);
+        ModCreativeTabs.register(modEventBus);
         
         modEventBus.addListener(this::commonSetup);
         modEventBus.addListener(this::clientSetup);
