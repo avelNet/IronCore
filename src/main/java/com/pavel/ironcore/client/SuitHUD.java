@@ -64,6 +64,14 @@ public class SuitHUD {
                     currentY += 10;
                 }
 
+                if (suit.getHeat() > 0) {
+                    int color = 0xFFFF00; // Yellow
+                    if (suit.getHeat() > 60) color = 0xFFA500; // Orange
+                    if (suit.getHeat() > 85) color = 0xFF0000; // Red
+                    guiGraphics.drawString(minecraft.font, "TEMP: " + String.format("%.1f%%", suit.getHeat()), x, currentY, color);
+                    currentY += 10;
+                }
+
                 if (suit.getPalladiumPoisoning() > 0) {
                     guiGraphics.drawString(minecraft.font, "POISONING: " + suit.getPalladiumPoisoning(), x, currentY, 0xFF0000);
                 }

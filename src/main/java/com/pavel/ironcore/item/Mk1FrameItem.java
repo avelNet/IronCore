@@ -66,7 +66,7 @@ public class Mk1FrameItem extends ArmorItem {
                         ModMessages.sendToPlayer(new PacketSyncSuitData(
                                 suit.getEnergy(), suit.getMaxEnergy(), suit.getSuitTier(), 
                                 suit.getFrameDurability(), suit.getPalladiumPoisoning(),
-                                suit.getIcingLevel(), suit.isFlying()), player);
+                                suit.getIcingLevel(), suit.getHeat(), suit.isFlying()), player);
                     }
                 });
             }

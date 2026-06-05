@@ -37,8 +37,8 @@ public class Mk2FrameItem extends ArmorItem {
                     boolean isFull = isFullSuitEquipped(player);
 
                     if (isFull) {
-                        // Авто-активация STANDBY только если системы не заморожены
-                        if (suit.getIcingLevel() < 100.0f) {
+                        // Авто-активация STANDBY только если системы не заморожены/перегреты
+                        if (suit.getIcingLevel() < 100.0f && suit.getHeat() < 100.0f) {
                             if (!suit.isFlying()) {
                                 suit.setFlying(true);
                             }
@@ -50,27 +50,29 @@ public class Mk2FrameItem extends ArmorItem {
                                 net.minecraft.client.Minecraft.getInstance().options.keySprint.isDown() : 
                                 suit.isBoostKeyHeld();
 
+                            boolean enginesFrozen = suit.getIcingLevel() >= 100.0f;
+                            boolean enginesOverheated = suit.getHeat() >= 100.0f;
+
                             if (player.isInWater()) {
-                                // Полет в воде невозможен для Mk2
                                 player.getAbilities().flying = false;
                                 player.onUpdateAbilities();
-                            } else if (suit.getEnergy() <= 1000 && suit.getEnergy() >= 4 && suit.getIcingLevel() < 100.0f) {
+                            } else if (enginesOverheated) {
+                                // При перегреве тяга пропадает, медленно падаем
+                                Vec3 current = player.getDeltaMovement();
+                                player.setDeltaMovement(current.x * 0.9, current.y - 0.1, current.z * 0.9);
+                                player.hasImpulse = true;
+                            } else if (suit.getEnergy() <= 1000 && suit.getEnergy() >= 4 && !enginesFrozen) {
                                 // Резервное питание
                                 Vec3 current = player.getDeltaMovement();
                                 player.setDeltaMovement(current.x * 0.9, current.y - 0.1, current.z * 0.9);
                                 player.hasImpulse = true;
-                            } else if (isBoosting && suit.getEnergy() > 1000 && suit.getIcingLevel() < 100.0f) {
+                            } else if (isBoosting && suit.getEnergy() > 1000 && !enginesFrozen) {
                                 Vec3 look = player.getLookAngle();
                                 Vec3 current = player.getDeltaMovement();
-                                
-                                if (current.length() < 0.3) {
-                                    current = look.scale(0.3);
-                                }
+                                if (current.length() < 0.3) current = look.scale(0.3);
                                 
                                 double maxSpeed = 0.85; 
                                 double acceleration = 0.08; 
-
-                                // Усиление вертикальной тяги
                                 double yBoost = look.y > 0 ? look.y * 1.5 : look.y;
                                 Vec3 target = new Vec3(look.x, yBoost, look.z).normalize().scale(maxSpeed);
                                 
@@ -82,20 +84,13 @@ public class Mk2FrameItem extends ArmorItem {
                                 
                                 player.setDeltaMovement(newMovement);
                                 player.hasImpulse = true;
-                            } else if (suit.getEnergy() >= 4 && suit.getIcingLevel() < 100.0f) {
-                                // Строгое ограничение скорости парения до 20 км/ч (0.278 blocks/tick)
+                            } else if (suit.getEnergy() >= 4 && !enginesFrozen) {
                                 Vec3 current = player.getDeltaMovement();
-                                double hoverMaxSpeed = 0.278; 
-                                
-                                // Проверяем полную 3D скорость (чтобы убрать инерцию после ускорения)
-                                if (current.length() > hoverMaxSpeed) {
-                                    // Плавное, но быстрое торможение до лимита
-                                    player.setDeltaMovement(current.scale(0.85)); 
-                                    // Если скорость все еще выше лимита после торможения, обрезаем жестко
-                                    if (player.getDeltaMovement().length() > hoverMaxSpeed) {
-                                        player.setDeltaMovement(player.getDeltaMovement().normalize().scale(hoverMaxSpeed));
-                                    }
-                                    player.hasImpulse = true;
+                                double hoverMaxSpeed = 0.28;
+                                double horizontalLength = Math.sqrt(current.x * current.x + current.z * current.z);
+                                if (horizontalLength > hoverMaxSpeed) {
+                                    double scale = hoverMaxSpeed / horizontalLength;
+                                    player.setDeltaMovement(current.x * scale, current.y, current.z * scale);
                                 }
                             }
                         }
@@ -115,18 +110,23 @@ public class Mk2FrameItem extends ArmorItem {
                             serverPlayer.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 40, 0, false, false, true));
                             
                             // Системы полета
-                            boolean systemsFunctional = suit.getIcingLevel() < 100.0f && suit.getEnergy() >= 4 && !serverPlayer.isInWater();
+                            boolean systemsFunctional = suit.getIcingLevel() < 100.0f && suit.getHeat() < 100.0f && suit.getEnergy() >= 4 && !serverPlayer.isInWater();
                             serverPlayer.getAbilities().mayfly = systemsFunctional;
                             
                             if (serverPlayer.getAbilities().flying) {
                                 if (!systemsFunctional) {
                                     serverPlayer.getAbilities().flying = false;
-                                    if (serverPlayer.isInWater()) {
-                                        serverPlayer.displayClientMessage(net.minecraft.network.chat.Component.literal("§cSYSTEM FAILURE: WATER DETECTED!"), true);
-                                    }
+                                    if (serverPlayer.isInWater()) serverPlayer.displayClientMessage(net.minecraft.network.chat.Component.literal("§cSYSTEM FAILURE: WATER DETECTED!"), true);
+                                    else if (suit.getHeat() >= 100.0f) serverPlayer.displayClientMessage(net.minecraft.network.chat.Component.literal("§cSYSTEM FAILURE: OVERHEATED!"), true);
                                     serverPlayer.onUpdateAbilities();
                                 } else {
                                     suit.setEnergy(suit.getEnergy() - 4);
+                                    
+                                    // Нагрев при ускорении
+                                    if (suit.isBoostKeyHeld()) {
+                                        suit.setHeat(suit.getHeat() + 0.15f);
+                                    }
+
                                     if (suit.getEnergy() <= 1000 && serverPlayer.tickCount % 40 == 0) {
                                         serverPlayer.displayClientMessage(net.minecraft.network.chat.Component.literal("§eWARNING: RESERVE POWER"), true);
                                     }
@@ -144,40 +144,46 @@ public class Mk2FrameItem extends ArmorItem {
 
                             // Обледенение
                             double yPos = serverPlayer.getY();
-                            if (yPos > 170) { // Высота 170
+                            if (yPos > 170) {
                                 float icingRate = (float) ((yPos - 170) * 0.05f); 
                                 if (level.getBiome(serverPlayer.blockPosition()).value().getBaseTemperature() < 0.2f) icingRate *= 2.0f;
                                 if (suit.getIcingLevel() < 100.0f) suit.setIcingLevel(suit.getIcingLevel() + icingRate);
                             } else {
                                 if (suit.getIcingLevel() > 0.0f) suit.setIcingLevel(suit.getIcingLevel() - 0.2f); 
                             }
-                            serverPlayer.setTicksFrozen((int) ((suit.getIcingLevel() / 100.0f) * 140));
-                            
-                            if (suit.getIcingLevel() > 50.0f) serverPlayer.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 40, 0, false, false, true));
-                            
-                            if (suit.getIcingLevel() >= 100.0f) {
-                                if (suit.isFlying()) {
-                                    suit.setFlying(false);
-                                    serverPlayer.displayClientMessage(net.minecraft.network.chat.Component.literal("§cSYSTEM FAILURE: ENGINES FROZEN!"), true);
-                                    changed = true;
-                                }
-                                
-                                serverPlayer.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 60, 1, false, false, true));
-                                
-                                if (suit.getFailureYPos() < 0) {
-                                    suit.setFailureYPos(serverPlayer.getY());
-                                }
 
-                                double distanceFallen = suit.getFailureYPos() - serverPlayer.getY();
-                                if (distanceFallen >= 20.0 && !serverPlayer.onGround()) {
-                                    // Применяем Slow Falling каждый тик после 20 блоков падения
+                            // --- Система Перегрева ---
+                            float coolingRate = 0.1f;
+                            if (serverPlayer.isInWater()) coolingRate = 0.5f;
+                            else if (level.getBiome(serverPlayer.blockPosition()).value().getBaseTemperature() < 0.2f) coolingRate = 0.2f;
+                            
+                            if (level.dimension() == net.minecraft.world.level.Level.NETHER) suit.setHeat(suit.getHeat() + 0.05f);
+                            if (serverPlayer.isOnFire() || serverPlayer.isInLava()) suit.setHeat(suit.getHeat() + 1.0f);
+                            
+                            if (!suit.isBoostKeyHeld() || !serverPlayer.getAbilities().flying) {
+                                suit.setHeat(suit.getHeat() - coolingRate);
+                            }
+
+                            if (suit.getHeat() > 80.0f && serverPlayer.tickCount % 40 == 0) {
+                                serverPlayer.displayClientMessage(net.minecraft.network.chat.Component.literal("§6WARNING: CRITICAL TEMPERATURE!"), true);
+                            }
+
+                            if (suit.getIcingLevel() >= 100.0f || suit.getHeat() >= 100.0f) {
+                                if (serverPlayer.getAbilities().flying) {
+                                    serverPlayer.getAbilities().flying = false;
+                                    serverPlayer.onUpdateAbilities();
+                                }
+                                serverPlayer.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 60, 1, false, false, true));
+                                if (suit.getFailureYPos() < 0) suit.setFailureYPos(serverPlayer.getY());
+                                if (suit.getFailureYPos() - serverPlayer.getY() >= 20.0 && !serverPlayer.onGround()) {
                                     serverPlayer.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING, 20, 0, false, false, true));
                                 }
                             } else {
-                                if (suit.getFailureYPos() >= 0) {
-                                    suit.setFailureYPos(-1.0);
-                                }
+                                if (suit.getFailureYPos() >= 0) suit.setFailureYPos(-1.0);
                             }
+
+                            serverPlayer.setTicksFrozen((int) ((suit.getIcingLevel() / 100.0f) * 140));
+                            if (suit.getIcingLevel() > 50.0f) serverPlayer.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 40, 0, false, false, true));
                             changed = true;
                         } else {
                             if (suit.getSuitTier().equals("mk2")) {
@@ -196,7 +202,7 @@ public class Mk2FrameItem extends ArmorItem {
                             ModMessages.sendToPlayer(new PacketSyncSuitData(
                                     suit.getEnergy(), suit.getMaxEnergy(), suit.getSuitTier(), 
                                     suit.getFrameDurability(), suit.getPalladiumPoisoning(),
-                                    suit.getIcingLevel(), suit.isFlying()), serverPlayer);
+                                    suit.getIcingLevel(), suit.getHeat(), suit.isFlying()), serverPlayer);
                         }
                     }
                 });

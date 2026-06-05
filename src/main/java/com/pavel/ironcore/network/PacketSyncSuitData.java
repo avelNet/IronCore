@@ -13,15 +13,17 @@ public class PacketSyncSuitData {
     private final int durability;
     private final int poisoning;
     private final float icingLevel;
+    private final float heatLevel;
     private final boolean isFlying;
 
-    public PacketSyncSuitData(int energy, int maxEnergy, String tier, int durability, int poisoning, float icingLevel, boolean isFlying) {
+    public PacketSyncSuitData(int energy, int maxEnergy, String tier, int durability, int poisoning, float icingLevel, float heatLevel, boolean isFlying) {
         this.energy = energy;
         this.maxEnergy = maxEnergy;
         this.tier = tier;
         this.durability = durability;
         this.poisoning = poisoning;
         this.icingLevel = icingLevel;
+        this.heatLevel = heatLevel;
         this.isFlying = isFlying;
     }
 
@@ -32,6 +34,7 @@ public class PacketSyncSuitData {
         this.durability = buffer.readInt();
         this.poisoning = buffer.readInt();
         this.icingLevel = buffer.readFloat();
+        this.heatLevel = buffer.readFloat();
         this.isFlying = buffer.readBoolean();
     }
 
@@ -42,6 +45,7 @@ public class PacketSyncSuitData {
         buffer.writeInt(durability);
         buffer.writeInt(poisoning);
         buffer.writeFloat(icingLevel);
+        buffer.writeFloat(heatLevel);
         buffer.writeBoolean(isFlying);
     }
 
@@ -55,6 +59,7 @@ public class PacketSyncSuitData {
                 suit.setFrameDurability(durability);
                 suit.setPalladiumPoisoning(poisoning);
                 suit.setIcingLevel(icingLevel);
+                suit.setHeat(heatLevel);
                 suit.setFlying(isFlying);
             });
         });

@@ -29,7 +29,7 @@ public class SuitCapability implements INBTSerializable<CompoundTag> {
     public void setSuitTier(String tier) { this.suitTier = tier; }
 
     public float getHeat() { return heat; }
-    public void setHeat(float heat) { this.heat = heat; }
+    public void setHeat(float heat) { this.heat = Math.max(0.0f, Math.min(heat, 100.0f)); }
 
     public int getPalladiumPoisoning() { return palladiumPoisoning; }
     public void setPalladiumPoisoning(int level) { this.palladiumPoisoning = level; }
