@@ -22,6 +22,16 @@ public class ModItems {
     public static final RegistryObject<Item> MK1_BOOTS = ITEMS.register("mk1_boots",
             () -> new Mk1FrameItem(ArmorMaterials.IRON, ArmorItem.Type.BOOTS, new Item.Properties()));
 
+    // Полный сет Mk2
+    public static final RegistryObject<Item> MK2_HELMET = ITEMS.register("mk2_helmet",
+            () -> new Mk2FrameItem(ArmorMaterials.IRON, ArmorItem.Type.HELMET, new Item.Properties()));
+    public static final RegistryObject<Item> MK2_CHESTPLATE = ITEMS.register("mk2_chestplate",
+            () -> new Mk2FrameItem(ArmorMaterials.IRON, ArmorItem.Type.CHESTPLATE, new Item.Properties()));
+    public static final RegistryObject<Item> MK2_LEGGINGS = ITEMS.register("mk2_leggings",
+            () -> new Mk2FrameItem(ArmorMaterials.IRON, ArmorItem.Type.LEGGINGS, new Item.Properties()));
+    public static final RegistryObject<Item> MK2_BOOTS = ITEMS.register("mk2_boots",
+            () -> new Mk2FrameItem(ArmorMaterials.IRON, ArmorItem.Type.BOOTS, new Item.Properties()));
+
     public static final RegistryObject<Item> COAL_REACTOR = ITEMS.register("coal_reactor",
             () -> new ReactorItem(new Item.Properties().stacksTo(1), 5000, "coal"));
 

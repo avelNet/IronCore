@@ -3,9 +3,14 @@
   "item.ironcore.mk1_chestplate": "Mk1 Chestplate",
   "item.ironcore.mk1_leggings": "Mk1 Leggings",
   "item.ironcore.mk1_boots": "Mk1 Boots",
+  "item.ironcore.mk2_helmet": "Mk2 Helmet",
+  "item.ironcore.mk2_chestplate": "Mk2 Chestplate",
+  "item.ironcore.mk2_leggings": "Mk2 Leggings",
+  "item.ironcore.mk2_boots": "Mk2 Boots",
   "item.ironcore.coal_reactor": "Coal Reactor",
   "key.category.ironcore": "IronCore",
   "key.ironcore.flamethrower": "Use Flamethrower",
+  "key.ironcore.toggle_flight": "Toggle Flight",
   "tooltip.ironcore.reactor_type": "Type: %s",
   "tooltip.ironcore.capacity": "Capacity: %s FE"
 }

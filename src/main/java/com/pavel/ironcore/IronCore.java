@@ -41,6 +41,15 @@ public class IronCore {
         KeyBindings.init();
     }
 
+    @Mod.EventBusSubscriber(modid = MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = net.minecraftforge.api.distmarker.Dist.CLIENT)
+    public static class ClientModEvents {
+        @SubscribeEvent
+        public static void onKeyRegister(net.minecraftforge.client.event.RegisterKeyMappingsEvent event) {
+            event.register(KeyBindings.flamethrowerKey);
+            event.register(KeyBindings.toggleFlightKey);
+        }
+    }
+
     @SubscribeEvent
     public void onAttachCapabilitiesPlayer(AttachCapabilitiesEvent<Entity> event) {
         if (event.getObject() instanceof Player) {

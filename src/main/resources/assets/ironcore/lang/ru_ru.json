@@ -3,9 +3,14 @@
   "item.ironcore.mk1_chestplate": "Нагрудник Mk1",
   "item.ironcore.mk1_leggings": "Поножи Mk1",
   "item.ironcore.mk1_boots": "Ботинки Mk1",
+  "item.ironcore.mk2_helmet": "Шлем Mk2",
+  "item.ironcore.mk2_chestplate": "Нагрудник Mk2",
+  "item.ironcore.mk2_leggings": "Поножи Mk2",
+  "item.ironcore.mk2_boots": "Ботинки Mk2",
   "item.ironcore.coal_reactor": "Угольный реактор",
   "key.category.ironcore": "IronCore",
   "key.ironcore.flamethrower": "Использовать огнемёт",
+  "key.ironcore.toggle_flight": "Переключить полёт",
   "tooltip.ironcore.reactor_type": "Тип: %s",
   "tooltip.ironcore.capacity": "Ёмкость: %s FE"
 }

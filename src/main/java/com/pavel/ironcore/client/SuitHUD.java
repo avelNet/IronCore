@@ -31,8 +31,23 @@ public class SuitHUD {
                 guiGraphics.drawString(minecraft.font, energyText, x, y + 10, 0x00AAFF);
                 guiGraphics.drawString(minecraft.font, durabilityText, x, y + 20, 0xFFAA00);
                 
+                int currentY = y + 30;
+
+                if (suit.isFlying()) {
+                    guiGraphics.drawString(minecraft.font, "FLIGHT: ACTIVE", x, currentY, 0x00FF00);
+                    currentY += 10;
+                }
+
+                if (suit.getIcingLevel() > 0) {
+                    int color = 0x00FFFF; // Light blue
+                    if (suit.getIcingLevel() > 50) color = 0xFFA500; // Orange
+                    if (suit.getIcingLevel() > 80) color = 0xFF0000; // Red
+                    guiGraphics.drawString(minecraft.font, "ICING: " + String.format("%.1f%%", suit.getIcingLevel()), x, currentY, color);
+                    currentY += 10;
+                }
+
                 if (suit.getPalladiumPoisoning() > 0) {
-                    guiGraphics.drawString(minecraft.font, "POISONING: " + suit.getPalladiumPoisoning(), x, y + 30, 0xFF0000);
+                    guiGraphics.drawString(minecraft.font, "POISONING: " + suit.getPalladiumPoisoning(), x, currentY, 0xFF0000);
                 }
             });
         });

@@ -37,6 +37,12 @@ public class ModMessages {
                 .encoder(PacketFlamethrower::toBytes)
                 .consumerMainThread(PacketFlamethrower::handle)
                 .add();
+
+        net.messageBuilder(PacketToggleFlight.class, id(), NetworkDirection.PLAY_TO_SERVER)
+                .decoder(PacketToggleFlight::new)
+                .encoder(PacketToggleFlight::toBytes)
+                .consumerMainThread(PacketToggleFlight::handle)
+                .add();
     }
 
     public static <MSG> void sendToServer(MSG message) {

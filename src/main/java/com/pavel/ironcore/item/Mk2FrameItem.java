@@ -1,0 +1,135 @@
+package com.pavel.ironcore.item;
+
+import com.pavel.ironcore.capability.SuitCapabilityProvider;
+import com.pavel.ironcore.network.ModMessages;
+import com.pavel.ironcore.network.PacketSyncSuitData;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.ArmorItem;
+import net.minecraft.world.item.ArmorMaterial;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
+
+public class Mk2FrameItem extends ArmorItem {
+    public Mk2FrameItem(ArmorMaterial material, ArmorItem.Type type, Properties properties) {
+        super(material, type, properties);
+    }
+
+    private boolean isFullSuitEquipped(ServerPlayer player) {
+        return player.getItemBySlot(EquipmentSlot.HEAD).getItem() == ModItems.MK2_HELMET.get() &&
+               player.getItemBySlot(EquipmentSlot.CHEST).getItem() == ModItems.MK2_CHESTPLATE.get() &&
+               player.getItemBySlot(EquipmentSlot.LEGS).getItem() == ModItems.MK2_LEGGINGS.get() &&
+               player.getItemBySlot(EquipmentSlot.FEET).getItem() == ModItems.MK2_BOOTS.get();
+    }
+
+    @Override
+    public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
+        if (!level.isClientSide && entity instanceof ServerPlayer player) {
+            if (player.getItemBySlot(this.getType().getSlot()) == stack) {
+                player.getCapability(SuitCapabilityProvider.SUIT_CAPABILITY).ifPresent(suit -> {
+                    boolean changed = false;
+                    boolean isFull = isFullSuitEquipped(player);
+
+                    if (isFull) {
+                        if (!suit.getSuitTier().equals("mk2")) {
+                            suit.setSuitTier("mk2");
+                            suit.setMaxEnergy(50000); // Mk2 has larger capacity
+                            changed = true;
+                        }
+
+                        // Flight mechanics
+                        if (suit.isFlying()) {
+                            if (suit.getEnergy() >= 20 && suit.getIcingLevel() < 100.0f) {
+                                suit.setEnergy(suit.getEnergy() - 20); // 400 FE/s for flight
+                                player.getAbilities().mayfly = true;
+                                player.getAbilities().flying = true;
+                                player.onUpdateAbilities();
+
+                                // Server-side particles for thrusters (visual feedback for multiplayer)
+                                ServerLevel serverLevel = (ServerLevel) level;
+                                Vec3 pos = player.position();
+                                if (player.tickCount % 2 == 0) {
+                                    serverLevel.sendParticles(ParticleTypes.FLAME, pos.x, pos.y + 0.1, pos.z, 1, 0.1, 0.0, 0.1, 0.02);
+                                }
+                            } else {
+                                // Out of energy or system failure due to icing
+                                suit.setFlying(false);
+                                player.getAbilities().mayfly = false;
+                                player.getAbilities().flying = false;
+                                player.onUpdateAbilities();
+                                player.displayClientMessage(net.minecraft.network.chat.Component.literal("§cSYSTEM FAILURE: Flight disabled!"), true);
+                                changed = true;
+                            }
+                        } else {
+                            if (player.getAbilities().mayfly && !player.isCreative() && !player.isSpectator()) {
+                                player.getAbilities().mayfly = false;
+                                player.getAbilities().flying = false;
+                                player.onUpdateAbilities();
+                            }
+                        }
+
+                        // Icing mechanics
+                        double yPos = player.getY();
+                        if (yPos > 120) {
+                            // Calculate icing rate based on altitude
+                            float icingRate = (float) ((yPos - 120) * 0.05f); 
+                            
+                            // Check biomes for extra cold
+                            float biomeTemp = level.getBiome(player.blockPosition()).value().getBaseTemperature();
+                            if (biomeTemp < 0.2f) {
+                                icingRate *= 2.0f; // Freeze faster in cold biomes
+                            }
+
+                            if (suit.getIcingLevel() < 100.0f) {
+                                suit.setIcingLevel(suit.getIcingLevel() + icingRate);
+                            }
+
+                            // Effects of icing
+                            if (suit.getIcingLevel() > 50.0f) {
+                                player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 40, 0, false, false, true));
+                            }
+                            if (suit.getIcingLevel() >= 100.0f) {
+                                // Freeze systems
+                                if (suit.isFlying()) {
+                                    suit.setFlying(false);
+                                }
+                                player.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 40, 0, false, false, true));
+                            }
+                        } else {
+                            // Thaw if low enough
+                            if (suit.getIcingLevel() > 0.0f) {
+                                suit.setIcingLevel(suit.getIcingLevel() - 1.0f); // Thawing rate
+                            }
+                        }
+
+                        changed = true; // Constantly ticking energy/icing
+                    } else {
+                        if (suit.getSuitTier().equals("mk2")) {
+                            suit.setSuitTier("none");
+                            suit.setFlying(false);
+                            if (!player.isCreative() && !player.isSpectator()) {
+                                player.getAbilities().mayfly = false;
+                                player.getAbilities().flying = false;
+                                player.onUpdateAbilities();
+                            }
+                            changed = true;
+                        }
+                    }
+
+                    if (changed || player.tickCount % 20 == 0) {
+                        ModMessages.sendToPlayer(new PacketSyncSuitData(
+                                suit.getEnergy(), suit.getSuitTier(), 
+                                suit.getFrameDurability(), suit.getPalladiumPoisoning(),
+                                suit.getIcingLevel(), suit.isFlying()), player);
+                    }
+                });
+            }
+        }
+    }
+}

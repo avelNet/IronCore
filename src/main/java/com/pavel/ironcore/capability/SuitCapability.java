@@ -11,6 +11,8 @@ public class SuitCapability implements INBTSerializable<CompoundTag> {
     private String suitTier = "none";
     private float heat = 0.0f;
     private int palladiumPoisoning = 0;
+    private float icingLevel = 0.0f;
+    private boolean isFlying = false;
 
     public int getEnergy() { return energy; }
     public void setEnergy(int energy) { this.energy = Math.max(0, Math.min(energy, maxEnergy)); }
@@ -30,6 +32,12 @@ public class SuitCapability implements INBTSerializable<CompoundTag> {
     public int getPalladiumPoisoning() { return palladiumPoisoning; }
     public void setPalladiumPoisoning(int level) { this.palladiumPoisoning = level; }
 
+    public float getIcingLevel() { return icingLevel; }
+    public void setIcingLevel(float level) { this.icingLevel = Math.max(0.0f, Math.min(level, 100.0f)); }
+
+    public boolean isFlying() { return isFlying; }
+    public void setFlying(boolean flying) { this.isFlying = flying; }
+
     public void saveNBTData(CompoundTag nbt) {
         nbt.putInt("energy", energy);
         nbt.putInt("maxEnergy", maxEnergy);
@@ -38,6 +46,8 @@ public class SuitCapability implements INBTSerializable<CompoundTag> {
         nbt.putString("tier", suitTier);
         nbt.putFloat("heat", heat);
         nbt.putInt("poisoning", palladiumPoisoning);
+        nbt.putFloat("icing", icingLevel);
+        nbt.putBoolean("flying", isFlying);
     }
 
     public void loadNBTData(CompoundTag nbt) {
@@ -48,6 +58,8 @@ public class SuitCapability implements INBTSerializable<CompoundTag> {
         suitTier = nbt.getString("tier");
         heat = nbt.getFloat("heat");
         palladiumPoisoning = nbt.getInt("poisoning");
+        icingLevel = nbt.getFloat("icing");
+        isFlying = nbt.getBoolean("flying");
     }
 
     @Override
