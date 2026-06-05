@@ -77,9 +77,9 @@ public class Mk2FrameItem extends ArmorItem {
 
                         // Icing mechanics
                         double yPos = player.getY();
-                        if (yPos > 120) {
+                        if (yPos > 200) { // Обледенение начинается с высоты 200
                             // Calculate icing rate based on altitude
-                            float icingRate = (float) ((yPos - 120) * 0.05f); 
+                            float icingRate = (float) ((yPos - 200) * 0.05f); 
                             
                             // Check biomes for extra cold
                             float biomeTemp = level.getBiome(player.blockPosition()).value().getBaseTemperature();
@@ -96,11 +96,18 @@ public class Mk2FrameItem extends ArmorItem {
                                 player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 40, 0, false, false, true));
                             }
                             if (suit.getIcingLevel() >= 100.0f) {
-                                // Freeze systems
+                                // Freeze systems - Critical Failure
                                 if (suit.isFlying()) {
                                     suit.setFlying(false);
                                 }
-                                player.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 40, 0, false, false, true));
+                                // Экстренное планирование (Аварийная посадка)
+                                player.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING, 60, 0, false, false, true));
+                                // Убираем слепоту, чтобы игрок мог найти место для посадки,
+                                // но оставляем дебафф, чтобы показать, что всё плохо.
+                                player.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 60, 1, false, false, true));
+                                if (player.tickCount % 40 == 0) {
+                                    player.displayClientMessage(net.minecraft.network.chat.Component.literal("§4CRITICAL ICE BUILDUP: EMERGENCY GLIDE INITIATED!"), true);
+                                }
                             }
                         } else {
                             // Thaw if low enough
