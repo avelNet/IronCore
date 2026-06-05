@@ -91,6 +91,10 @@ public class Mk2FrameItem extends ArmorItem {
                                 suit.setIcingLevel(suit.getIcingLevel() + icingRate);
                             }
 
+                            // Apply vanilla freezing visual effect (max 140 ticks is fully frozen screen)
+                            int freezeTicks = (int) ((suit.getIcingLevel() / 100.0f) * 140);
+                            player.setTicksFrozen(freezeTicks);
+
                             // Effects of icing
                             if (suit.getIcingLevel() > 50.0f) {
                                 player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 40, 0, false, false, true));
@@ -114,6 +118,9 @@ public class Mk2FrameItem extends ArmorItem {
                             if (suit.getIcingLevel() > 0.0f) {
                                 suit.setIcingLevel(suit.getIcingLevel() - 1.0f); // Thawing rate
                             }
+                            // Sync thawing to vanilla visual
+                            int freezeTicks = (int) ((suit.getIcingLevel() / 100.0f) * 140);
+                            player.setTicksFrozen(freezeTicks);
                         }
 
                         changed = true; // Constantly ticking energy/icing
