@@ -45,8 +45,9 @@ public class Mk2FrameItem extends ArmorItem {
 
                         // Flight mechanics
                         if (suit.isFlying()) {
-                            if (suit.getEnergy() >= 20 && suit.getIcingLevel() < 100.0f) {
-                                suit.setEnergy(suit.getEnergy() - 20); // 400 FE/s for flight
+                            // Reduced consumption: 4 FE per tick (80 FE/s). 50k FE = ~10.4 minutes of continuous flight.
+                            if (suit.getEnergy() >= 4 && suit.getIcingLevel() < 100.0f) {
+                                suit.setEnergy(suit.getEnergy() - 4); 
                                 player.getAbilities().mayfly = true;
                                 player.getAbilities().flying = true;
                                 player.onUpdateAbilities();
