@@ -124,7 +124,7 @@ public class Mk2FrameItem extends ArmorItem {
                                     
                                     // Нагрев при ускорении
                                     if (suit.isBoostKeyHeld()) {
-                                        suit.setHeat(suit.getHeat() + 0.15f);
+                                        suit.setHeat(suit.getHeat() + 0.0476f); // 1.75 минуты до 100%
                                     }
 
                                     if (suit.getEnergy() <= 1000 && serverPlayer.tickCount % 40 == 0) {
