@@ -124,7 +124,7 @@ public class Mk2FrameItem extends ArmorItem {
 
                     if (changed || player.tickCount % 20 == 0) {
                         ModMessages.sendToPlayer(new PacketSyncSuitData(
-                                suit.getEnergy(), suit.getSuitTier(), 
+                                suit.getEnergy(), suit.getMaxEnergy(), suit.getSuitTier(), 
                                 suit.getFrameDurability(), suit.getPalladiumPoisoning(),
                                 suit.getIcingLevel(), suit.isFlying()), player);
                     }

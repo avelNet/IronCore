@@ -8,14 +8,16 @@ import java.util.function.Supplier;
 
 public class PacketSyncSuitData {
     private final int energy;
+    private final int maxEnergy;
     private final String tier;
     private final int durability;
     private final int poisoning;
     private final float icingLevel;
     private final boolean isFlying;
 
-    public PacketSyncSuitData(int energy, String tier, int durability, int poisoning, float icingLevel, boolean isFlying) {
+    public PacketSyncSuitData(int energy, int maxEnergy, String tier, int durability, int poisoning, float icingLevel, boolean isFlying) {
         this.energy = energy;
+        this.maxEnergy = maxEnergy;
         this.tier = tier;
         this.durability = durability;
         this.poisoning = poisoning;
@@ -25,6 +27,7 @@ public class PacketSyncSuitData {
 
     public PacketSyncSuitData(FriendlyByteBuf buffer) {
         this.energy = buffer.readInt();
+        this.maxEnergy = buffer.readInt();
         this.tier = buffer.readUtf();
         this.durability = buffer.readInt();
         this.poisoning = buffer.readInt();
@@ -34,6 +37,7 @@ public class PacketSyncSuitData {
 
     public void toBytes(FriendlyByteBuf buffer) {
         buffer.writeInt(energy);
+        buffer.writeInt(maxEnergy);
         buffer.writeUtf(tier);
         buffer.writeInt(durability);
         buffer.writeInt(poisoning);
@@ -45,6 +49,7 @@ public class PacketSyncSuitData {
         NetworkEvent.Context context = supplier.get();
         context.enqueueWork(() -> {
             net.minecraft.client.Minecraft.getInstance().player.getCapability(SuitCapabilityProvider.SUIT_CAPABILITY).ifPresent(suit -> {
+                suit.setMaxEnergy(maxEnergy);
                 suit.setEnergy(energy);
                 suit.setSuitTier(tier);
                 suit.setFrameDurability(durability);
