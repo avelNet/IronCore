@@ -12,8 +12,15 @@ import net.minecraftforge.registries.RegistryObject;
 public class ModItems {
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, IronCore.MODID);
 
-    public static final RegistryObject<Item> MK1_FRAME = ITEMS.register("mk1_frame",
+    // Полный сет Mk1
+    public static final RegistryObject<Item> MK1_HELMET = ITEMS.register("mk1_helmet",
+            () -> new Mk1FrameItem(ArmorMaterials.IRON, ArmorItem.Type.HELMET, new Item.Properties()));
+    public static final RegistryObject<Item> MK1_CHESTPLATE = ITEMS.register("mk1_chestplate",
             () -> new Mk1FrameItem(ArmorMaterials.IRON, ArmorItem.Type.CHESTPLATE, new Item.Properties()));
+    public static final RegistryObject<Item> MK1_LEGGINGS = ITEMS.register("mk1_leggings",
+            () -> new Mk1FrameItem(ArmorMaterials.IRON, ArmorItem.Type.LEGGINGS, new Item.Properties()));
+    public static final RegistryObject<Item> MK1_BOOTS = ITEMS.register("mk1_boots",
+            () -> new Mk1FrameItem(ArmorMaterials.IRON, ArmorItem.Type.BOOTS, new Item.Properties()));
 
     public static final RegistryObject<Item> COAL_REACTOR = ITEMS.register("coal_reactor",
             () -> new ReactorItem(new Item.Properties().stacksTo(1), 5000, "coal"));

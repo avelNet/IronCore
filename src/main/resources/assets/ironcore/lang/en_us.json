@@ -1,5 +1,8 @@
 {
-  "item.ironcore.mk1_frame": "Mk1 Frame",
+  "item.ironcore.mk1_helmet": "Mk1 Helmet",
+  "item.ironcore.mk1_chestplate": "Mk1 Chestplate",
+  "item.ironcore.mk1_leggings": "Mk1 Leggings",
+  "item.ironcore.mk1_boots": "Mk1 Boots",
   "item.ironcore.coal_reactor": "Coal Reactor",
   "key.category.ironcore": "IronCore",
   "key.ironcore.flamethrower": "Use Flamethrower",

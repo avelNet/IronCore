@@ -1,7 +1,6 @@
 package com.pavel.ironcore.network;
 
 import com.pavel.ironcore.capability.SuitCapabilityProvider;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -35,23 +34,14 @@ public class PacketFlamethrower {
                     Vec3 look = player.getLookAngle();
                     Vec3 pos = player.getEyePosition();
 
-                    // Спавн частиц
-                    for (int i = 0; i < 10; i++) {
-                        double ox = (player.getRandom().nextDouble() - 0.5) * 0.2;
-                        double oy = (player.getRandom().nextDouble() - 0.5) * 0.2;
-                        double oz = (player.getRandom().nextDouble() - 0.5) * 0.2;
-                        level.sendParticles(ParticleTypes.FLAME, 
-                                pos.x + look.x + ox, pos.y + look.y + oy, pos.z + look.z + oz, 
-                                1, look.x * 0.5, look.y * 0.5, look.z * 0.5, 0.1);
-                    }
-
-                    // Урон сущностям
-                    Vec3 targetPos = pos.add(look.scale(3.0));
-                    AABB area = new AABB(pos, targetPos).inflate(1.0);
+                    // Визуальные частицы убраны для подготовки кастомной анимации
+                    // Урон и поджог сущностям в конусе перед игроком
+                    Vec3 targetPos = pos.add(look.scale(4.0));
+                    AABB area = new AABB(pos, targetPos).inflate(1.5);
                     List<Entity> entities = level.getEntities(player, area, e -> e instanceof LivingEntity);
                     for (Entity entity : entities) {
-                        entity.setSecondsOnFire(3);
-                        entity.hurt(player.damageSources().playerAttack(player), 2.0f);
+                        entity.setSecondsOnFire(5);
+                        entity.hurt(player.damageSources().inFire(), 3.0f);
                     }
                 }
             });

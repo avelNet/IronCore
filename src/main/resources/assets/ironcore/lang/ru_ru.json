@@ -1,5 +1,8 @@
 {
-  "item.ironcore.mk1_frame": "Каркас Mk1",
+  "item.ironcore.mk1_helmet": "Шлем Mk1",
+  "item.ironcore.mk1_chestplate": "Нагрудник Mk1",
+  "item.ironcore.mk1_leggings": "Поножи Mk1",
+  "item.ironcore.mk1_boots": "Ботинки Mk1",
   "item.ironcore.coal_reactor": "Угольный реактор",
   "key.category.ironcore": "IronCore",
   "key.ironcore.flamethrower": "Использовать огнемёт",
