@@ -50,7 +50,11 @@ public class Mk2FrameItem extends ArmorItem {
                                 net.minecraft.client.Minecraft.getInstance().options.keySprint.isDown() : 
                                 suit.isBoostKeyHeld();
 
-                            if (suit.getEnergy() <= 1000 && suit.getEnergy() >= 4 && suit.getIcingLevel() < 100.0f) {
+                            if (player.isInWater()) {
+                                // Полет в воде невозможен для Mk2
+                                player.getAbilities().flying = false;
+                                player.onUpdateAbilities();
+                            } else if (suit.getEnergy() <= 1000 && suit.getEnergy() >= 4 && suit.getIcingLevel() < 100.0f) {
                                 // Резервное питание
                                 Vec3 current = player.getDeltaMovement();
                                 player.setDeltaMovement(current.x * 0.9, current.y - 0.1, current.z * 0.9);
@@ -111,12 +115,15 @@ public class Mk2FrameItem extends ArmorItem {
                             serverPlayer.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 40, 0, false, false, true));
                             
                             // Системы полета
-                            boolean systemsFunctional = suit.getIcingLevel() < 100.0f && suit.getEnergy() >= 4;
+                            boolean systemsFunctional = suit.getIcingLevel() < 100.0f && suit.getEnergy() >= 4 && !serverPlayer.isInWater();
                             serverPlayer.getAbilities().mayfly = systemsFunctional;
                             
                             if (serverPlayer.getAbilities().flying) {
                                 if (!systemsFunctional) {
                                     serverPlayer.getAbilities().flying = false;
+                                    if (serverPlayer.isInWater()) {
+                                        serverPlayer.displayClientMessage(net.minecraft.network.chat.Component.literal("§cSYSTEM FAILURE: WATER DETECTED!"), true);
+                                    }
                                     serverPlayer.onUpdateAbilities();
                                 } else {
                                     suit.setEnergy(suit.getEnergy() - 4);
