@@ -1,0 +1,8 @@
+{
+  "item.ironcore.mk1_frame": "Mk1 Frame",
+  "item.ironcore.coal_reactor": "Coal Reactor",
+  "key.category.ironcore": "IronCore",
+  "key.ironcore.flamethrower": "Use Flamethrower",
+  "tooltip.ironcore.reactor_type": "Type: %s",
+  "tooltip.ironcore.capacity": "Capacity: %s FE"
+}

@@ -1,0 +1,8 @@
+{
+  "item.ironcore.mk1_frame": "Каркас Mk1",
+  "item.ironcore.coal_reactor": "Угольный реактор",
+  "key.category.ironcore": "IronCore",
+  "key.ironcore.flamethrower": "Использовать огнемёт",
+  "tooltip.ironcore.reactor_type": "Тип: %s",
+  "tooltip.ironcore.capacity": "Ёмкость: %s FE"
+}
