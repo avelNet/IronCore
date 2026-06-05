@@ -43,9 +43,14 @@ public class Mk2FrameItem extends ArmorItem {
                                 Vec3 look = player.getLookAngle();
                                 Vec3 current = player.getDeltaMovement();
                                 
+                                // Initial burst: if we are hovering or starting from zero, jump to ~20 km/h instantly
+                                if (current.length() < 0.3) {
+                                    current = look.scale(0.3); // 0.3 blocks/tick is ~21 km/h
+                                }
+                                
                                 // Target speed ~60 km/h (approx 0.85 blocks/tick)
                                 double maxSpeed = 0.85; 
-                                double acceleration = 0.15; // Faster responsiveness
+                                double acceleration = 0.02; // Very gradual acceleration (takes ~2-3 seconds to reach max)
 
                                 Vec3 target = look.scale(maxSpeed);
                                 
