@@ -39,12 +39,18 @@ public class Mk2FrameItem extends ArmorItem {
                     // --- CLIENT & SERVER (Для плавной физики без фризов) ---
                     if (isFull) {
                         if (suit.isFlying() && player.getAbilities().flying) {
+                            // Используем НАШУ проверку зажатой клавиши (синхронизированную через пакет)
+                            // Это предотвращает ускорение от двойного нажатия W
+                            boolean isBoosting = level.isClientSide ? 
+                                net.minecraft.client.Minecraft.getInstance().options.keySprint.isDown() : 
+                                suit.isBoostKeyHeld();
+
                             if (suit.getEnergy() <= 1000 && suit.getEnergy() >= 4 && suit.getIcingLevel() < 100.0f) {
                                 // Резервное питание: отключаем турбо, принудительно тянем вниз (отказ двигателей)
                                 Vec3 current = player.getDeltaMovement();
                                 player.setDeltaMovement(current.x * 0.9, current.y - 0.05, current.z * 0.9);
                                 player.hasImpulse = true;
-                            } else if (player.isSprinting() && suit.getEnergy() > 1000 && suit.getIcingLevel() < 100.0f) {
+                            } else if (isBoosting && suit.getEnergy() > 1000 && suit.getIcingLevel() < 100.0f) {
                                 Vec3 look = player.getLookAngle();
                                 Vec3 current = player.getDeltaMovement();
                                 

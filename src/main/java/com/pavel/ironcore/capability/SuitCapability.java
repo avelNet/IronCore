@@ -14,6 +14,7 @@ public class SuitCapability implements INBTSerializable<CompoundTag> {
     private float icingLevel = 0.0f;
     private boolean isFlying = false;
     private double failureYPos = -1.0; // Y pos when systems freeze
+    private boolean isBoostKeyHeld = false; // Transient, not saved to NBT
 
     public int getEnergy() { return energy; }
     public void setEnergy(int energy) { this.energy = Math.max(0, Math.min(energy, maxEnergy)); }
@@ -41,6 +42,9 @@ public class SuitCapability implements INBTSerializable<CompoundTag> {
 
     public double getFailureYPos() { return failureYPos; }
     public void setFailureYPos(double yPos) { this.failureYPos = yPos; }
+
+    public boolean isBoostKeyHeld() { return isBoostKeyHeld; }
+    public void setBoostKeyHeld(boolean held) { this.isBoostKeyHeld = held; }
 
     public void saveNBTData(CompoundTag nbt) {
         nbt.putInt("energy", energy);

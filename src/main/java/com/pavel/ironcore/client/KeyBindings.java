@@ -4,7 +4,12 @@ import com.mojang.blaze3d.platform.InputConstants;
 import com.pavel.ironcore.network.ModMessages;
 import com.pavel.ironcore.network.PacketFlamethrower;
 import com.pavel.ironcore.network.PacketToggleFlight;
+import com.pavel.ironcore.network.PacketSyncBoostState;
+import com.pavel.ironcore.network.PacketBoostLaunch;
+import com.pavel.ironcore.capability.SuitCapabilityProvider;
 import net.minecraft.client.KeyMapping;
+import net.minecraft.client.Minecraft;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.common.MinecraftForge;
@@ -26,6 +31,9 @@ public class KeyBindings {
         MinecraftForge.EVENT_BUS.register(new KeyBindings());
     }
 
+    private static long lastSprintTime = 0;
+    private static boolean wasSprintDown = false;
+
     @SubscribeEvent
     public void onClientTick(TickEvent.ClientTickEvent event) {
         if (event.phase != TickEvent.Phase.END) return;
@@ -36,6 +44,36 @@ public class KeyBindings {
         
         while (toggleFlightKey.consumeClick()) {
             ModMessages.sendToServer(new PacketToggleFlight());
+        }
+
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.player != null) {
+            boolean isSprintDown = mc.options.keySprint.isDown();
+            
+            // Sync physical Ctrl state to server to prevent double-W boost
+            if (isSprintDown != wasSprintDown) {
+                ModMessages.sendToServer(new PacketSyncBoostState(isSprintDown));
+                
+                // Double tap detection for Ctrl (Sprint key)
+                if (isSprintDown) {
+                    long currentTime = System.currentTimeMillis();
+                    if (currentTime - lastSprintTime < 300) {
+                        ModMessages.sendToServer(new PacketBoostLaunch());
+                        
+                        // Apply locally for instant feedback
+                        mc.player.getCapability(SuitCapabilityProvider.SUIT_CAPABILITY).ifPresent(suit -> {
+                            suit.setFlying(true);
+                        });
+                        mc.player.getAbilities().mayfly = true;
+                        mc.player.getAbilities().flying = true;
+                        Vec3 look = mc.player.getLookAngle();
+                        Vec3 boost = new Vec3(look.x * 0.5, 1.5, look.z * 0.5);
+                        mc.player.setDeltaMovement(boost);
+                    }
+                    lastSprintTime = currentTime;
+                }
+                wasSprintDown = isSprintDown;
+            }
         }
     }
 }

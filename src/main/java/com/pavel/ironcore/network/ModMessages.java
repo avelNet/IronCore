@@ -43,6 +43,18 @@ public class ModMessages {
                 .encoder(PacketToggleFlight::toBytes)
                 .consumerMainThread(PacketToggleFlight::handle)
                 .add();
+
+        net.messageBuilder(PacketSyncBoostState.class, id(), NetworkDirection.PLAY_TO_SERVER)
+                .decoder(PacketSyncBoostState::new)
+                .encoder(PacketSyncBoostState::toBytes)
+                .consumerMainThread(PacketSyncBoostState::handle)
+                .add();
+
+        net.messageBuilder(PacketBoostLaunch.class, id(), NetworkDirection.PLAY_TO_SERVER)
+                .decoder(PacketBoostLaunch::new)
+                .encoder(PacketBoostLaunch::toBytes)
+                .consumerMainThread(PacketBoostLaunch::handle)
+                .add();
     }
 
     public static <MSG> void sendToServer(MSG message) {
