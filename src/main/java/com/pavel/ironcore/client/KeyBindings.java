@@ -19,7 +19,7 @@ public class KeyBindings {
     public static final KeyMapping flamethrowerKey = new KeyMapping(KEY_FLAMETHROWER, 
             KeyConflictContext.IN_GAME, InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_Z, KEY_CATEGORY_IRONCORE);
     public static final KeyMapping toggleFlightKey = new KeyMapping(KEY_TOGGLE_FLIGHT, 
-            KeyConflictContext.IN_GAME, InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_F, KEY_CATEGORY_IRONCORE);
+            KeyConflictContext.IN_GAME, InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_LEFT_ALT, KEY_CATEGORY_IRONCORE);
 
     public static void init() {
         MinecraftForge.EVENT_BUS.register(new KeyBindings());

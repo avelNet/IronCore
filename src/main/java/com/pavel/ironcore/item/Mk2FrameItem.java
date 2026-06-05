@@ -43,6 +43,18 @@ public class Mk2FrameItem extends ArmorItem {
                             changed = true;
                         }
 
+                        // Каноничный бафф (наследуется от Mk1)
+                        player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 40, 0, false, false, true));
+
+                        // Автоматическое отключение полёта при касании земли
+                        if (suit.isFlying() && player.onGround()) {
+                            suit.setFlying(false);
+                            player.getAbilities().mayfly = false;
+                            player.getAbilities().flying = false;
+                            player.onUpdateAbilities();
+                            changed = true;
+                        }
+
                         // Flight mechanics
                         if (suit.isFlying()) {
                             // Reduced consumption: 4 FE per tick (80 FE/s). 50k FE = ~10.4 minutes of continuous flight.
