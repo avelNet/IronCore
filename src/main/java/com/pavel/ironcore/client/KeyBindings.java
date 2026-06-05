@@ -50,25 +50,17 @@ public class KeyBindings {
         if (mc.player != null) {
             boolean isSprintDown = mc.options.keySprint.isDown();
             
-            // Sync physical Ctrl state to server to prevent double-W boost
             if (isSprintDown != wasSprintDown) {
                 ModMessages.sendToServer(new PacketSyncBoostState(isSprintDown));
                 
-                // Double tap detection for Ctrl (Sprint key)
                 if (isSprintDown) {
                     long currentTime = System.currentTimeMillis();
+                    // Double tap detect
                     if (currentTime - lastSprintTime < 300) {
-                        ModMessages.sendToServer(new PacketBoostLaunch());
-                        
-                        // Apply locally for instant feedback
-                        mc.player.getCapability(SuitCapabilityProvider.SUIT_CAPABILITY).ifPresent(suit -> {
-                            suit.setFlying(true);
-                        });
-                        mc.player.getAbilities().mayfly = true;
-                        mc.player.getAbilities().flying = true;
-                        Vec3 look = mc.player.getLookAngle();
-                        Vec3 boost = new Vec3(look.x * 0.5, 1.5, look.z * 0.5);
-                        mc.player.setDeltaMovement(boost);
+                        // Launch ONLY if on ground
+                        if (mc.player.onGround()) {
+                            ModMessages.sendToServer(new PacketBoostLaunch());
+                        }
                     }
                     lastSprintTime = currentTime;
                 }
