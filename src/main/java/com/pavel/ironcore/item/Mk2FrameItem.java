@@ -50,7 +50,7 @@ public class Mk2FrameItem extends ArmorItem {
                                 
                                 // Target speed ~60 km/h (approx 0.85 blocks/tick)
                                 double maxSpeed = 0.85; 
-                                double acceleration = 0.02; // Very gradual acceleration (takes ~2-3 seconds to reach max)
+                                double acceleration = 0.05; // Slightly faster to feel punchy but still ramped
 
                                 Vec3 target = look.scale(maxSpeed);
                                 
@@ -61,7 +61,9 @@ public class Mk2FrameItem extends ArmorItem {
                                     current.z + (target.z - current.z) * acceleration
                                 );
                                 
+                                // Override the player's movement completely (bypassing Vanilla flight drag, especially vertical)
                                 player.setDeltaMovement(newMovement);
+                                player.hasImpulse = true; // Tell engine this is a forced move
                             } else if (suit.getEnergy() >= 4 && suit.getIcingLevel() < 100.0f) {
                                 // Если игрок летит, но НЕ на спринте - жестко ограничиваем скорость парения
                                 // Ванильный креативный полет слишком быстрый, режем его до ~20 км/ч (0.28 blocks/tick)
