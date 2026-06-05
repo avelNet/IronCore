@@ -23,6 +23,11 @@ public class SuitHUD {
                 int x = 10;
                 int y = 10;
 
+                int energyColor = 0x00AAFF; // Default blue
+                if (suit.getEnergy() <= 1000) {
+                    energyColor = (minecraft.player.tickCount % 20 < 10) ? 0xFF0000 : 0xFFFF00; // Blink Red/Yellow
+                }
+
                 String energyText = "Energy: " + suit.getEnergy() + " / " + suit.getMaxEnergy() + " FE";
                 String tierText = "Suit: " + suit.getSuitTier().toUpperCase();
                 String durabilityText = "Armor: " + suit.getFrameDurability() + "%";
@@ -36,7 +41,7 @@ public class SuitHUD {
                 String speedText = "SPEED: " + String.format("%.1f", speedKmH) + " km/h";
 
                 guiGraphics.drawString(minecraft.font, tierText, x, y, 0xFFFFFF);
-                guiGraphics.drawString(minecraft.font, energyText, x, y + 10, 0x00AAFF);
+                guiGraphics.drawString(minecraft.font, energyText, x, y + 10, energyColor);
                 guiGraphics.drawString(minecraft.font, durabilityText, x, y + 20, 0xFFAA00);
                 guiGraphics.drawString(minecraft.font, speedText, x, y + 30, 0x00FF00); // Green speed
                 

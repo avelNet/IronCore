@@ -39,7 +39,12 @@ public class Mk2FrameItem extends ArmorItem {
                     // --- CLIENT & SERVER (Для плавной физики без фризов) ---
                     if (isFull) {
                         if (suit.isFlying() && player.getAbilities().flying) {
-                            if (player.isSprinting() && suit.getEnergy() >= 4 && suit.getIcingLevel() < 100.0f) {
+                            if (suit.getEnergy() <= 1000 && suit.getEnergy() >= 4 && suit.getIcingLevel() < 100.0f) {
+                                // Резервное питание: отключаем турбо, принудительно тянем вниз (отказ двигателей)
+                                Vec3 current = player.getDeltaMovement();
+                                player.setDeltaMovement(current.x * 0.9, current.y - 0.05, current.z * 0.9);
+                                player.hasImpulse = true;
+                            } else if (player.isSprinting() && suit.getEnergy() > 1000 && suit.getIcingLevel() < 100.0f) {
                                 Vec3 look = player.getLookAngle();
                                 Vec3 current = player.getDeltaMovement();
                                 
@@ -100,11 +105,17 @@ public class Mk2FrameItem extends ArmorItem {
                                     if (suit.getEnergy() >= 4 && suit.getIcingLevel() < 100.0f) {
                                         suit.setEnergy(suit.getEnergy() - 4);
                                         
+                                        if (suit.getEnergy() <= 1000 && serverPlayer.tickCount % 40 == 0) {
+                                            serverPlayer.displayClientMessage(net.minecraft.network.chat.Component.literal("§eWARNING: RESERVE POWER. AUXILIARY THRUSTERS FAILING!"), true);
+                                        }
+
                                         // Particles
                                         ServerLevel serverLevel = (ServerLevel) level;
                                         Vec3 pos = serverPlayer.position();
                                         if (serverPlayer.tickCount % 2 == 0) {
-                                            serverLevel.sendParticles(ParticleTypes.FLAME, pos.x, pos.y + 0.1, pos.z, 1, 0.1, 0.0, 0.1, 0.02);
+                                            if (suit.getEnergy() > 1000 || serverPlayer.tickCount % 10 == 0) {
+                                                serverLevel.sendParticles(ParticleTypes.FLAME, pos.x, pos.y + 0.1, pos.z, 1, 0.1, 0.0, 0.1, 0.02);
+                                            }
                                         }
                                     } else {
                                         suit.setFlying(false);
@@ -112,7 +123,7 @@ public class Mk2FrameItem extends ArmorItem {
                                             serverPlayer.getAbilities().mayfly = false;
                                             serverPlayer.getAbilities().flying = false;
                                         }
-                                        serverPlayer.displayClientMessage(net.minecraft.network.chat.Component.literal("§cSYSTEM FAILURE: Flight disabled!"), true);
+                                        serverPlayer.displayClientMessage(net.minecraft.network.chat.Component.literal("§cSYSTEM FAILURE: OUT OF POWER!"), true);
                                         changed = true;
                                     }
                                 }
