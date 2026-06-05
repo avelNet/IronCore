@@ -79,13 +79,19 @@ public class Mk2FrameItem extends ArmorItem {
                                 player.setDeltaMovement(newMovement);
                                 player.hasImpulse = true;
                             } else if (suit.getEnergy() >= 4 && suit.getIcingLevel() < 100.0f) {
-                                // Ограничение скорости парения
+                                // Строгое ограничение скорости парения до 20 км/ч (0.278 blocks/tick)
                                 Vec3 current = player.getDeltaMovement();
-                                double hoverMaxSpeed = 0.28;
-                                double horizontalLength = Math.sqrt(current.x * current.x + current.z * current.z);
-                                if (horizontalLength > hoverMaxSpeed) {
-                                    double scale = hoverMaxSpeed / horizontalLength;
-                                    player.setDeltaMovement(current.x * scale, current.y, current.z * scale);
+                                double hoverMaxSpeed = 0.278; 
+                                
+                                // Проверяем полную 3D скорость (чтобы убрать инерцию после ускорения)
+                                if (current.length() > hoverMaxSpeed) {
+                                    // Плавное, но быстрое торможение до лимита
+                                    player.setDeltaMovement(current.scale(0.85)); 
+                                    // Если скорость все еще выше лимита после торможения, обрезаем жестко
+                                    if (player.getDeltaMovement().length() > hoverMaxSpeed) {
+                                        player.setDeltaMovement(player.getDeltaMovement().normalize().scale(hoverMaxSpeed));
+                                    }
+                                    player.hasImpulse = true;
                                 }
                             }
                         }
