@@ -1,0 +1,20 @@
+# Gradle
+.gradle
+build
+!/src/main/resources/META-INF/mods.toml
+!/src/main/templates/META-INF/mods.toml
+
+# IDE
+.idea
+*.iml
+*.ipr
+*.iws
+out
+
+# OS
+.DS_Store
+thumbs.db
+
+# Minecraft
+run/
+bin/
