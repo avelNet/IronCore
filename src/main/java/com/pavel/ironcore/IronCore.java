@@ -13,6 +13,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -52,11 +53,43 @@ public class IronCore {
         }
     }
 
-    @SubscribeEvent
-    public void onAttachCapabilitiesPlayer(AttachCapabilitiesEvent<Entity> event) {
-        if (event.getObject() instanceof Player) {
-            if (!event.getObject().getCapability(SuitCapabilityProvider.SUIT_CAPABILITY).isPresent()) {
-                event.addCapability(new ResourceLocation(MODID, "suit_properties"), new SuitCapabilityProvider());
+    @Mod.EventBusSubscriber(modid = MODID)
+    public static class ForgeEvents {
+        @SubscribeEvent
+        public static void onLivingFall(LivingFallEvent event) {
+            if (event.getEntity() instanceof Player player) {
+                player.getCapability(SuitCapabilityProvider.SUIT_CAPABILITY).ifPresent(suit -> {
+                    // Системы должны быть активны (есть энергия и нет критического обледенения)
+                    if ((suit.getSuitTier().equals("mk1") || suit.getSuitTier().equals("mk2")) 
+                        && suit.getEnergy() > 0 && suit.getIcingLevel() < 100.0f) {
+                        
+                        float damage = event.getDistance() - 3.0f; // Ванильный порог урона
+                        if (damage > 0) {
+                            int energyCost = (int) (damage * 200); // 200 FE за каждое сердце урона
+                            
+                            if (suit.getEnergy() >= energyCost) {
+                                suit.setEnergy(suit.getEnergy() - energyCost);
+                                event.setDistance(0); // Отменяем урон
+                                player.displayClientMessage(net.minecraft.network.chat.Component.literal("§bSHOCK ABSORBERS: Impact mitigated!"), true);
+                            } else {
+                                // Если энергии мало, поглощаем сколько можем
+                                float absorbed = suit.getEnergy() / 200.0f;
+                                suit.setEnergy(0);
+                                event.setDistance(event.getDistance() - absorbed);
+                                player.displayClientMessage(net.minecraft.network.chat.Component.literal("§cSHOCK ABSORBERS: Energy depleted!"), true);
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        @SubscribeEvent
+        public static void onAttachCapabilitiesPlayer(AttachCapabilitiesEvent<Entity> event) {
+            if (event.getObject() instanceof Player) {
+                if (!event.getObject().getCapability(SuitCapabilityProvider.SUIT_CAPABILITY).isPresent()) {
+                    event.addCapability(new ResourceLocation(MODID, "suit_properties"), new SuitCapabilityProvider());
+                }
             }
         }
     }
