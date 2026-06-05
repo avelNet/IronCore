@@ -55,6 +55,16 @@ public class Mk2FrameItem extends ArmorItem {
                                 if (suit.getEnergy() >= 4 && suit.getIcingLevel() < 100.0f) {
                                     suit.setEnergy(suit.getEnergy() - 4); 
                                     
+                                    // Fast horizontal flight if sprinting
+                                    if (player.isSprinting()) {
+                                        Vec3 look = player.getLookAngle();
+                                        // Apply thrust mostly horizontally, with a slight vertical component
+                                        Vec3 boost = new Vec3(look.x, look.y * 0.5, look.z).normalize().scale(1.5);
+                                        player.setDeltaMovement(boost);
+                                        player.hurtMarked = true; // Tell client to update velocity
+                                        suit.setEnergy(suit.getEnergy() - 6); // Extra energy for boosting
+                                    }
+                                    
                                     // Server-side particles for thrusters
                                     ServerLevel serverLevel = (ServerLevel) level;
                                     Vec3 pos = player.position();

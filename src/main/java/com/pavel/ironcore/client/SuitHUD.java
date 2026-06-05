@@ -34,7 +34,11 @@ public class SuitHUD {
                 int currentY = y + 30;
 
                 if (suit.isFlying()) {
-                    guiGraphics.drawString(minecraft.font, "FLIGHT: ACTIVE", x, currentY, 0x00FF00);
+                    if (minecraft.player.getAbilities().flying) {
+                        guiGraphics.drawString(minecraft.font, "FLIGHT: ACTIVE", x, currentY, 0x00FF00); // Green
+                    } else {
+                        guiGraphics.drawString(minecraft.font, "FLIGHT: STANDBY", x, currentY, 0xFFFF00); // Yellow
+                    }
                     currentY += 10;
                 }
 
