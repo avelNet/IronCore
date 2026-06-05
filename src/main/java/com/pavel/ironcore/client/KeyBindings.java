@@ -10,6 +10,7 @@ import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.lwjgl.glfw.GLFW;
+import net.minecraftforge.event.TickEvent;
 
 public class KeyBindings {
     public static final String KEY_CATEGORY_IRONCORE = "key.category.ironcore";
@@ -26,11 +27,13 @@ public class KeyBindings {
     }
 
     @SubscribeEvent
-    public void onKeyInput(InputEvent.Key event) {
+    public void onClientTick(TickEvent.ClientTickEvent event) {
+        if (event.phase != TickEvent.Phase.END) return;
+        
         if (flamethrowerKey.isDown()) {
             ModMessages.sendToServer(new PacketFlamethrower());
         }
-        // Use consumeClick() for toggle so it doesn't fire every tick the key is held
+        
         while (toggleFlightKey.consumeClick()) {
             ModMessages.sendToServer(new PacketToggleFlight());
         }
