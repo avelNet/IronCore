@@ -21,6 +21,8 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
+import com.pavel.ironcore.block.ModBlocks;
+
 @Mod(IronCore.MODID)
 public class IronCore {
     public static final String MODID = "ironcore";
@@ -28,6 +30,7 @@ public class IronCore {
     public IronCore() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         ModItems.register(modEventBus);
+        ModBlocks.register(modEventBus);
         ModCreativeTabs.register(modEventBus);
         
         modEventBus.addListener(this::commonSetup);
