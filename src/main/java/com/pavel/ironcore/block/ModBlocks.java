@@ -27,6 +27,9 @@ public class ModBlocks {
     public static final RegistryObject<Block> PALLADIUM_ORE = registerBlock("palladium_ore", 
             () -> new Block(BlockBehaviour.Properties.copy(Blocks.GOLD_ORE).requiresCorrectToolForDrops().strength(4.0f, 5.0f).sound(SoundType.STONE)));
 
+    public static final RegistryObject<Block> ALLOY_SMELTER = registerBlock("alloy_smelter", 
+            () -> new AlloySmelterBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).noOcclusion()));
+
     private static <T extends Block> RegistryObject<T> registerBlock(String name, Supplier<T> block) {
         RegistryObject<T> toReturn = BLOCKS.register(name, block);
         registerBlockItem(name, toReturn);

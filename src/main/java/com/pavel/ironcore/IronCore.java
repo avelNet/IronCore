@@ -22,6 +22,11 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 import com.pavel.ironcore.block.ModBlocks;
+import com.pavel.ironcore.block.entity.ModBlockEntities;
+
+import com.pavel.ironcore.screen.AlloySmelterScreen;
+import com.pavel.ironcore.screen.ModMenuTypes;
+import net.minecraft.client.gui.screens.MenuScreens;
 
 @Mod(IronCore.MODID)
 public class IronCore {
@@ -31,7 +36,9 @@ public class IronCore {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         ModItems.register(modEventBus);
         ModBlocks.register(modEventBus);
+        ModBlockEntities.register(modEventBus);
         ModCreativeTabs.register(modEventBus);
+        ModMenuTypes.register(modEventBus);
         
         modEventBus.addListener(this::commonSetup);
         modEventBus.addListener(this::clientSetup);
@@ -45,6 +52,9 @@ public class IronCore {
 
     private void clientSetup(final FMLClientSetupEvent event) {
         KeyBindings.init();
+        event.enqueueWork(() -> {
+            MenuScreens.register(ModMenuTypes.ALLOY_SMELTER_MENU.get(), AlloySmelterScreen::new);
+        });
     }
 
     @Mod.EventBusSubscriber(modid = MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = net.minecraftforge.api.distmarker.Dist.CLIENT)
