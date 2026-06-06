@@ -18,6 +18,10 @@ public class ModBlockStateProvider extends BlockStateProvider {
         blockWithItem(ModBlocks.TITANIUM_ORE);
         blockWithItem(ModBlocks.DEEPSLATE_TITANIUM_ORE);
         blockWithItem(ModBlocks.PALLADIUM_ORE);
+        simpleBlockWithItem(ModBlocks.ALLOY_SMELTER.get(), models().cubeBottomTop("alloy_smelter", 
+                modLoc("block/alloy_smelter_side"), 
+                modLoc("block/alloy_smelter_bottom"), 
+                modLoc("block/alloy_smelter_top")));
     }
 
     private void blockWithItem(RegistryObject<Block> blockRegistryObject) {

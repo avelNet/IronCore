@@ -22,6 +22,7 @@ public class ModBlockLootTables extends BlockLootSubProvider {
                 block -> createOreDrop(ModBlocks.DEEPSLATE_TITANIUM_ORE.get(), ModItems.RAW_TITANIUM.get()));
         this.add(ModBlocks.PALLADIUM_ORE.get(),
                 block -> createOreDrop(ModBlocks.PALLADIUM_ORE.get(), ModItems.RAW_PALLADIUM.get()));
+        this.dropSelf(ModBlocks.ALLOY_SMELTER.get());
     }
 
     @Override
