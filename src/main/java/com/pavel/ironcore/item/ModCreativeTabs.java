@@ -39,7 +39,8 @@ public class ModCreativeTabs {
                         output.accept(ModBlocks.ALLOY_SMELTER.get());
                         output.accept(ModBlocks.COAL_GENERATOR.get());
                         output.accept(ModBlocks.ASSEMBLY_TABLE.get());
-                        output.accept(ModItems.RAW_TITANIUM.get());
+                        output.accept(ModBlocks.CHARGING_STATION.get());
+                        output.accept(ModBlocks.SUIT_STATION.get());
                         output.accept(ModItems.TITANIUM_INGOT.get());
                         output.accept(ModBlocks.TITANIUM_ORE.get());
                         output.accept(ModBlocks.DEEPSLATE_TITANIUM_ORE.get());

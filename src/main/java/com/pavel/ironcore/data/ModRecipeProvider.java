@@ -62,7 +62,29 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .unlockedBy("has_crafting_table", has(Items.CRAFTING_TABLE))
                 .save(pWriter);
 
-        // Хлорофилловый сок (Простой крафт: Пузырек + любая листва)
+                // Сборочный стенд (Suit Station)
+                ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.SUIT_STATION.get())
+                .pattern(" I ")
+                .pattern("IHI")
+                .pattern("SSS")
+                .define('I', Items.IRON_BLOCK)
+                .define('H', Items.HOPPER)
+                .define('S', Items.SMOOTH_STONE)
+                .unlockedBy("has_iron_block", has(Items.IRON_BLOCK))
+                .save(pWriter);
+
+                // Зарядная станция (Charging Station)
+                ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.CHARGING_STATION.get())
+                .pattern("CRC")
+                .pattern("RIR")
+                .pattern("CRC")
+                .define('I', Items.IRON_BLOCK)
+                .define('R', Items.REDSTONE)
+                .define('C', Items.COPPER_INGOT)
+                .unlockedBy("has_redstone", has(Items.REDSTONE))
+                .save(pWriter);
+
+                // Хлорофилловый сок (Простой крафт: Пузырек + любая листва)
         ShapelessRecipeBuilder.shapeless(RecipeCategory.FOOD, ModItems.CHLOROPHYLL_JUICE.get())
                 .requires(Items.GLASS_BOTTLE)
                 .requires(net.minecraft.tags.ItemTags.LEAVES)

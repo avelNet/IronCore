@@ -28,7 +28,6 @@ public class Mk1FrameItem extends ArmorItem {
     @Override
     public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
         if (!level.isClientSide && entity instanceof ServerPlayer player) {
-            // Проверяем логику только если этот предмет надет в слот брони
             if (player.getItemBySlot(this.getType().getSlot()) == stack) {
                 
                 player.getCapability(SuitCapabilityProvider.SUIT_CAPABILITY).ifPresent(suit -> {
@@ -36,25 +35,58 @@ public class Mk1FrameItem extends ArmorItem {
                     boolean isFull = isFullSuitEquipped(player);
 
                     if (isFull) {
+                        // Читаем данные реактора из НАГРУДНИКА
+                        ItemStack chestplate = player.getItemBySlot(EquipmentSlot.CHEST);
+                        net.minecraft.nbt.CompoundTag chestTag = chestplate.getOrCreateTag();
+                        
+                        String installedReactor = chestTag.getString("InstalledReactor");
+                        int suitEnergy = chestTag.getInt("SuitEnergy");
+                        int suitMaxEnergy = chestTag.getInt("SuitMaxEnergy");
+
+                        // Если реактора нет - выключаем системы
+                        if (installedReactor.isEmpty() || installedReactor.equals("none")) {
+                            if (!suit.getSuitTier().equals("none")) {
+                                suit.setSuitTier("none");
+                                suit.setActiveReactorType("none");
+                                suit.setEnergy(0);
+                                suit.setMaxEnergy(0);
+                                ModMessages.sendToPlayer(new PacketSyncSuitData(
+                                        suit.getEnergy(), suit.getMaxEnergy(), suit.getSuitTier(), 
+                                        suit.getFrameDurability(), suit.getPalladiumPoisoning(), suit.getActiveReactorType(),
+                                        suit.getIcingLevel(), suit.getHeat(), suit.isFlying()), player);
+                            }
+                            return; 
+                        }
+
                         if (!suit.getSuitTier().equals("mk1")) {
                             suit.setSuitTier("mk1");
                             changed = true;
                         }
 
-                        // Каноничные баффы Mk1
-                        player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 40, 0, false, false, true));
+                        // Синхронизируем реактор
+                        if (installedReactor.contains("palladium")) suit.setActiveReactorType("palladium");
+                        else if (installedReactor.contains("coal")) suit.setActiveReactorType("coal");
+                        
+                        suit.setMaxEnergy(suitMaxEnergy);
+                        if (suit.getEnergy() != suitEnergy) {
+                           suit.setEnergy(suitEnergy); 
+                        }
 
-                        // Система термозащиты (сопротивление огню за счет энергии)
-                        // Максимум 1 минута = 1200 тиков. Если тратить 8 FE в тик, полного реактора (10000) хватит на ~60 секунд.
+                        // Каноничные баффы Mk1 (если есть энергия)
+                        if (suit.getEnergy() > 0) {
+                            player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 40, 0, false, false, true));
+                        }
+
+                        // Система термозащиты
                         if (player.isOnFire() || player.isInLava()) {
                             if (suit.getEnergy() >= 8) {
                                 suit.setEnergy(suit.getEnergy() - 8);
+                                chestTag.putInt("SuitEnergy", suit.getEnergy()); // СОХРАНЯЕМ В НАГРУДНИК
                                 player.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 40, 0, false, false, true));
                                 changed = true;
                             }
                         }
                     } else {
-                        // Если сет не полный, сбрасываем статус костюма
                         if (suit.getSuitTier().equals("mk1")) {
                             suit.setSuitTier("none");
                             changed = true;
