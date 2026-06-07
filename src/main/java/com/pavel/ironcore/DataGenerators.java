@@ -4,6 +4,7 @@ import com.pavel.ironcore.data.ModBlockStateProvider;
 import com.pavel.ironcore.data.ModItemModelProvider;
 import com.pavel.ironcore.data.ModLootTableProvider;
 import com.pavel.ironcore.data.ModBlockTagsProvider;
+import com.pavel.ironcore.data.ModRecipeProvider;
 import com.pavel.ironcore.worldgen.ModWorldGenProvider;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
@@ -27,6 +28,7 @@ public class DataGenerators {
 
         generator.addProvider(event.includeServer(), new ModWorldGenProvider(packOutput, lookupProvider));
         generator.addProvider(event.includeServer(), ModLootTableProvider.create(packOutput));
+        generator.addProvider(event.includeServer(), new ModRecipeProvider(packOutput));
         BlockTagsProvider blockTagsProvider = generator.addProvider(event.includeServer(),
                 new ModBlockTagsProvider(packOutput, lookupProvider, existingFileHelper));
         generator.addProvider(event.includeClient(), new ModBlockStateProvider(packOutput, existingFileHelper));

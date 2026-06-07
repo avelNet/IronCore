@@ -1,4 +1,4 @@
-// 1.20.1	2026-06-07T20:06:25.66474473	Tags for minecraft:block mod id ironcore
-0af0dc1caeb9c536f9f59463e162043750e7d73a data/minecraft/tags/blocks/mineable/pickaxe.json
+// 1.20.1	2026-06-07T20:40:55.158005238	Tags for minecraft:block mod id ironcore
+dbbeb8352cbf72c16ef91e66eab2e40a12b8033b data/minecraft/tags/blocks/mineable/pickaxe.json
 2d3ad44a4e77d2827b78fb4be6878b44770df4c3 data/minecraft/tags/blocks/needs_iron_tool.json
 445d42a8ed39bb938ab181777e760576705f30ee data/minecraft/tags/blocks/needs_stone_tool.json

@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:blasting",
+  "category": "misc",
+  "cookingtime": 100,
+  "experience": 1.0,
+  "group": "palladium",
+  "ingredient": {
+    "item": "ironcore:raw_palladium"
+  },
+  "result": "ironcore:palladium_ingot"
+}
