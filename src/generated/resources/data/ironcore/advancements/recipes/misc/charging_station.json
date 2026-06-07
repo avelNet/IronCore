@@ -1,12 +1,12 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_iron_block": {
+    "has_redstone": {
       "conditions": {
         "items": [
           {
             "items": [
-              "minecraft:iron_block"
+              "minecraft:redstone"
             ]
           }
         ]
@@ -22,7 +22,7 @@
   },
   "requirements": [
     [
-      "has_iron_block",
+      "has_redstone",
       "has_the_recipe"
     ]
   ],

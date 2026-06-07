@@ -2,19 +2,19 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "B": {
-      "item": "minecraft:iron_block"
-    },
     "H": {
       "item": "minecraft:hopper"
+    },
+    "I": {
+      "item": "minecraft:iron_block"
     },
     "S": {
       "item": "minecraft:smooth_stone"
     }
   },
   "pattern": [
-    " B ",
-    "BHB",
+    " I ",
+    "IHI",
     "SSS"
   ],
   "result": {
