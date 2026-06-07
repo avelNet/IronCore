@@ -30,6 +30,12 @@ public class ModCreativeTabs {
                         output.accept(ModItems.MK2_LEGGINGS.get());
                         output.accept(ModItems.MK2_BOOTS.get());
                         
+                        // Броня Mk3
+                        output.accept(ModItems.MK3_HELMET.get());
+                        output.accept(ModItems.MK3_CHESTPLATE.get());
+                        output.accept(ModItems.MK3_LEGGINGS.get());
+                        output.accept(ModItems.MK3_BOOTS.get());
+                        
                         // Энергетика
                         output.accept(ModItems.COAL_REACTOR.get());
                         output.accept(ModItems.PALLADIUM_REACTOR.get());

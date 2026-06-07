@@ -19,7 +19,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class SuitStationBlockEntity extends BlockEntity {
-    private final ItemStackHandler itemHandler = new ItemStackHandler(2) { // 0: Chestplate, 1: Reactor
+    private final ItemStackHandler itemHandler = new ItemStackHandler(3) { // 0: Chestplate, 1: Reactor IN, 2: Reactor OUT
         @Override
         protected void onContentsChanged(int slot) {
             setChanged();
@@ -29,6 +29,7 @@ public class SuitStationBlockEntity extends BlockEntity {
         public boolean isItemValid(int slot, @NotNull ItemStack stack) {
             if (slot == 0) return stack.getItem() instanceof ArmorItem && ((ArmorItem)stack.getItem()).getType() == ArmorItem.Type.CHESTPLATE;
             if (slot == 1) return stack.getItem() instanceof ReactorItem;
+            if (slot == 2) return stack.getItem() instanceof ReactorItem; // Разрешаем программно класть реакторы
             return super.isItemValid(slot, stack);
         }
     };
@@ -63,28 +64,55 @@ public class SuitStationBlockEntity extends BlockEntity {
         if (level.isClientSide()) return;
 
         ItemStack chestplate = entity.itemHandler.getStackInSlot(0);
-        ItemStack reactor = entity.itemHandler.getStackInSlot(1);
+        ItemStack reactorIn = entity.itemHandler.getStackInSlot(1);
 
-        // Логика установки реактора
-        if (!chestplate.isEmpty() && !reactor.isEmpty()) {
-            // Проверяем, что в нагруднике еще нет реактора (или мы его меняем)
-            // В данной итерации просто "вплавляем" реактор при наличии обоих предметов
-            
-            if (reactor.getItem() instanceof ReactorItem reactorItem) {
-                CompoundTag tag = chestplate.getOrCreateTag();
+        if (!chestplate.isEmpty() && chestplate.getItem() instanceof ArmorItem) {
+            CompoundTag chestTag = chestplate.getOrCreateTag();
+            String installedType = chestTag.getString("InstalledReactor");
+
+            // УСТАНОВКА: Если броня пустая, а в слоте ВХОДА (1) есть реактор
+            if ((installedType.isEmpty() || installedType.equals("none")) && !reactorIn.isEmpty() && reactorIn.getItem() instanceof ReactorItem) {
+                chestTag.putString("InstalledReactor", reactorIn.getItem().toString()); 
                 
-                // Переносим данные
-                tag.putString("InstalledReactor", reactor.getItem().toString()); // Упрощенно для альфы
-                
-                // Получаем энергию из реактора через его капку
-                reactor.getCapability(ForgeCapabilities.ENERGY).ifPresent(energy -> {
-                    tag.putInt("SuitEnergy", energy.getEnergyStored());
-                    tag.putInt("SuitMaxEnergy", energy.getMaxEnergyStored());
+                reactorIn.getCapability(ForgeCapabilities.ENERGY).ifPresent(energy -> {
+                    chestTag.putInt("SuitEnergy", energy.getEnergyStored());
+                    chestTag.putInt("SuitMaxEnergy", energy.getMaxEnergyStored());
                 });
 
-                // Удаляем предмет реактора
                 entity.itemHandler.extractItem(1, 1, false);
                 entity.setChanged();
+            }
+        }
+    }
+
+    public void extractReactor() {
+        ItemStack chestplate = itemHandler.getStackInSlot(0);
+        ItemStack reactorOut = itemHandler.getStackInSlot(2);
+
+        if (!chestplate.isEmpty() && chestplate.getItem() instanceof ArmorItem) {
+            CompoundTag chestTag = chestplate.getOrCreateTag();
+            String installedType = chestTag.getString("InstalledReactor");
+            int storedEnergy = chestTag.getInt("SuitEnergy");
+
+            if (!installedType.isEmpty() && !installedType.equals("none") && reactorOut.isEmpty()) {
+                net.minecraft.world.item.Item reactorItemToSpawn = null;
+                if (installedType.contains("palladium")) {
+                    reactorItemToSpawn = com.pavel.ironcore.item.ModItems.PALLADIUM_REACTOR.get();
+                } else if (installedType.contains("coal")) {
+                    reactorItemToSpawn = com.pavel.ironcore.item.ModItems.COAL_REACTOR.get();
+                }
+
+                if (reactorItemToSpawn != null) {
+                    ItemStack extractedReactor = new ItemStack(reactorItemToSpawn);
+                    extractedReactor.getOrCreateTag().putInt("Energy", storedEnergy);
+                    
+                    itemHandler.setStackInSlot(2, extractedReactor);
+                    
+                    chestTag.putString("InstalledReactor", "none");
+                    chestTag.putInt("SuitEnergy", 0);
+                    chestTag.putInt("SuitMaxEnergy", 0);
+                    setChanged();
+                }
             }
         }
     }
@@ -98,7 +126,17 @@ public class SuitStationBlockEntity extends BlockEntity {
     @Override
     public void load(CompoundTag tag) {
         super.load(tag);
-        itemHandler.deserializeNBT(tag.getCompound("inventory"));
+        
+        // Временно читаем во временный хендлер
+        ItemStackHandler tempHandler = new ItemStackHandler(3);
+        tempHandler.deserializeNBT(tag.getCompound("inventory"));
+        
+        // Защита от вылетов при обновлении старых блоков (2 слота -> 3 слота)
+        // Копируем предметы вручную, чтобы не потерять их при изменении размера массива
+        itemHandler.setSize(3);
+        for (int i = 0; i < Math.min(tempHandler.getSlots(), 3); i++) {
+            itemHandler.setStackInSlot(i, tempHandler.getStackInSlot(i));
+        }
     }
 
     public void drops() {

@@ -17,16 +17,16 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
-public class Mk2FrameItem extends ArmorItem {
-    public Mk2FrameItem(ArmorMaterial material, ArmorItem.Type type, Properties properties) {
+public class Mk3FrameItem extends ArmorItem {
+    public Mk3FrameItem(ArmorMaterial material, ArmorItem.Type type, Properties properties) {
         super(material, type, properties);
     }
 
     private boolean isFullSuitEquipped(Player player) {
-        return player.getItemBySlot(EquipmentSlot.HEAD).getItem() == ModItems.MK2_HELMET.get() &&
-               player.getItemBySlot(EquipmentSlot.CHEST).getItem() == ModItems.MK2_CHESTPLATE.get() &&
-               player.getItemBySlot(EquipmentSlot.LEGS).getItem() == ModItems.MK2_LEGGINGS.get() &&
-               player.getItemBySlot(EquipmentSlot.FEET).getItem() == ModItems.MK2_BOOTS.get();
+        return player.getItemBySlot(EquipmentSlot.HEAD).getItem() == ModItems.MK3_HELMET.get() &&
+               player.getItemBySlot(EquipmentSlot.CHEST).getItem() == ModItems.MK3_CHESTPLATE.get() &&
+               player.getItemBySlot(EquipmentSlot.LEGS).getItem() == ModItems.MK3_LEGGINGS.get() &&
+               player.getItemBySlot(EquipmentSlot.FEET).getItem() == ModItems.MK3_BOOTS.get();
     }
 
     @Override
@@ -55,7 +55,6 @@ public class Mk2FrameItem extends ArmorItem {
                                 player.getAbilities().flying = false;
                                 player.onUpdateAbilities();
                             }
-                            // Ранний выход из тика - без реактора броня мертва
                             if (!level.isClientSide && player.tickCount % 20 == 0) {
                                 ModMessages.sendToPlayer(new PacketSyncSuitData(
                                     suit.getEnergy(), suit.getMaxEnergy(), suit.getSuitTier(), 
@@ -65,20 +64,17 @@ public class Mk2FrameItem extends ArmorItem {
                             return; 
                         }
 
-                        // Если реактор есть, обновляем капку игрока для работы старой логики
-                        // В будущем можно будет полностью перенести логику на NBT предмета
+                        // Если реактор установлен
                         if (installedReactor.contains("palladium")) suit.setActiveReactorType("palladium");
                         else if (installedReactor.contains("coal")) suit.setActiveReactorType("coal");
                         
                         suit.setMaxEnergy(suitMaxEnergy);
-                        // Для совместимости со старым кодом полета, который тратит энергию из suit.getEnergy()
-                        // мы пока что синхронизируем их каждый тик, но НАСТОЯЩАЯ энергия хранится в нагруднике
                         if (suit.getEnergy() != suitEnergy) {
                            suit.setEnergy(suitEnergy); 
                         }
 
-                        // Авто-активация STANDBY только если системы не заморожены/перегреты
-                        if (suit.getIcingLevel() < 100.0f && suit.getHeat() < 100.0f) {
+                        // Авто-активация STANDBY (Mk3 не боится льда, проверяем только перегрев)
+                        if (suit.getHeat() < 100.0f) {
                             if (!suit.isFlying()) {
                                 suit.setFlying(true);
                             }
@@ -90,7 +86,6 @@ public class Mk2FrameItem extends ArmorItem {
                                 net.minecraft.client.Minecraft.getInstance().options.keySprint.isDown() : 
                                 suit.isBoostKeyHeld();
 
-                            boolean enginesFrozen = suit.getIcingLevel() >= 100.0f;
                             boolean enginesOverheated = suit.getHeat() >= 100.0f;
 
                             if (player.isInWater()) {
@@ -100,32 +95,35 @@ public class Mk2FrameItem extends ArmorItem {
                                 Vec3 current = player.getDeltaMovement();
                                 player.setDeltaMovement(current.x * 0.9, current.y - 0.1, current.z * 0.9);
                                 player.hasImpulse = true;
-                            } else if (suit.getEnergy() <= 1000 && suit.getEnergy() >= 4 && !enginesFrozen) {
+                            } else if (suit.getEnergy() <= 1000 && suit.getEnergy() >= 4) {
                                 Vec3 current = player.getDeltaMovement();
                                 player.setDeltaMovement(current.x * 0.9, current.y - 0.1, current.z * 0.9);
                                 player.hasImpulse = true;
-                            } else if (isBoosting && suit.getEnergy() > 1000 && !enginesFrozen) {
+                            } else if (isBoosting && suit.getEnergy() > 1000) {
                                 Vec3 look = player.getLookAngle();
                                 Vec3 current = player.getDeltaMovement();
                                 if (current.length() < 0.3) current = look.scale(0.3);
                                 
-                                double maxSpeed = 0.85; 
-                                double acceleration = 0.08; 
-                                double yBoost = look.y > 0 ? look.y * 1.5 : look.y;
+                                // MK3 SPEED (120 km/h = ~1.7 blocks/tick)
+                                double maxSpeed = 1.7; 
+                                double accelerationXZ = 0.12; 
+                                double accelerationY = 0.3; // Сильнее толкаем по Y, чтобы пробить ванильное сопротивление полета
+                                
+                                double yBoost = look.y * 2.0; // Усиливаем вектор взгляда по вертикали
                                 Vec3 target = new Vec3(look.x, yBoost, look.z).normalize().scale(maxSpeed);
                                 
                                 Vec3 newMovement = new Vec3(
-                                    current.x + (target.x - current.x) * acceleration,
-                                    current.y + (target.y - current.y) * acceleration,
-                                    current.z + (target.z - current.z) * acceleration
+                                    current.x + (target.x - current.x) * accelerationXZ,
+                                    current.y + (target.y - current.y) * accelerationY,
+                                    current.z + (target.z - current.z) * accelerationXZ
                                 );
                                 
                                 player.setDeltaMovement(newMovement);
                                 player.hasImpulse = true;
-                            } else if (suit.getEnergy() >= 4 && !enginesFrozen) {
+                            } else if (suit.getEnergy() >= 4) {
                                 // Ограничение скорости парения
                                 Vec3 current = player.getDeltaMovement();
-                                double hoverMaxSpeed = 0.278; 
+                                double hoverMaxSpeed = 0.4; // Чуть быстрее парит чем Mk2
                                 if (current.length() > hoverMaxSpeed) {
                                     player.setDeltaMovement(current.scale(0.85)); 
                                     if (player.getDeltaMovement().length() > hoverMaxSpeed) {
@@ -142,16 +140,17 @@ public class Mk2FrameItem extends ArmorItem {
                         boolean changed = false;
 
                         if (isFull) {
-                            if (!suit.getSuitTier().equals("mk2")) {
-                                suit.setSuitTier("mk2");
-                                suit.setMaxEnergy(50000);
+                            if (!suit.getSuitTier().equals("mk3")) {
+                                suit.setSuitTier("mk3");
                                 changed = true;
                             }
 
-                            serverPlayer.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 40, 0, false, false, true));
+                            // Пассивные баффы Mk3
+                            serverPlayer.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 40, 1, false, false, true)); // Сила 2
+                            serverPlayer.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 40, 1, false, false, true)); // Сопротивление 2
                             
                             // Системы полета
-                            boolean systemsFunctional = suit.getIcingLevel() < 100.0f && suit.getHeat() < 100.0f && suit.getEnergy() >= 4 && !serverPlayer.isInWater();
+                            boolean systemsFunctional = suit.getHeat() < 100.0f && suit.getEnergy() >= 4 && !serverPlayer.isInWater();
                             serverPlayer.getAbilities().mayfly = systemsFunctional;
                             
                             if (serverPlayer.getAbilities().flying) {
@@ -161,44 +160,43 @@ public class Mk2FrameItem extends ArmorItem {
                                     else if (suit.getHeat() >= 100.0f) serverPlayer.displayClientMessage(net.minecraft.network.chat.Component.literal("§cSYSTEM FAILURE: OVERHEATED!"), true);
                                     serverPlayer.onUpdateAbilities();
                                 } else {
-                                    suit.setEnergy(suit.getEnergy() - 4);
+                                    suit.setEnergy(suit.getEnergy() - 5); // Потребляет чуть больше энергии
                                     
                                     ItemStack chestplateServer = serverPlayer.getItemBySlot(EquipmentSlot.CHEST);
                                     if(chestplateServer.getItem() instanceof ArmorItem) {
                                          chestplateServer.getOrCreateTag().putInt("SuitEnergy", suit.getEnergy()); 
                                     }
 
-                                    if (suit.isBoostKeyHeld()) suit.setHeat(suit.getHeat() + 0.0476f);
+                                    // Охлаждение лучше, нагревается медленнее (0.025 вместо 0.047)
+                                    if (suit.isBoostKeyHeld()) suit.setHeat(suit.getHeat() + 0.025f);
+                                    
                                     if (suit.getEnergy() <= 1000 && serverPlayer.tickCount % 40 == 0) {
                                         serverPlayer.displayClientMessage(net.minecraft.network.chat.Component.literal("§eWARNING: RESERVE POWER"), true);
                                     }
+                                    
                                     ServerLevel serverLevel = (ServerLevel) level;
                                     Vec3 pos = serverPlayer.position();
                                     if (serverPlayer.tickCount % 2 == 0) {
                                         if (suit.getEnergy() > 1000 || serverPlayer.tickCount % 10 == 0) {
-                                            serverLevel.sendParticles(ParticleTypes.FLAME, pos.x, pos.y + 0.1, pos.z, 1, 0.1, 0.0, 0.1, 0.02);
+                                            // Синее пламя репульсоров
+                                            serverLevel.sendParticles(ParticleTypes.SOUL_FIRE_FLAME, pos.x, pos.y + 0.1, pos.z, 1, 0.1, 0.0, 0.1, 0.02);
                                         }
                                     }
                                 }
                             }
                             serverPlayer.onUpdateAbilities();
 
-                            // Обледенение
-                            double yPos = serverPlayer.getY();
-                            if (yPos > 170) {
-                                float icingRate = (float) ((yPos - 170) * 0.05f); 
-                                if (level.getBiome(serverPlayer.blockPosition()).value().getBaseTemperature() < 0.2f) icingRate *= 2.0f;
-                                if (suit.getIcingLevel() < 100.0f) suit.setIcingLevel(suit.getIcingLevel() + icingRate);
-                            } else {
-                                if (suit.getIcingLevel() > 0.0f) suit.setIcingLevel(suit.getIcingLevel() - 0.2f); 
+                            // ОБЛЕДЕНЕНИЕ ОТСУТСТВУЕТ У MK3 (Золото-титан решает проблему)
+                            if (suit.getIcingLevel() > 0.0f) {
+                                suit.setIcingLevel(suit.getIcingLevel() - 0.5f); // Быстро оттаивает, если было
                             }
 
-                            // Система Перегрева
-                            float coolingRate = 0.1f;
-                            if (serverPlayer.isInWater()) coolingRate = 0.5f;
-                            else if (level.getBiome(serverPlayer.blockPosition()).value().getBaseTemperature() < 0.2f) coolingRate = 0.2f;
-                            if (level.dimension() == net.minecraft.world.level.Level.NETHER) suit.setHeat(suit.getHeat() + 0.05f);
-                            if (serverPlayer.isOnFire() || serverPlayer.isInLava()) suit.setHeat(suit.getHeat() + 1.0f);
+                            // Система Перегрева (Охлаждается быстрее)
+                            float coolingRate = 0.2f;
+                            if (serverPlayer.isInWater()) coolingRate = 0.8f;
+                            else if (level.getBiome(serverPlayer.blockPosition()).value().getBaseTemperature() < 0.2f) coolingRate = 0.4f;
+                            if (level.dimension() == net.minecraft.world.level.Level.NETHER) suit.setHeat(suit.getHeat() + 0.03f);
+                            if (serverPlayer.isOnFire() || serverPlayer.isInLava()) suit.setHeat(suit.getHeat() + 0.5f); // Горит в 2 раза медленнее
                             if (!suit.isBoostKeyHeld() || !serverPlayer.getAbilities().flying) {
                                 suit.setHeat(suit.getHeat() - coolingRate);
                             }
@@ -206,7 +204,7 @@ public class Mk2FrameItem extends ArmorItem {
                                 serverPlayer.displayClientMessage(net.minecraft.network.chat.Component.literal("§6WARNING: CRITICAL TEMPERATURE!"), true);
                             }
 
-                            if (suit.getIcingLevel() >= 100.0f || suit.getHeat() >= 100.0f) {
+                            if (suit.getHeat() >= 100.0f) {
                                 if (serverPlayer.getAbilities().flying) {
                                     serverPlayer.getAbilities().flying = false;
                                     serverPlayer.onUpdateAbilities();
@@ -220,11 +218,10 @@ public class Mk2FrameItem extends ArmorItem {
                                 if (suit.getFailureYPos() >= 0) suit.setFailureYPos(-1.0);
                             }
 
-                            serverPlayer.setTicksFrozen((int) ((suit.getIcingLevel() / 100.0f) * 140));
-                            if (suit.getIcingLevel() > 50.0f) serverPlayer.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 40, 0, false, false, true));
+                            serverPlayer.setTicksFrozen(0); // Никогда не замерзает визуально
                             changed = true;
                         } else {
-                            if (suit.getSuitTier().equals("mk2")) {
+                            if (suit.getSuitTier().equals("mk3")) {
                                 suit.setSuitTier("none");
                                 suit.setFlying(false);
                                 if (!serverPlayer.isCreative() && !serverPlayer.isSpectator()) {

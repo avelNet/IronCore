@@ -38,12 +38,6 @@ public class ModMessages {
                 .consumerMainThread(PacketFlamethrower::handle)
                 .add();
 
-        net.messageBuilder(PacketToggleFlight.class, id(), NetworkDirection.PLAY_TO_SERVER)
-                .decoder(PacketToggleFlight::new)
-                .encoder(PacketToggleFlight::toBytes)
-                .consumerMainThread(PacketToggleFlight::handle)
-                .add();
-
         net.messageBuilder(PacketSyncBoostState.class, id(), NetworkDirection.PLAY_TO_SERVER)
                 .decoder(PacketSyncBoostState::new)
                 .encoder(PacketSyncBoostState::toBytes)
@@ -54,6 +48,18 @@ public class ModMessages {
                 .decoder(PacketBoostLaunch::new)
                 .encoder(PacketBoostLaunch::toBytes)
                 .consumerMainThread(PacketBoostLaunch::handle)
+                .add();
+
+        net.messageBuilder(PacketExtractReactor.class, id(), NetworkDirection.PLAY_TO_SERVER)
+                .decoder(PacketExtractReactor::new)
+                .encoder(PacketExtractReactor::toBytes)
+                .consumerMainThread(PacketExtractReactor::handle)
+                .add();
+
+        net.messageBuilder(PacketRepulsorFire.class, id(), NetworkDirection.PLAY_TO_SERVER)
+                .decoder(PacketRepulsorFire::new)
+                .encoder(PacketRepulsorFire::toBytes)
+                .consumerMainThread(PacketRepulsorFire::handle)
                 .add();
     }
 

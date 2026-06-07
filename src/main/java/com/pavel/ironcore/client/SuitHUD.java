@@ -18,7 +18,13 @@ public class SuitHUD {
             if (minecraft.player == null) return;
 
             minecraft.player.getCapability(SuitCapabilityProvider.SUIT_CAPABILITY).ifPresent(suit -> {
-                if (suit.getSuitTier().equals("none")) return;
+                // Если костюма нет, но есть отравление - показываем ТОЛЬКО шкалу отравления
+                if (suit.getSuitTier().equals("none")) {
+                    if (suit.getPalladiumPoisoning() > 0) {
+                        guiGraphics.drawString(minecraft.font, "TOXICITY: " + String.format("%.1f%%", suit.getPalladiumPoisoning()), 10, 10, 0xFF00FF);
+                    }
+                    return;
+                }
 
                 int x = 10;
                 int y = 10;

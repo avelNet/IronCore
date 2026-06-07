@@ -24,7 +24,7 @@ public class SuitStationMenu extends AbstractContainerMenu {
 
     public SuitStationMenu(int pContainerId, Inventory inv, BlockEntity entity) {
         super(ModMenuTypes.SUIT_STATION_MENU.get(), pContainerId);
-        checkContainerSize(inv, 2);
+        checkContainerSize(inv, 3);
         blockEntity = ((SuitStationBlockEntity) entity);
         this.level = inv.player.level();
 
@@ -32,10 +32,17 @@ public class SuitStationMenu extends AbstractContainerMenu {
         addPlayerHotbar(inv);
 
         this.blockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(iItemHandler -> {
-            // Слот для Нагрудника (Слот 0)
-            this.addSlot(new SlotItemHandler(iItemHandler, 0, 80, 20));
-            // Слот для Реактора (Слот 1)
-            this.addSlot(new SlotItemHandler(iItemHandler, 1, 80, 50));
+            // Слот для Нагрудника (Слот 0) - Центр
+            this.addSlot(new SlotItemHandler(iItemHandler, 0, 56, 35));
+            // Слот для ВХОДЯЩЕГО Реактора (Слот 1) - Справа сверху
+            this.addSlot(new SlotItemHandler(iItemHandler, 1, 116, 17));
+            // Слот для ИЗВЛЕЧЕННОГО Реактора (Слот 2) - Справа снизу
+            this.addSlot(new SlotItemHandler(iItemHandler, 2, 116, 53) {
+                @Override
+                public boolean mayPlace(ItemStack stack) {
+                    return false; // Запрещаем класть руками в слот выхода
+                }
+            });
         });
     }
 
@@ -46,11 +53,11 @@ public class SuitStationMenu extends AbstractContainerMenu {
         ItemStack sourceStack = sourceSlot.getItem();
         ItemStack copyOfSourceStack = sourceStack.copy();
 
-        if (index < 36) {
-            if (!moveItemStackTo(sourceStack, 36, 38, false)) {
+        if (index < 36) { // Инвентарь -> Стенд
+            if (!moveItemStackTo(sourceStack, 36, 38, false)) { // Пытаемся положить в слоты 0 или 1
                 return ItemStack.EMPTY;
             }
-        } else if (index < 38) {
+        } else if (index < 39) { // Стенд -> Инвентарь
             if (!moveItemStackTo(sourceStack, 0, 36, false)) {
                 return ItemStack.EMPTY;
             }
