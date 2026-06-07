@@ -70,6 +70,10 @@ public class AlloySmelterMenu extends AbstractContainerMenu {
         return this.data.get(2);
     }
 
+    public int getMaxEnergy() {
+        return this.data.get(3);
+    }
+
     @Override
     public ItemStack quickMoveStack(Player playerIn, int index) {
         Slot sourceSlot = slots.get(index);

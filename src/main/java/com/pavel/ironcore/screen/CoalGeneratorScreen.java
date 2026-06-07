@@ -53,7 +53,7 @@ public class CoalGeneratorScreen extends AbstractContainerScreen<CoalGeneratorMe
         int y = (height - imageHeight) / 2;
 
         if(isHovering(15, 18, 16, 50, mouseX, mouseY)) {
-            guiGraphics.renderTooltip(this.font, Component.literal(menu.getEnergy() + " / 100000 FE"), mouseX, mouseY);
+            guiGraphics.renderTooltip(this.font, Component.literal(menu.getEnergy() + " / " + menu.getMaxEnergy() + " FE"), mouseX, mouseY);
         }
     }
 }
