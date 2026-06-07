@@ -10,11 +10,12 @@ public class SuitCapability implements INBTSerializable<CompoundTag> {
     private int maxFrameDurability = 100;
     private String suitTier = "none";
     private float heat = 0.0f;
-    private int palladiumPoisoning = 0;
+    private float palladiumPoisoning = 0.0f;
+    private String activeReactorType = "none";
     private float icingLevel = 0.0f;
     private boolean isFlying = false;
-    private double failureYPos = -1.0; // Y pos when systems freeze
-    private boolean isBoostKeyHeld = false; // Transient, not saved to NBT
+    private double failureYPos = -1.0; 
+    private boolean isBoostKeyHeld = false; 
 
     public int getEnergy() { return energy; }
     public void setEnergy(int energy) { this.energy = Math.max(0, Math.min(energy, maxEnergy)); }
@@ -31,8 +32,11 @@ public class SuitCapability implements INBTSerializable<CompoundTag> {
     public float getHeat() { return heat; }
     public void setHeat(float heat) { this.heat = Math.max(0.0f, Math.min(heat, 100.0f)); }
 
-    public int getPalladiumPoisoning() { return palladiumPoisoning; }
-    public void setPalladiumPoisoning(int level) { this.palladiumPoisoning = level; }
+    public float getPalladiumPoisoning() { return palladiumPoisoning; }
+    public void setPalladiumPoisoning(float level) { this.palladiumPoisoning = Math.max(0.0f, Math.min(level, 100.0f)); }
+
+    public String getActiveReactorType() { return activeReactorType; }
+    public void setActiveReactorType(String type) { this.activeReactorType = type; }
 
     public float getIcingLevel() { return icingLevel; }
     public void setIcingLevel(float level) { this.icingLevel = Math.max(0.0f, Math.min(level, 100.0f)); }
@@ -53,7 +57,8 @@ public class SuitCapability implements INBTSerializable<CompoundTag> {
         nbt.putInt("maxDurability", maxFrameDurability);
         nbt.putString("tier", suitTier);
         nbt.putFloat("heat", heat);
-        nbt.putInt("poisoning", palladiumPoisoning);
+        nbt.putFloat("poisoning", palladiumPoisoning);
+        nbt.putString("reactor", activeReactorType);
         nbt.putFloat("icing", icingLevel);
         nbt.putBoolean("flying", isFlying);
         nbt.putDouble("failureY", failureYPos);
@@ -66,7 +71,8 @@ public class SuitCapability implements INBTSerializable<CompoundTag> {
         maxFrameDurability = nbt.getInt("maxDurability");
         suitTier = nbt.getString("tier");
         heat = nbt.getFloat("heat");
-        palladiumPoisoning = nbt.getInt("poisoning");
+        palladiumPoisoning = nbt.getFloat("poisoning");
+        activeReactorType = nbt.getString("reactor");
         icingLevel = nbt.getFloat("icing");
         isFlying = nbt.getBoolean("flying");
         failureYPos = nbt.getDouble("failureY");

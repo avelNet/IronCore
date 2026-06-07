@@ -27,11 +27,10 @@ public class ReactorItem extends Item {
         ItemStack stack = player.getItemInHand(hand);
         if (!level.isClientSide) {
             player.getCapability(SuitCapabilityProvider.SUIT_CAPABILITY).ifPresent(suit -> {
-                // В альфе просто пополняем энергию при клике, если это угольный реактор
-                if (reactorType.equals("coal")) {
-                    suit.setEnergy(suit.getEnergy() + 500);
-                    player.displayClientMessage(Component.literal("Реактор заряжен: " + suit.getEnergy() + " FE"), true);
-                }
+                // В альфе просто пополняем энергию при клике
+                suit.setEnergy(suit.getEnergy() + capacity / 10); // Пополняем по 10% за клик
+                suit.setActiveReactorType(reactorType);
+                player.displayClientMessage(Component.literal("Реактор установлен: " + reactorType.toUpperCase()), true);
             });
         }
         return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
