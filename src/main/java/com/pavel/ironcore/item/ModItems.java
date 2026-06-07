@@ -35,6 +35,18 @@ public class ModItems {
     public static final RegistryObject<Item> COAL_REACTOR = ITEMS.register("coal_reactor",
             () -> new ReactorItem(new Item.Properties().stacksTo(1), 5000, "coal"));
 
+    // Индустриальные ресурсы
+    public static final RegistryObject<Item> RAW_TITANIUM = ITEMS.register("raw_titanium",
+            () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> TITANIUM_INGOT = ITEMS.register("titanium_ingot",
+            () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> RAW_PALLADIUM = ITEMS.register("raw_palladium",
+            () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> PALLADIUM_INGOT = ITEMS.register("palladium_ingot",
+            () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> GOLD_TITANIUM_ALLOY = ITEMS.register("gold_titanium_alloy",
+            () -> new Item(new Item.Properties()));
+
     public static void register(IEventBus eventBus) {
         ITEMS.register(eventBus);
     }

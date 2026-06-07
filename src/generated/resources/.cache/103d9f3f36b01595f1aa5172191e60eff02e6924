@@ -1,0 +1,7 @@
+// 1.20.1	2026-06-06T23:01:49.540943891	Registries
+9c5aea5fabe5c690e25d7a898f2b4ba8f34362c8 data/ironcore/forge/biome_modifier/add_palladium_ore.json
+e18bc69a90fb70b1c6f10e9581151612deadd3ee data/ironcore/forge/biome_modifier/add_titanium_ore.json
+f47e36d6c44f36293b81be36f9d35d1d5e71b675 data/ironcore/worldgen/configured_feature/palladium_ore.json
+c9504f2f5a17a132086bc5072957b202f354403f data/ironcore/worldgen/configured_feature/titanium_ore.json
+2a8961f00e6668367366c651cf3dd954cd8d81d4 data/ironcore/worldgen/placed_feature/palladium_ore_placed.json
+72b32a65f8f1379d57d50f4998ff533e9c95f85e data/ironcore/worldgen/placed_feature/titanium_ore_placed.json

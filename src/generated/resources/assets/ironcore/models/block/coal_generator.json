@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "bottom": "ironcore:block/alloy_smelter_bottom",
+    "side": "ironcore:block/alloy_smelter_side",
+    "top": "ironcore:block/alloy_smelter_top"
+  }
+}

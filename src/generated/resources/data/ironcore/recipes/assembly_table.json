@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": {
+      "item": "minecraft:iron_bars"
+    },
+    "I": {
+      "item": "minecraft:iron_block"
+    },
+    "S": {
+      "item": "minecraft:smooth_stone"
+    },
+    "W": {
+      "item": "minecraft:crafting_table"
+    }
+  },
+  "pattern": [
+    "IBI",
+    "SWS",
+    "SSS"
+  ],
+  "result": {
+    "item": "ironcore:assembly_table"
+  },
+  "show_notification": true
+}
