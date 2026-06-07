@@ -1,9 +1,13 @@
 package com.pavel.ironcore.block.entity;
 
+import com.pavel.ironcore.item.ReactorItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.Containers;
 import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.item.ArmorItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
@@ -19,6 +23,13 @@ public class SuitStationBlockEntity extends BlockEntity {
         @Override
         protected void onContentsChanged(int slot) {
             setChanged();
+        }
+
+        @Override
+        public boolean isItemValid(int slot, @NotNull ItemStack stack) {
+            if (slot == 0) return stack.getItem() instanceof ArmorItem && ((ArmorItem)stack.getItem()).getType() == ArmorItem.Type.CHESTPLATE;
+            if (slot == 1) return stack.getItem() instanceof ReactorItem;
+            return super.isItemValid(slot, stack);
         }
     };
 
@@ -46,6 +57,36 @@ public class SuitStationBlockEntity extends BlockEntity {
     public void invalidateCaps() {
         super.invalidateCaps();
         lazyItemHandler.invalidate();
+    }
+
+    public static void tick(Level level, BlockPos pos, BlockState state, SuitStationBlockEntity entity) {
+        if (level.isClientSide()) return;
+
+        ItemStack chestplate = entity.itemHandler.getStackInSlot(0);
+        ItemStack reactor = entity.itemHandler.getStackInSlot(1);
+
+        // Логика установки реактора
+        if (!chestplate.isEmpty() && !reactor.isEmpty()) {
+            // Проверяем, что в нагруднике еще нет реактора (или мы его меняем)
+            // В данной итерации просто "вплавляем" реактор при наличии обоих предметов
+            
+            if (reactor.getItem() instanceof ReactorItem reactorItem) {
+                CompoundTag tag = chestplate.getOrCreateTag();
+                
+                // Переносим данные
+                tag.putString("InstalledReactor", reactor.getItem().toString()); // Упрощенно для альфы
+                
+                // Получаем энергию из реактора через его капку
+                reactor.getCapability(ForgeCapabilities.ENERGY).ifPresent(energy -> {
+                    tag.putInt("SuitEnergy", energy.getEnergyStored());
+                    tag.putInt("SuitMaxEnergy", energy.getMaxEnergyStored());
+                });
+
+                // Удаляем предмет реактора
+                entity.itemHandler.extractItem(1, 1, false);
+                entity.setChanged();
+            }
+        }
     }
 
     @Override

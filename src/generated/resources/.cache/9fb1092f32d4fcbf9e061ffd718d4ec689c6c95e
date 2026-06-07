@@ -1,4 +1,4 @@
-// 1.20.1	2026-06-07T21:50:21.322898189	Recipes
+// 1.20.1	2026-06-07T22:16:34.880399421	Recipes
 490c8366bc39f4b48ae657714c92f36e4f7220de data/ironcore/advancements/recipes/food/chlorophyll_juice.json
 8f12852e57743ea79e249a203880e70e61e1f2dc data/ironcore/advancements/recipes/misc/alloy_smelter.json
 95ccf83ad116e403eef555ef9839a461eb3fc9a5 data/ironcore/advancements/recipes/misc/assembly_table.json
@@ -6,6 +6,7 @@ a8337cc1370955d01f9227022c5e0719593b385b data/ironcore/advancements/recipes/misc
 6f694508d94f65faddd434292d65f0c81f51dc38 data/ironcore/advancements/recipes/misc/coal_generator.json
 10c767fb3e82ee482597c277751d567e2417a17c data/ironcore/advancements/recipes/misc/palladium_ingot_from_blasting_raw_palladium.json
 18a5c0d85034e9197391e6cbf6157132eec91850 data/ironcore/advancements/recipes/misc/palladium_ingot_from_smelting_raw_palladium.json
+c3541637e19fa6c2ec03fb3889f08b4bcb199d19 data/ironcore/advancements/recipes/misc/suit_station.json
 e0538202c39ee5ed2174971d507685b8b1d8a952 data/ironcore/advancements/recipes/misc/titanium_ingot_from_blasting_raw_titanium.json
 a3ed1af8478fc169bf84249da6e0e05fa76d7095 data/ironcore/advancements/recipes/misc/titanium_ingot_from_smelting_raw_titanium.json
 145706dc7c1756873250e1a072adcfce66b783c0 data/ironcore/recipes/alloy_smelter.json
@@ -15,5 +16,6 @@ fcaca0b47c75e7aec3b07b4e89517dbb5d5777a1 data/ironcore/recipes/chlorophyll_juice
 809bb3f65ce4ebc8067e4884d287c281a3dea9f3 data/ironcore/recipes/coal_generator.json
 8bc43e24e9ef4ed4e2828fe0a7fe688930e2570e data/ironcore/recipes/palladium_ingot_from_blasting_raw_palladium.json
 14e48628dab828cafefd5af44d53ec97f7eff921 data/ironcore/recipes/palladium_ingot_from_smelting_raw_palladium.json
+a7b7981c51dc0b0b6972c6ceaaf94be555c53e23 data/ironcore/recipes/suit_station.json
 6e8c4613b4a1b1db9411e314e54d71e8583a49ad data/ironcore/recipes/titanium_ingot_from_blasting_raw_titanium.json
 2521213b0355edc74cb1c7ed35e5ec5d8390ff92 data/ironcore/recipes/titanium_ingot_from_smelting_raw_titanium.json

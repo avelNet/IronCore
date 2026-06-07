@@ -68,4 +68,11 @@ public class SuitStationBlock extends BaseEntityBlock {
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new SuitStationBlockEntity(pos, state);
     }
+
+    @Nullable
+    @Override
+    public <T extends BlockEntity> net.minecraft.world.level.block.entity.BlockEntityTicker<T> getTicker(Level level, BlockState state, net.minecraft.world.level.block.entity.BlockEntityType<T> type) {
+        return level.isClientSide() ? null : createTickerHelper(type, com.pavel.ironcore.block.entity.ModBlockEntities.SUIT_STATION_BE.get(), 
+                com.pavel.ironcore.block.entity.SuitStationBlockEntity::tick);
+    }
 }

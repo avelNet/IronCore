@@ -62,7 +62,18 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .unlockedBy("has_crafting_table", has(Items.CRAFTING_TABLE))
                 .save(pWriter);
 
-        // Зарядная станция
+                // Сборочный стенд (Suit Station)
+                ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.SUIT_STATION.get())
+                .pattern(" B ")
+                .pattern("BHB")
+                .pattern("SSS")
+                .define('B', Items.IRON_BLOCK)
+                .define('H', Items.HOPPER)
+                .define('S', Items.SMOOTH_STONE)
+                .unlockedBy("has_iron_block", has(Items.IRON_BLOCK))
+                .save(pWriter);
+
+                // Хлорофилловый сок
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.CHARGING_STATION.get())
                 .pattern("CRC")
                 .pattern("RIR")
