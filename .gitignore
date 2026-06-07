@@ -18,3 +18,7 @@ thumbs.db
 # Minecraft
 run/
 bin/
+*.jar
+
+# Development Assets
+screens/
