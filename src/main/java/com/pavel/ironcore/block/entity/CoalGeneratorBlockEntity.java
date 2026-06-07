@@ -141,9 +141,9 @@ public class CoalGeneratorBlockEntity extends BlockEntity {
         // Генерация энергии
         if (entity.burnTime > 0) {
             entity.burnTime--;
-            // Генерируем 40 FE за тик
+            // Генерируем 60 FE за тик
             if (entity.energyStorage.getEnergyStored() < entity.energyStorage.getMaxEnergyStored()) {
-                entity.energyStorage.generateEnergy(40);
+                entity.energyStorage.generateEnergy(60);
                 changed = true;
             }
         } else {

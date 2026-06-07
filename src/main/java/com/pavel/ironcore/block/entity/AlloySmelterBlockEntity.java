@@ -32,11 +32,11 @@ public class AlloySmelterBlockEntity extends BlockEntity {
         }
     };
 
-    private final CustomEnergyStorage energyStorage = new CustomEnergyStorage(50000, 1000);
+    private final CustomEnergyStorage energyStorage = new CustomEnergyStorage(100000, 1000);
 
     private class CustomEnergyStorage extends EnergyStorage {
         public CustomEnergyStorage(int capacity, int maxReceive) {
-            super(capacity, maxReceive, capacity); // Разрешаем извлекать энергию (для работы самой печи)
+            super(capacity, maxReceive, capacity);
         }
         @Override
         public int receiveEnergy(int maxReceive, boolean simulate) {
@@ -55,9 +55,9 @@ public class AlloySmelterBlockEntity extends BlockEntity {
 
     public final ContainerData data;
     private int progress = 0;
-    private int maxProgress = 400; // 20 секунд
+    private int maxProgress = 400; 
     
-    private static final int ENERGY_REQ = 150; // 150 FE за тик (Всего 60,000 FE)
+    private static final int ENERGY_REQ = 100; // 100 FE за тик (Всего 40,000 FE)
 
     public AlloySmelterBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.ALLOY_SMELTER_BE.get(), pos, state);
