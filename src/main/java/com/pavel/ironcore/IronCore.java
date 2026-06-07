@@ -79,6 +79,32 @@ public class IronCore {
         public static void onPlayerTick(net.minecraftforge.event.TickEvent.PlayerTickEvent event) {
             if (event.phase == net.minecraftforge.event.TickEvent.Phase.END && !event.player.level().isClientSide()) {
                 event.player.getCapability(SuitCapabilityProvider.SUIT_CAPABILITY).ifPresent(suit -> {
+                    
+                    // Глобальная логика отравления палладием (работает всегда)
+                    if (suit.getActiveReactorType().equals("palladium")) {
+                        suit.setPalladiumPoisoning(suit.getPalladiumPoisoning() + 0.01f);
+                        if (suit.getPalladiumPoisoning() > 30.0f) {
+                            event.player.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.WEAKNESS, 40, 0, false, false, true));
+                        }
+                        if (suit.getPalladiumPoisoning() > 60.0f) {
+                            event.player.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.MOVEMENT_SLOWDOWN, 40, 0, false, false, true));
+                        }
+                        if (suit.getPalladiumPoisoning() > 85.0f) {
+                            if (event.player.tickCount % 100 == 0) {
+                                event.player.hurt(event.player.damageSources().magic(), 1.0f);
+                            }
+                        }
+                    } else if (suit.getPalladiumPoisoning() > 0) {
+                        suit.setPalladiumPoisoning(suit.getPalladiumPoisoning() - 0.005f);
+                        // Если костюм снят, но токсичность есть - синхронизируем HUD, чтобы шкала пропадала плавно
+                        if (suit.getSuitTier().equals("none") && event.player.tickCount % 20 == 0) {
+                            ModMessages.sendToPlayer(new com.pavel.ironcore.network.PacketSyncSuitData(
+                                    suit.getEnergy(), suit.getMaxEnergy(), suit.getSuitTier(), 
+                                    suit.getFrameDurability(), suit.getPalladiumPoisoning(), suit.getActiveReactorType(),
+                                    suit.getIcingLevel(), suit.getHeat(), suit.isFlying()), (net.minecraft.server.level.ServerPlayer)event.player);
+                        }
+                    }
+
                     if (!suit.getSuitTier().equals("none")) {
                         // Проверка-предохранитель на случай если броню удалили читом (Clear Inventory)
                         boolean hasMk1 = event.player.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.CHEST).getItem() == ModItems.MK1_CHESTPLATE.get();
