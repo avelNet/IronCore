@@ -183,27 +183,6 @@ public class Mk2FrameItem extends ArmorItem {
                             }
                             serverPlayer.onUpdateAbilities();
 
-                            // Отравление палладием
-                            if (suit.getActiveReactorType().equals("palladium")) {
-                                suit.setPalladiumPoisoning(suit.getPalladiumPoisoning() + 0.01f); // Медленный рост
-                                if (suit.getPalladiumPoisoning() > 30.0f) {
-                                    serverPlayer.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 40, 0, false, false, true));
-                                }
-                                if (suit.getPalladiumPoisoning() > 60.0f) {
-                                    serverPlayer.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 40, 0, false, false, true));
-                                }
-                                if (suit.getPalladiumPoisoning() > 85.0f) {
-                                    if (serverPlayer.tickCount % 100 == 0) {
-                                        serverPlayer.hurt(serverPlayer.damageSources().magic(), 1.0f); // Урон от токсинов
-                                    }
-                                }
-                            } else {
-                                // Медленное естественное восстановление
-                                if (suit.getPalladiumPoisoning() > 0) {
-                                    suit.setPalladiumPoisoning(suit.getPalladiumPoisoning() - 0.005f);
-                                }
-                            }
-
                             // Обледенение
                             double yPos = serverPlayer.getY();
                             if (yPos > 170) {

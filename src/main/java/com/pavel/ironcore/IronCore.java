@@ -83,6 +83,14 @@ public class IronCore {
                     // Глобальная логика отравления палладием (работает всегда)
                     if (suit.getActiveReactorType().equals("palladium")) {
                         suit.setPalladiumPoisoning(suit.getPalladiumPoisoning() + 0.01f);
+                        
+                        if (event.player.tickCount % 20 == 0) {
+                            ModMessages.sendToPlayer(new com.pavel.ironcore.network.PacketSyncSuitData(
+                                    suit.getEnergy(), suit.getMaxEnergy(), suit.getSuitTier(), 
+                                    suit.getFrameDurability(), suit.getPalladiumPoisoning(), suit.getActiveReactorType(),
+                                    suit.getIcingLevel(), suit.getHeat(), suit.isFlying()), (net.minecraft.server.level.ServerPlayer)event.player);
+                        }
+
                         if (suit.getPalladiumPoisoning() > 30.0f) {
                             event.player.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.WEAKNESS, 40, 0, false, false, true));
                         }

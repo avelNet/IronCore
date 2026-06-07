@@ -186,26 +186,6 @@ public class Mk3FrameItem extends ArmorItem {
                             }
                             serverPlayer.onUpdateAbilities();
 
-                            // Отравление палладием (одинаково для всех)
-                            if (suit.getActiveReactorType().equals("palladium")) {
-                                suit.setPalladiumPoisoning(suit.getPalladiumPoisoning() + 0.01f);
-                                if (suit.getPalladiumPoisoning() > 30.0f) {
-                                    serverPlayer.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 40, 0, false, false, true));
-                                }
-                                if (suit.getPalladiumPoisoning() > 60.0f) {
-                                    serverPlayer.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 40, 0, false, false, true));
-                                }
-                                if (suit.getPalladiumPoisoning() > 85.0f) {
-                                    if (serverPlayer.tickCount % 100 == 0) {
-                                        serverPlayer.hurt(serverPlayer.damageSources().magic(), 1.0f);
-                                    }
-                                }
-                            } else {
-                                if (suit.getPalladiumPoisoning() > 0) {
-                                    suit.setPalladiumPoisoning(suit.getPalladiumPoisoning() - 0.005f);
-                                }
-                            }
-
                             // ОБЛЕДЕНЕНИЕ ОТСУТСТВУЕТ У MK3 (Золото-титан решает проблему)
                             if (suit.getIcingLevel() > 0.0f) {
                                 suit.setIcingLevel(suit.getIcingLevel() - 0.5f); // Быстро оттаивает, если было
