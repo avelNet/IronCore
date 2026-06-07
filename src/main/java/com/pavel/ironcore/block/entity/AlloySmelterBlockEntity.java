@@ -16,6 +16,10 @@ import net.minecraftforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import net.minecraft.world.inventory.ContainerData;
+import net.minecraftforge.energy.EnergyStorage;
+import net.minecraftforge.energy.IEnergyStorage;
+
 public class AlloySmelterBlockEntity extends BlockEntity {
     private final ItemStackHandler itemHandler = new ItemStackHandler(3) { // 0: Слот 1, 1: Слот 2, 2: Результат
         @Override
@@ -23,23 +27,67 @@ public class AlloySmelterBlockEntity extends BlockEntity {
             setChanged();
         }
     };
+
+    private final EnergyStorage energyStorage = new EnergyStorage(50000, 1000, 0) {
+        @Override
+        public int receiveEnergy(int maxReceive, boolean simulate) {
+            setChanged();
+            return super.receiveEnergy(maxReceive, simulate);
+        }
+        
+        @Override
+        public int extractEnergy(int maxExtract, boolean simulate) {
+            setChanged();
+            return super.extractEnergy(maxExtract, simulate);
+        }
+    };
     
     private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
+    private LazyOptional<IEnergyStorage> lazyEnergyHandler = LazyOptional.empty();
 
+    public final ContainerData data;
     private int progress = 0;
     private int maxProgress = 100; // 5 секунд (100 тиков) на одну операцию
     
-    // В будущем тут будет расход энергии
-    private static final int ENERGY_REQ = 500;
+    private static final int ENERGY_REQ = 50; // 50 FE за тик (Всего 5000 FE за операцию)
 
     public AlloySmelterBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.ALLOY_SMELTER_BE.get(), pos, state);
+        this.data = new ContainerData() {
+            @Override
+            public int get(int index) {
+                switch (index) {
+                    case 0: return AlloySmelterBlockEntity.this.progress;
+                    case 1: return AlloySmelterBlockEntity.this.maxProgress;
+                    case 2: return AlloySmelterBlockEntity.this.energyStorage.getEnergyStored();
+                    case 3: return AlloySmelterBlockEntity.this.energyStorage.getMaxEnergyStored();
+                    default: return 0;
+                }
+            }
+
+            @Override
+            public void set(int index, int value) {
+                switch (index) {
+                    case 0: AlloySmelterBlockEntity.this.progress = value; break;
+                    case 1: AlloySmelterBlockEntity.this.maxProgress = value; break;
+                    // Клиент не должен изменять энергию сервера напрямую
+                }
+            }
+
+            @Override
+            public int getCount() {
+                return 4;
+            }
+        };
     }
 
     @Override
     public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable net.minecraft.core.Direction side) {
         if(cap == ForgeCapabilities.ITEM_HANDLER) {
             return lazyItemHandler.cast();
+        }
+        if(cap == ForgeCapabilities.ENERGY) {
+            return lazyEnergyHandler.cast();
         }
         return super.getCapability(cap, side);
     }
@@ -48,12 +96,14 @@ public class AlloySmelterBlockEntity extends BlockEntity {
     public void onLoad() {
         super.onLoad();
         lazyItemHandler = LazyOptional.of(() -> itemHandler);
+        lazyEnergyHandler = LazyOptional.of(() -> energyStorage);
     }
 
     @Override
     public void invalidateCaps() {
         super.invalidateCaps();
         lazyItemHandler.invalidate();
+        lazyEnergyHandler.invalidate();
     }
 
     public void drops() {
@@ -68,6 +118,7 @@ public class AlloySmelterBlockEntity extends BlockEntity {
     protected void saveAdditional(CompoundTag tag) {
         tag.put("inventory", itemHandler.serializeNBT());
         tag.putInt("alloy_smelter.progress", progress);
+        tag.putInt("alloy_smelter.energy", energyStorage.getEnergyStored());
         super.saveAdditional(tag);
     }
 
@@ -76,12 +127,14 @@ public class AlloySmelterBlockEntity extends BlockEntity {
         super.load(tag);
         itemHandler.deserializeNBT(tag.getCompound("inventory"));
         progress = tag.getInt("alloy_smelter.progress");
+        energyStorage.receiveEnergy(tag.getInt("alloy_smelter.energy"), false);
     }
 
     public static void tick(Level level, BlockPos pos, BlockState state, AlloySmelterBlockEntity pEntity) {
         if (level.isClientSide()) return;
 
-        if (hasRecipe(pEntity)) {
+        if (hasRecipe(pEntity) && pEntity.energyStorage.getEnergyStored() >= ENERGY_REQ) {
+            pEntity.energyStorage.extractEnergy(ENERGY_REQ, false);
             pEntity.progress++;
             setChanged(level, pos, state);
             if (pEntity.progress >= pEntity.maxProgress) {

@@ -57,7 +57,7 @@ public class AlloySmelterBlock extends BaseEntityBlock {
                     @Nullable
                     @Override
                     public AbstractContainerMenu createMenu(int pContainerId, Inventory pPlayerInventory, Player pPlayer) {
-                        return new AlloySmelterMenu(pContainerId, pPlayerInventory, entity);
+                        return new AlloySmelterMenu(pContainerId, pPlayerInventory, entity, ((AlloySmelterBlockEntity)entity).data);
                     }
                 }, pos);
             } else {

@@ -33,6 +33,13 @@ public class AlloySmelterScreen extends AbstractContainerScreen<AlloySmelterMenu
         int y = (height - imageHeight) / 2;
 
         guiGraphics.blit(TEXTURE, x, y, 0, 0, imageWidth, imageHeight);
+
+        if(menu.isCrafting()) {
+            guiGraphics.blit(TEXTURE, x + 79, y + 34, 176, 14, menu.getScaledProgress(), 16);
+        }
+
+        int energyScale = menu.getScaledEnergy();
+        guiGraphics.blit(TEXTURE, x + 15, y + 68 - energyScale, 176, 81 - energyScale, 16, energyScale);
     }
 
     @Override
@@ -40,5 +47,12 @@ public class AlloySmelterScreen extends AbstractContainerScreen<AlloySmelterMenu
         renderBackground(guiGraphics);
         super.render(guiGraphics, mouseX, mouseY, delta);
         renderTooltip(guiGraphics, mouseX, mouseY);
+
+        int x = (width - imageWidth) / 2;
+        int y = (height - imageHeight) / 2;
+
+        if(isHovering(15, 18, 16, 50, mouseX, mouseY)) {
+            guiGraphics.renderTooltip(this.font, Component.literal(menu.getEnergy() + " / 50000 FE"), mouseX, mouseY);
+        }
     }
 }
