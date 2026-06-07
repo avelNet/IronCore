@@ -44,6 +44,8 @@ public class ModItems {
             () -> new Item(new Item.Properties()));
     public static final RegistryObject<Item> PALLADIUM_INGOT = ITEMS.register("palladium_ingot",
             () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> GOLD_TITANIUM_ALLOY = ITEMS.register("gold_titanium_alloy",
+            () -> new Item(new Item.Properties()));
 
     public static void register(IEventBus eventBus) {
         ITEMS.register(eventBus);

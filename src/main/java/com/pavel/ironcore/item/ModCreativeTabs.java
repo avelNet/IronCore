@@ -43,6 +43,7 @@ public class ModCreativeTabs {
                         
                         output.accept(ModItems.RAW_PALLADIUM.get());
                         output.accept(ModItems.PALLADIUM_INGOT.get());
+                        output.accept(ModItems.GOLD_TITANIUM_ALLOY.get());
                         output.accept(ModBlocks.PALLADIUM_ORE.get());
                     }).build());
 
