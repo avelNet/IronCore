@@ -36,7 +36,7 @@ public class AlloySmelterBlockEntity extends BlockEntity {
 
     private class CustomEnergyStorage extends EnergyStorage {
         public CustomEnergyStorage(int capacity, int maxReceive) {
-            super(capacity, maxReceive, 0);
+            super(capacity, maxReceive, capacity); // Разрешаем извлекать энергию (для работы самой печи)
         }
         @Override
         public int receiveEnergy(int maxReceive, boolean simulate) {
