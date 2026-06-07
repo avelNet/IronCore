@@ -53,11 +53,19 @@ public class PacketRepulsorFire {
                         target.hurt(player.damageSources().playerAttack(player), 10.0f); // 10 урона (5 сердец)
                     }
 
+                    // Вычисляем позицию ПРАВОЙ РУКИ для визуального луча
+                    // Смещение: вправо, вниз и немного вперед от глаз
+                    Vec3 rightVector = Vec3.directionFromRotation(0, player.getYRot() + 90.0f);
+                    Vec3 handPosition = eyePosition.add(rightVector.scale(0.4)).add(0, -0.4, 0).add(lookVector.scale(0.4));
+                    
+                    // Направление визуального луча: от руки к точке прицеливания
+                    Vec3 beamDirection = endPosition.subtract(handPosition).normalize();
+                    double beamLength = handPosition.distanceTo(endPosition);
+
                     // Spawn Beam Particles
                     ServerLevel serverLevel = (ServerLevel) player.level();
-                    double distance = eyePosition.distanceTo(endPosition);
-                    for (double i = 0; i < distance; i += 0.5) {
-                        Vec3 particlePos = eyePosition.add(lookVector.scale(i));
+                    for (double i = 0; i < beamLength; i += 0.5) {
+                        Vec3 particlePos = handPosition.add(beamDirection.scale(i));
                         serverLevel.sendParticles(ParticleTypes.ELECTRIC_SPARK, particlePos.x, particlePos.y, particlePos.z, 1, 0.0, 0.0, 0.0, 0.0);
                         serverLevel.sendParticles(ParticleTypes.END_ROD, particlePos.x, particlePos.y, particlePos.z, 1, 0.0, 0.0, 0.0, 0.0);
                     }
