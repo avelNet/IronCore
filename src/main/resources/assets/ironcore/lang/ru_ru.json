@@ -29,7 +29,7 @@
   "block.ironcore.palladium_ore": "Палладиевая руда",
   "creativetab.ironcore_tab": "IronCore",
   "key.category.ironcore": "IronCore",
-  "key.ironcore.flamethrower": "Использовать огнемёт",
+  "key.ironcore.fire_weapon": "Выстрел из костюма",
   "key.ironcore.toggle_flight": "Переключить полёт",
   "tooltip.ironcore.reactor_type": "Тип: %s",
   "tooltip.ironcore.capacity": "Ёмкость: %s FE"

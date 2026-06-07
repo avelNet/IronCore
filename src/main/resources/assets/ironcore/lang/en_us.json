@@ -29,7 +29,7 @@
   "block.ironcore.palladium_ore": "Palladium Ore",
   "creativetab.ironcore_tab": "IronCore",
   "key.category.ironcore": "IronCore",
-  "key.ironcore.flamethrower": "Use Flamethrower",
+  "key.ironcore.fire_weapon": "Fire Suit Weapon",
   "key.ironcore.toggle_flight": "Toggle Flight",
   "tooltip.ironcore.reactor_type": "Type: %s",
   "tooltip.ironcore.capacity": "Capacity: %s FE"
