@@ -126,13 +126,16 @@ public class SuitStationBlockEntity extends BlockEntity {
     @Override
     public void load(CompoundTag tag) {
         super.load(tag);
-        itemHandler.deserializeNBT(tag.getCompound("inventory"));
         
-        // ЗАЩИТА ОТ ВЫЛЕТОВ (Обратная совместимость)
-        // Если блок был сохранен в мире, когда у него было только 2 слота,
-        // NBT уменьшит размер инвентаря до 2. Принудительно возвращаем 3.
-        if (itemHandler.getSlots() < 3) {
-            itemHandler.setSize(3);
+        // Временно читаем во временный хендлер
+        ItemStackHandler tempHandler = new ItemStackHandler(3);
+        tempHandler.deserializeNBT(tag.getCompound("inventory"));
+        
+        // Защита от вылетов при обновлении старых блоков (2 слота -> 3 слота)
+        // Копируем предметы вручную, чтобы не потерять их при изменении размера массива
+        itemHandler.setSize(3);
+        for (int i = 0; i < Math.min(tempHandler.getSlots(), 3); i++) {
+            itemHandler.setStackInSlot(i, tempHandler.getStackInSlot(i));
         }
     }
 
