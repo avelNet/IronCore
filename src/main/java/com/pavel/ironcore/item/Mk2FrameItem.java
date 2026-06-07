@@ -57,12 +57,10 @@ public class Mk2FrameItem extends ArmorItem {
                                 player.getAbilities().flying = false;
                                 player.onUpdateAbilities();
                             } else if (enginesOverheated) {
-                                // При перегреве тяга пропадает, медленно падаем
                                 Vec3 current = player.getDeltaMovement();
                                 player.setDeltaMovement(current.x * 0.9, current.y - 0.1, current.z * 0.9);
                                 player.hasImpulse = true;
                             } else if (suit.getEnergy() <= 1000 && suit.getEnergy() >= 4 && !enginesFrozen) {
-                                // Резервное питание
                                 Vec3 current = player.getDeltaMovement();
                                 player.setDeltaMovement(current.x * 0.9, current.y - 0.1, current.z * 0.9);
                                 player.hasImpulse = true;
@@ -85,12 +83,15 @@ public class Mk2FrameItem extends ArmorItem {
                                 player.setDeltaMovement(newMovement);
                                 player.hasImpulse = true;
                             } else if (suit.getEnergy() >= 4 && !enginesFrozen) {
+                                // Ограничение скорости парения
                                 Vec3 current = player.getDeltaMovement();
-                                double hoverMaxSpeed = 0.28;
-                                double horizontalLength = Math.sqrt(current.x * current.x + current.z * current.z);
-                                if (horizontalLength > hoverMaxSpeed) {
-                                    double scale = hoverMaxSpeed / horizontalLength;
-                                    player.setDeltaMovement(current.x * scale, current.y, current.z * scale);
+                                double hoverMaxSpeed = 0.278; 
+                                if (current.length() > hoverMaxSpeed) {
+                                    player.setDeltaMovement(current.scale(0.85)); 
+                                    if (player.getDeltaMovement().length() > hoverMaxSpeed) {
+                                        player.setDeltaMovement(player.getDeltaMovement().normalize().scale(hoverMaxSpeed));
+                                    }
+                                    player.hasImpulse = true;
                                 }
                             }
                         }
@@ -121,16 +122,10 @@ public class Mk2FrameItem extends ArmorItem {
                                     serverPlayer.onUpdateAbilities();
                                 } else {
                                     suit.setEnergy(suit.getEnergy() - 4);
-                                    
-                                    // Нагрев при ускорении
-                                    if (suit.isBoostKeyHeld()) {
-                                        suit.setHeat(suit.getHeat() + 0.0476f); // 1.75 минуты до 100%
-                                    }
-
+                                    if (suit.isBoostKeyHeld()) suit.setHeat(suit.getHeat() + 0.0476f);
                                     if (suit.getEnergy() <= 1000 && serverPlayer.tickCount % 40 == 0) {
                                         serverPlayer.displayClientMessage(net.minecraft.network.chat.Component.literal("§eWARNING: RESERVE POWER"), true);
                                     }
-                                    // Particles
                                     ServerLevel serverLevel = (ServerLevel) level;
                                     Vec3 pos = serverPlayer.position();
                                     if (serverPlayer.tickCount % 2 == 0) {
@@ -142,6 +137,27 @@ public class Mk2FrameItem extends ArmorItem {
                             }
                             serverPlayer.onUpdateAbilities();
 
+                            // Отравление палладием
+                            if (suit.getActiveReactorType().equals("palladium")) {
+                                suit.setPalladiumPoisoning(suit.getPalladiumPoisoning() + 0.01f); // Медленный рост
+                                if (suit.getPalladiumPoisoning() > 30.0f) {
+                                    serverPlayer.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 40, 0, false, false, true));
+                                }
+                                if (suit.getPalladiumPoisoning() > 60.0f) {
+                                    serverPlayer.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 40, 0, false, false, true));
+                                }
+                                if (suit.getPalladiumPoisoning() > 85.0f) {
+                                    if (serverPlayer.tickCount % 100 == 0) {
+                                        serverPlayer.hurt(serverPlayer.damageSources().magic(), 1.0f); // Урон от токсинов
+                                    }
+                                }
+                            } else {
+                                // Медленное естественное восстановление
+                                if (suit.getPalladiumPoisoning() > 0) {
+                                    suit.setPalladiumPoisoning(suit.getPalladiumPoisoning() - 0.005f);
+                                }
+                            }
+
                             // Обледенение
                             double yPos = serverPlayer.getY();
                             if (yPos > 170) {
@@ -152,18 +168,15 @@ public class Mk2FrameItem extends ArmorItem {
                                 if (suit.getIcingLevel() > 0.0f) suit.setIcingLevel(suit.getIcingLevel() - 0.2f); 
                             }
 
-                            // --- Система Перегрева ---
+                            // Система Перегрева
                             float coolingRate = 0.1f;
                             if (serverPlayer.isInWater()) coolingRate = 0.5f;
                             else if (level.getBiome(serverPlayer.blockPosition()).value().getBaseTemperature() < 0.2f) coolingRate = 0.2f;
-                            
                             if (level.dimension() == net.minecraft.world.level.Level.NETHER) suit.setHeat(suit.getHeat() + 0.05f);
                             if (serverPlayer.isOnFire() || serverPlayer.isInLava()) suit.setHeat(suit.getHeat() + 1.0f);
-                            
                             if (!suit.isBoostKeyHeld() || !serverPlayer.getAbilities().flying) {
                                 suit.setHeat(suit.getHeat() - coolingRate);
                             }
-
                             if (suit.getHeat() > 80.0f && serverPlayer.tickCount % 40 == 0) {
                                 serverPlayer.displayClientMessage(net.minecraft.network.chat.Component.literal("§6WARNING: CRITICAL TEMPERATURE!"), true);
                             }
@@ -201,7 +214,7 @@ public class Mk2FrameItem extends ArmorItem {
                         if (changed || serverPlayer.tickCount % 20 == 0) {
                             ModMessages.sendToPlayer(new PacketSyncSuitData(
                                     suit.getEnergy(), suit.getMaxEnergy(), suit.getSuitTier(), 
-                                    suit.getFrameDurability(), suit.getPalladiumPoisoning(),
+                                    suit.getFrameDurability(), suit.getPalladiumPoisoning(), suit.getActiveReactorType(),
                                     suit.getIcingLevel(), suit.getHeat(), suit.isFlying()), serverPlayer);
                         }
                     }

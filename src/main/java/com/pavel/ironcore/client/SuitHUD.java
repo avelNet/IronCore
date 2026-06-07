@@ -73,7 +73,7 @@ public class SuitHUD {
                 }
 
                 if (suit.getPalladiumPoisoning() > 0) {
-                    guiGraphics.drawString(minecraft.font, "POISONING: " + suit.getPalladiumPoisoning(), x, currentY, 0xFF0000);
+                    guiGraphics.drawString(minecraft.font, "TOXICITY: " + String.format("%.1f%%", suit.getPalladiumPoisoning()), x, currentY, 0xFF00FF);
                 }
             });
         });

@@ -1,0 +1,35 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_palladium": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "ironcore:raw_palladium"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "ironcore:chlorophyll_juice"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_palladium",
+      "has_the_recipe"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "ironcore:chlorophyll_juice"
+    ]
+  },
+  "sends_telemetry_event": false
+}

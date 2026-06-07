@@ -11,17 +11,19 @@ public class PacketSyncSuitData {
     private final int maxEnergy;
     private final String tier;
     private final int durability;
-    private final int poisoning;
+    private final float poisoning;
+    private final String reactor;
     private final float icingLevel;
     private final float heatLevel;
     private final boolean isFlying;
 
-    public PacketSyncSuitData(int energy, int maxEnergy, String tier, int durability, int poisoning, float icingLevel, float heatLevel, boolean isFlying) {
+    public PacketSyncSuitData(int energy, int maxEnergy, String tier, int durability, float poisoning, String reactor, float icingLevel, float heatLevel, boolean isFlying) {
         this.energy = energy;
         this.maxEnergy = maxEnergy;
         this.tier = tier;
         this.durability = durability;
         this.poisoning = poisoning;
+        this.reactor = reactor;
         this.icingLevel = icingLevel;
         this.heatLevel = heatLevel;
         this.isFlying = isFlying;
@@ -32,7 +34,8 @@ public class PacketSyncSuitData {
         this.maxEnergy = buffer.readInt();
         this.tier = buffer.readUtf();
         this.durability = buffer.readInt();
-        this.poisoning = buffer.readInt();
+        this.poisoning = buffer.readFloat();
+        this.reactor = buffer.readUtf();
         this.icingLevel = buffer.readFloat();
         this.heatLevel = buffer.readFloat();
         this.isFlying = buffer.readBoolean();
@@ -43,7 +46,8 @@ public class PacketSyncSuitData {
         buffer.writeInt(maxEnergy);
         buffer.writeUtf(tier);
         buffer.writeInt(durability);
-        buffer.writeInt(poisoning);
+        buffer.writeFloat(poisoning);
+        buffer.writeUtf(reactor);
         buffer.writeFloat(icingLevel);
         buffer.writeFloat(heatLevel);
         buffer.writeBoolean(isFlying);
@@ -58,11 +62,13 @@ public class PacketSyncSuitData {
                 suit.setSuitTier(tier);
                 suit.setFrameDurability(durability);
                 suit.setPalladiumPoisoning(poisoning);
+                suit.setActiveReactorType(reactor);
                 suit.setIcingLevel(icingLevel);
                 suit.setHeat(heatLevel);
                 suit.setFlying(isFlying);
             });
         });
+        context.setPacketHandled(true);
         return true;
     }
 }

@@ -61,6 +61,13 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .define('W', Items.CRAFTING_TABLE)
                 .unlockedBy("has_crafting_table", has(Items.CRAFTING_TABLE))
                 .save(pWriter);
+
+        // Хлорофилловый сок (Простой крафт: Пузырек + любая листва)
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.FOOD, ModItems.CHLOROPHYLL_JUICE.get())
+                .requires(Items.GLASS_BOTTLE)
+                .requires(net.minecraft.tags.ItemTags.LEAVES)
+                .unlockedBy("has_palladium", has(ModItems.RAW_PALLADIUM.get()))
+                .save(pWriter);
     }
 
     protected static void oreSmelting(Consumer<FinishedRecipe> pFinishedRecipeConsumer, List<net.minecraft.world.level.ItemLike> pIngredients, RecipeCategory pCategory, net.minecraft.world.level.ItemLike pResult, float pExperience, int pCookingTime, String pGroup) {

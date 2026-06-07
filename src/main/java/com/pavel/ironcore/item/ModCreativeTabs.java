@@ -32,6 +32,8 @@ public class ModCreativeTabs {
                         
                         // Энергетика
                         output.accept(ModItems.COAL_REACTOR.get());
+                        output.accept(ModItems.PALLADIUM_REACTOR.get());
+                        output.accept(ModItems.CHLOROPHYLL_JUICE.get());
 
                         // Индустрия
                         output.accept(ModBlocks.ALLOY_SMELTER.get());

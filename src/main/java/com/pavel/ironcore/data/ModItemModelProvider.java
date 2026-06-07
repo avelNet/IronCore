@@ -21,6 +21,9 @@ public class ModItemModelProvider extends ItemModelProvider {
         simpleItem(ModItems.TITANIUM_INGOT);
         simpleItem(ModItems.RAW_PALLADIUM);
         simpleItem(ModItems.PALLADIUM_INGOT);
+        simpleItem(ModItems.GOLD_TITANIUM_ALLOY);
+        simpleItem(ModItems.PALLADIUM_REACTOR);
+        simpleItem(ModItems.CHLOROPHYLL_JUICE);
         
         // Items with custom textures that don't need complex models right now
         simpleItem(ModItems.COAL_REACTOR);
