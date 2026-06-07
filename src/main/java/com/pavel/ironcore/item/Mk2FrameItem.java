@@ -37,6 +37,46 @@ public class Mk2FrameItem extends ArmorItem {
                     boolean isFull = isFullSuitEquipped(player);
 
                     if (isFull) {
+                        // Читаем данные реактора из НАГРУДНИКА
+                        ItemStack chestplate = player.getItemBySlot(EquipmentSlot.CHEST);
+                        net.minecraft.nbt.CompoundTag chestTag = chestplate.getOrCreateTag();
+                        
+                        String installedReactor = chestTag.getString("InstalledReactor");
+                        int suitEnergy = chestTag.getInt("SuitEnergy");
+                        int suitMaxEnergy = chestTag.getInt("SuitMaxEnergy");
+
+                        // Если реактора нет - выключаем системы
+                        if (installedReactor.isEmpty() || installedReactor.equals("none")) {
+                            suit.setActiveReactorType("none");
+                            suit.setEnergy(0);
+                            suit.setMaxEnergy(0);
+                            if (suit.isFlying()) suit.setFlying(false);
+                            if (player.getAbilities().flying) {
+                                player.getAbilities().flying = false;
+                                player.onUpdateAbilities();
+                            }
+                            // Ранний выход из тика - без реактора броня мертва
+                            if (!level.isClientSide && player.tickCount % 20 == 0) {
+                                ModMessages.sendToPlayer(new PacketSyncSuitData(
+                                    suit.getEnergy(), suit.getMaxEnergy(), suit.getSuitTier(), 
+                                    suit.getFrameDurability(), suit.getPalladiumPoisoning(), suit.getActiveReactorType(),
+                                    suit.getIcingLevel(), suit.getHeat(), suit.isFlying()), (ServerPlayer)player);
+                            }
+                            return; 
+                        }
+
+                        // Если реактор есть, обновляем капку игрока для работы старой логики
+                        // В будущем можно будет полностью перенести логику на NBT предмета
+                        if (installedReactor.contains("palladium")) suit.setActiveReactorType("palladium");
+                        else if (installedReactor.contains("coal")) suit.setActiveReactorType("coal");
+                        
+                        suit.setMaxEnergy(suitMaxEnergy);
+                        // Для совместимости со старым кодом полета, который тратит энергию из suit.getEnergy()
+                        // мы пока что синхронизируем их каждый тик, но НАСТОЯЩАЯ энергия хранится в нагруднике
+                        if (suit.getEnergy() != suitEnergy) {
+                           suit.setEnergy(suitEnergy); 
+                        }
+
                         // Авто-активация STANDBY только если системы не заморожены/перегреты
                         if (suit.getIcingLevel() < 100.0f && suit.getHeat() < 100.0f) {
                             if (!suit.isFlying()) {
@@ -122,6 +162,12 @@ public class Mk2FrameItem extends ArmorItem {
                                     serverPlayer.onUpdateAbilities();
                                 } else {
                                     suit.setEnergy(suit.getEnergy() - 4);
+                                    
+                                    ItemStack chestplateServer = serverPlayer.getItemBySlot(EquipmentSlot.CHEST);
+                                    if(chestplateServer.getItem() instanceof ArmorItem) {
+                                         chestplateServer.getOrCreateTag().putInt("SuitEnergy", suit.getEnergy()); 
+                                    }
+
                                     if (suit.isBoostKeyHeld()) suit.setHeat(suit.getHeat() + 0.0476f);
                                     if (suit.getEnergy() <= 1000 && serverPlayer.tickCount % 40 == 0) {
                                         serverPlayer.displayClientMessage(net.minecraft.network.chat.Component.literal("§eWARNING: RESERVE POWER"), true);

@@ -89,15 +89,9 @@ public class ReactorItem extends Item {
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
+        // Правый клик больше не устанавливает реактор. Используйте Suit Station.
         if (!level.isClientSide) {
-            player.getCapability(SuitCapabilityProvider.SUIT_CAPABILITY).ifPresent(suit -> {
-                // В альфе переносим энергию из предмета в капку при "установке"
-                int itemEnergy = stack.getOrCreateTag().getInt("Energy");
-                suit.setMaxEnergy(capacity);
-                suit.setEnergy(itemEnergy);
-                suit.setActiveReactorType(reactorType);
-                player.displayClientMessage(Component.literal("Реактор установлен: " + reactorType.toUpperCase()), true);
-            });
+             player.displayClientMessage(Component.literal("§cUse a Suit Station to install this reactor."), true);
         }
         return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
     }
