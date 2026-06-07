@@ -8,6 +8,8 @@
   "item.ironcore.mk2_leggings": "Поножи Mk2",
   "item.ironcore.mk2_boots": "Ботинки Mk2",
   "item.ironcore.coal_reactor": "Угольный реактор",
+  "block.ironcore.alloy_smelter": "Сплав-печь",
+  "block.ironcore.coal_generator": "Угольный генератор",
   "creativetab.ironcore_tab": "IronCore",
   "key.category.ironcore": "IronCore",
   "key.ironcore.flamethrower": "Использовать огнемёт",

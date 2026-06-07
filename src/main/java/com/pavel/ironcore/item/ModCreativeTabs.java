@@ -35,6 +35,7 @@ public class ModCreativeTabs {
 
                         // Индустрия
                         output.accept(ModBlocks.ALLOY_SMELTER.get());
+                        output.accept(ModBlocks.COAL_GENERATOR.get());
                         output.accept(ModItems.RAW_TITANIUM.get());
                         output.accept(ModItems.TITANIUM_INGOT.get());
                         output.accept(ModBlocks.TITANIUM_ORE.get());

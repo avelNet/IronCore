@@ -16,6 +16,11 @@ public class ModBlockEntities {
                     BlockEntityType.Builder.of(AlloySmelterBlockEntity::new,
                             com.pavel.ironcore.block.ModBlocks.ALLOY_SMELTER.get()).build(null));
 
+    public static final RegistryObject<BlockEntityType<CoalGeneratorBlockEntity>> COAL_GENERATOR_BE =
+            BLOCK_ENTITIES.register("coal_generator", () ->
+                    BlockEntityType.Builder.of(CoalGeneratorBlockEntity::new,
+                            com.pavel.ironcore.block.ModBlocks.COAL_GENERATOR.get()).build(null));
+
     public static void register(IEventBus eventBus) {
         BLOCK_ENTITIES.register(eventBus);
     }
