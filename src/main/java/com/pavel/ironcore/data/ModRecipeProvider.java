@@ -90,6 +90,64 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .requires(net.minecraft.tags.ItemTags.LEAVES)
                 .unlockedBy("has_palladium", has(ModItems.RAW_PALLADIUM.get()))
                 .save(pWriter);
+
+        // --- БРОНЯ MK1 ---
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.MK1_HELMET.get())
+                .pattern("III")
+                .pattern("IRI")
+                .define('I', Items.IRON_BLOCK)
+                .define('R', Items.REDSTONE)
+                .unlockedBy("has_iron_block", has(Items.IRON_BLOCK))
+                .save(pWriter);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.MK1_CHESTPLATE.get())
+                .pattern("I I")
+                .pattern("IRI")
+                .pattern("III")
+                .define('I', Items.IRON_BLOCK)
+                .define('R', Items.REDSTONE)
+                .unlockedBy("has_iron_block", has(Items.IRON_BLOCK))
+                .save(pWriter);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.MK1_LEGGINGS.get())
+                .pattern("III")
+                .pattern("IRI")
+                .pattern("I I")
+                .define('I', Items.IRON_BLOCK)
+                .define('R', Items.REDSTONE)
+                .unlockedBy("has_iron_block", has(Items.IRON_BLOCK))
+                .save(pWriter);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.MK1_BOOTS.get())
+                .pattern("I I")
+                .pattern("I I")
+                .pattern("R R")
+                .define('I', Items.IRON_BLOCK)
+                .define('R', Items.REDSTONE)
+                .unlockedBy("has_iron_block", has(Items.IRON_BLOCK))
+                .save(pWriter);
+
+        // --- АПГРЕЙД ДО MK2 ---
+        addSmithingUpgrade(pWriter, ModItems.MK1_HELMET.get(), ModItems.TITANIUM_INGOT.get(), ModItems.MK2_HELMET.get(), "mk2_helmet");
+        addSmithingUpgrade(pWriter, ModItems.MK1_CHESTPLATE.get(), ModItems.TITANIUM_INGOT.get(), ModItems.MK2_CHESTPLATE.get(), "mk2_chestplate");
+        addSmithingUpgrade(pWriter, ModItems.MK1_LEGGINGS.get(), ModItems.TITANIUM_INGOT.get(), ModItems.MK2_LEGGINGS.get(), "mk2_leggings");
+        addSmithingUpgrade(pWriter, ModItems.MK1_BOOTS.get(), ModItems.TITANIUM_INGOT.get(), ModItems.MK2_BOOTS.get(), "mk2_boots");
+
+        // --- АПГРЕЙД ДО MK3 ---
+        addSmithingUpgrade(pWriter, ModItems.MK2_HELMET.get(), ModItems.GOLD_TITANIUM_ALLOY.get(), ModItems.MK3_HELMET.get(), "mk3_helmet");
+        addSmithingUpgrade(pWriter, ModItems.MK2_CHESTPLATE.get(), ModItems.GOLD_TITANIUM_ALLOY.get(), ModItems.MK3_CHESTPLATE.get(), "mk3_chestplate");
+        addSmithingUpgrade(pWriter, ModItems.MK2_LEGGINGS.get(), ModItems.GOLD_TITANIUM_ALLOY.get(), ModItems.MK3_LEGGINGS.get(), "mk3_leggings");
+        addSmithingUpgrade(pWriter, ModItems.MK2_BOOTS.get(), ModItems.GOLD_TITANIUM_ALLOY.get(), ModItems.MK3_BOOTS.get(), "mk3_boots");
+    }
+
+    private static void addSmithingUpgrade(Consumer<FinishedRecipe> pWriter, net.minecraft.world.item.Item base, net.minecraft.world.item.Item material, net.minecraft.world.item.Item result, String name) {
+        SmithingTransformRecipeBuilder.smithing(
+                Ingredient.of(Items.REDSTONE),
+                Ingredient.of(base),
+                Ingredient.of(material),
+                RecipeCategory.COMBAT,
+                result
+        ).unlocks("has_material", has(material)).save(pWriter, com.pavel.ironcore.IronCore.MODID + ":" + name + "_smithing");
     }
 
     protected static void oreSmelting(Consumer<FinishedRecipe> pFinishedRecipeConsumer, List<net.minecraft.world.level.ItemLike> pIngredients, RecipeCategory pCategory, net.minecraft.world.level.ItemLike pResult, float pExperience, int pCookingTime, String pGroup) {

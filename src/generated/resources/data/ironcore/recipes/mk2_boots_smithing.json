@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:smithing_transform",
+  "addition": {
+    "item": "ironcore:titanium_ingot"
+  },
+  "base": {
+    "item": "ironcore:mk1_boots"
+  },
+  "result": {
+    "item": "ironcore:mk2_boots"
+  },
+  "template": {
+    "item": "minecraft:redstone"
+  }
+}
