@@ -8,6 +8,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Item;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
@@ -158,10 +159,14 @@ public class AlloySmelterBlockEntity extends BlockEntity {
         // Для альфы сделаем простую проверку: Слиток золота + Слиток титана -> Палладий (пока нет предмета Сплава, будем делать Палладий для тестов)
         // ВАЖНО: В будущем мы добавим отдельный предмет "Gold-Titanium Alloy"
         
-        boolean hasInput1 = entity.itemHandler.getStackInSlot(0).getItem() == net.minecraft.world.item.Items.GOLD_INGOT;
-        boolean hasInput2 = entity.itemHandler.getStackInSlot(1).getItem() == com.pavel.ironcore.item.ModItems.TITANIUM_INGOT.get();
+        Item slot0 = entity.itemHandler.getStackInSlot(0).getItem();
+        Item slot1 = entity.itemHandler.getStackInSlot(1).getItem();
+        Item gold = net.minecraft.world.item.Items.GOLD_INGOT;
+        Item titanium = com.pavel.ironcore.item.ModItems.TITANIUM_INGOT.get();
 
-        if (hasInput1 && hasInput2) {
+        boolean hasInput = (slot0 == gold && slot1 == titanium) || (slot0 == titanium && slot1 == gold);
+
+        if (hasInput) {
             ItemStack resultSlot = entity.itemHandler.getStackInSlot(2);
             // Проверяем, что слот выхода пуст или там уже лежит нужный предмет и есть место
             return resultSlot.isEmpty() || 
