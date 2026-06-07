@@ -38,12 +38,6 @@ public class ModMessages {
                 .consumerMainThread(PacketFlamethrower::handle)
                 .add();
 
-        net.messageBuilder(PacketToggleFlight.class, id(), NetworkDirection.PLAY_TO_SERVER)
-                .decoder(PacketToggleFlight::new)
-                .encoder(PacketToggleFlight::toBytes)
-                .consumerMainThread(PacketToggleFlight::handle)
-                .add();
-
         net.messageBuilder(PacketSyncBoostState.class, id(), NetworkDirection.PLAY_TO_SERVER)
                 .decoder(PacketSyncBoostState::new)
                 .encoder(PacketSyncBoostState::toBytes)

@@ -70,7 +70,6 @@ public class IronCore {
         @SubscribeEvent
         public static void onKeyRegister(net.minecraftforge.client.event.RegisterKeyMappingsEvent event) {
             event.register(KeyBindings.flamethrowerKey);
-            event.register(KeyBindings.toggleFlightKey);
         }
     }
 

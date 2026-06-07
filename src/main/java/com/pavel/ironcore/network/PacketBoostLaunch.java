@@ -22,7 +22,7 @@ public class PacketBoostLaunch {
             if (player == null) return;
 
             player.getCapability(SuitCapabilityProvider.SUIT_CAPABILITY).ifPresent(suit -> {
-                if (suit.getSuitTier().equals("mk2") && suit.getEnergy() >= 1000 && suit.getIcingLevel() < 100.0f) {
+                if ((suit.getSuitTier().equals("mk2") || suit.getSuitTier().equals("mk3")) && suit.getEnergy() >= 1000 && suit.getIcingLevel() < 100.0f) {
                     suit.setFlying(true);
                     player.getAbilities().mayfly = true;
                     player.getAbilities().flying = true;
@@ -30,7 +30,8 @@ public class PacketBoostLaunch {
                     
                     Vec3 look = player.getLookAngle();
                     // Launch straight up and slightly forward
-                    Vec3 boost = new Vec3(look.x * 0.5, 1.5, look.z * 0.5);
+                    double yBoost = suit.getSuitTier().equals("mk3") ? 2.0 : 1.5; // Mk3 прыгает выше
+                    Vec3 boost = new Vec3(look.x * 0.5, yBoost, look.z * 0.5);
                     player.setDeltaMovement(boost);
                     player.hasImpulse = true;
                     player.hurtMarked = true;
