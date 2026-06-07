@@ -76,6 +76,37 @@ public class IronCore {
     @Mod.EventBusSubscriber(modid = MODID)
     public static class ForgeEvents {
         @SubscribeEvent
+        public static void onPlayerTick(net.minecraftforge.event.TickEvent.PlayerTickEvent event) {
+            if (event.phase == net.minecraftforge.event.TickEvent.Phase.END && !event.player.level().isClientSide()) {
+                event.player.getCapability(SuitCapabilityProvider.SUIT_CAPABILITY).ifPresent(suit -> {
+                    if (!suit.getSuitTier().equals("none")) {
+                        // Проверка-предохранитель на случай если броню удалили читом (Clear Inventory)
+                        boolean hasMk1 = event.player.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.CHEST).getItem() == ModItems.MK1_CHESTPLATE.get();
+                        boolean hasMk2 = event.player.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.CHEST).getItem() == ModItems.MK2_CHESTPLATE.get();
+                        boolean hasMk3 = event.player.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.CHEST).getItem() == ModItems.MK3_CHESTPLATE.get();
+                        
+                        if (!hasMk1 && !hasMk2 && !hasMk3) {
+                            suit.setSuitTier("none");
+                            suit.setActiveReactorType("none");
+                            suit.setEnergy(0);
+                            suit.setMaxEnergy(0);
+                            suit.setFlying(false);
+                            if (!event.player.isCreative() && !event.player.isSpectator()) {
+                                event.player.getAbilities().mayfly = false;
+                                event.player.getAbilities().flying = false;
+                                event.player.onUpdateAbilities();
+                            }
+                            ModMessages.sendToPlayer(new com.pavel.ironcore.network.PacketSyncSuitData(
+                                    suit.getEnergy(), suit.getMaxEnergy(), suit.getSuitTier(), 
+                                    suit.getFrameDurability(), suit.getPalladiumPoisoning(), suit.getActiveReactorType(),
+                                    suit.getIcingLevel(), suit.getHeat(), suit.isFlying()), (net.minecraft.server.level.ServerPlayer)event.player);
+                        }
+                    }
+                });
+            }
+        }
+
+        @SubscribeEvent
         public static void onLivingFall(LivingFallEvent event) {
             if (event.getEntity() instanceof Player player) {
                 player.getCapability(SuitCapabilityProvider.SUIT_CAPABILITY).ifPresent(suit -> {
