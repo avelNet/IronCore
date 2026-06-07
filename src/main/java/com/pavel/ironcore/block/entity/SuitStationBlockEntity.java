@@ -29,7 +29,7 @@ public class SuitStationBlockEntity extends BlockEntity {
         public boolean isItemValid(int slot, @NotNull ItemStack stack) {
             if (slot == 0) return stack.getItem() instanceof ArmorItem && ((ArmorItem)stack.getItem()).getType() == ArmorItem.Type.CHESTPLATE;
             if (slot == 1) return stack.getItem() instanceof ReactorItem;
-            if (slot == 2) return false; // Output only
+            if (slot == 2) return stack.getItem() instanceof ReactorItem; // Разрешаем программно класть реакторы
             return super.isItemValid(slot, stack);
         }
     };
@@ -85,8 +85,8 @@ public class SuitStationBlockEntity extends BlockEntity {
                     ItemStack extractedReactor = new ItemStack(reactorItemToSpawn);
                     extractedReactor.getOrCreateTag().putInt("Energy", storedEnergy);
                     
-                    // Кладем старый реактор в слот ВЫХОДА (2)
-                    entity.itemHandler.insertItem(2, extractedReactor, false);
+                    // Кладем старый реактор в слот ВЫХОДА (2) напрямую, обходя insertItem
+                    entity.itemHandler.setStackInSlot(2, extractedReactor);
                     
                     // Очищаем данные в нагруднике
                     chestTag.putString("InstalledReactor", "none");
