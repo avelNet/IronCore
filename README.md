@@ -1,29 +1,63 @@
+# 🔴 IronCore
 
-Installation information
-=======
+![Minecraft Version](https://img.shields.io/badge/Minecraft-1.20.1-brightgreen)
+![Loader](https://img.shields.io/badge/Loader-Forge-blue)
+![Status](https://img.shields.io/badge/Status-Alpha_v0.1-orange)
 
-This template repository can be directly cloned to get you started with a new
-mod. Simply create a new repository cloned from this one, by following the
-instructions provided by [GitHub](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template).
+**IronCore** — это хардкорный инженерный мод для Minecraft 1.20.1, вдохновленный историей Железного Человека. Забудьте о простой броне. Здесь вы — инженер, создающий сложнейшую машину, требующую энергии, охлаждения и технического обслуживания.
 
-Once you have your clone, simply open the repository in the IDE of your choice. The usual recommendation for an IDE is either IntelliJ IDEA or Eclipse.
+---
 
-If at any point you are missing libraries in your IDE, or you've run into problems you can
-run `gradlew --refresh-dependencies` to refresh the local cache. `gradlew clean` to reset everything 
-{this does not affect your code} and then start the process again.
+## 🛠 Ключевые Особенности (v0.1)
 
-Mapping Names:
-============
-The MDK is configured to use the official mapping names from Mojang for methods and fields 
-in the Minecraft codebase. These names are covered by a specific license. All modders should be aware of this
-license. For the latest license text, refer to the mapping file itself, or the reference copy here:
-https://github.com/NeoForged/NeoForm/blob/main/Mojang.md
+### 🦾 Костюмы (Tiers)
+*   **Mk1 (Escape Suit):** Тяжелая, примитивная броня. Дает защиту и огнемет, но не умеет летать. Работает на угольном топливе.
+*   **Mk2 (Prototype):** Первый летающий костюм. Быстрый, но уязвимый: замерзает на больших высотах (обледенение) и перегревается при форсаже.
+*   **Mk3 (The Golden Avenger):** Создан из Золото-Титанового сплава. Иммунитет к обледенению, продвинутое охлаждение и мощные репульсорные лазеры.
 
-MDG Legacy:
-==========
-This template uses [ModDevGradle Legacy](https://github.com/neoforged/ModDevGradle). Documentation can be found [here](https://github.com/neoforged/ModDevGradle/blob/main/LEGACY.md).
+### 🔋 Энергетика и Реакторы
+*   **Физические реакторы:** Энергия хранится не в "игроке", а в физическом предмете-реакторе (Угольный или Палладиевый).
+*   **Сборочный стенд (Suit Station):** Место, где вы физически устанавливаете или извлекаете реактор из нагрудника.
+*   **Зарядная станция:** Заряжайте свои реакторы, используя FE-энергию (совместимо с другими тех-модами).
 
-Additional Resources: 
-==========
-Community Documentation: https://docs.neoforged.net/  
-NeoForged Discord: https://discord.neoforged.net/
+### ☢️ Хардкорные Механики
+*   **Палладиевое отравление:** Использование палладиевых сердечников постепенно отравляет вашу кровь. Следите за уровнем токсичности в HUD и пейте **Хлорофилловый сок**, чтобы выжить, пока не откроете чистые источники энергии в будущих обновлениях.
+*   **Термодинамика:** Костюмы нагреваются при полете и охлаждаются в воде или холодном климате.
+*   **Система обледенения:** На Mk2 опасно взлетать выше 170 блоков — системы могут отказать от льда.
+
+### 🏭 Индустриальная База
+*   **Новые руды:** Титан и Палладий.
+*   **Угольный Генератор:** Ваш первый источник энергии.
+*   **Сплав-печь:** Создавайте уникальные материалы, такие как Золото-Титановый сплав.
+*   **Сборочный верстак:** Место рождения ваших технологий.
+
+---
+
+## 🛤 Прогрессия
+
+1.  **Добыча:** Найдите железо и титан в глубоких пещерах.
+2.  **Сборка Mk1:** Скрафтите базовый каркас в обычном верстаке.
+3.  **Апгрейд:** Используйте **Стол Кузнеца**, чтобы улучшить Mk1 до Mk2 (нужен Титан), а затем Mk2 до Mk3 (нужен Золото-Титан).
+4.  **Обслуживание:** Не забывайте возвращаться на базу для зарядки реактора и очистки крови от токсинов.
+
+---
+
+## ⚙️ Управление (Defaults)
+
+*   `Double Tap Ctrl` (на земле) — Форсажный взлет.
+*   `Ctrl` (в полете) — Ускорение (Boost).
+*   `Z` — Оружие (Огнемет для Mk1/2, Репульсоры для Mk3).
+*   `Space / Shift` — Подъем и спуск в режиме парения.
+
+---
+
+## 👨‍💻 Для разработчиков
+
+Мод построен на современной архитектуре Forge 1.20.1:
+*   Данные хранятся в `SuitCapability`.
+*   Физика полета синхронизирована между сервером и клиентом.
+*   Весь контент (модели, рецепты, лут) генерируется через **Datagen**.
+
+---
+
+> *Created with Jarvis. Developed by Pavel.*
