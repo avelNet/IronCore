@@ -9,9 +9,13 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 
+import com.pavel.ironcore.network.ModMessages;
+import com.pavel.ironcore.network.PacketExtractReactor;
+import net.minecraft.client.gui.components.Button;
+
 public class SuitStationScreen extends AbstractContainerScreen<SuitStationMenu> {
     private static final ResourceLocation TEXTURE =
-            new ResourceLocation(IronCore.MODID, "textures/gui/alloy_smelter_gui.png"); // Временная текстура
+            new ResourceLocation(IronCore.MODID, "textures/gui/alloy_smelter_gui.png");
 
     public SuitStationScreen(SuitStationMenu pMenu, Inventory pPlayerInventory, Component pTitle) {
         super(pMenu, pPlayerInventory, pTitle);
@@ -22,6 +26,13 @@ public class SuitStationScreen extends AbstractContainerScreen<SuitStationMenu> 
         super.init();
         this.inventoryLabelY = 10000;
         this.titleLabelY = 10000;
+        
+        int x = (width - imageWidth) / 2;
+        int y = (height - imageHeight) / 2;
+        
+        this.addRenderableWidget(Button.builder(Component.literal("EJECT"), button -> {
+            ModMessages.sendToServer(new PacketExtractReactor(menu.blockEntity.getBlockPos()));
+        }).bounds(x + 75, y + 53, 38, 16).build());
     }
 
     @Override

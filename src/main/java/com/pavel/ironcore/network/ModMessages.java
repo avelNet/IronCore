@@ -49,6 +49,12 @@ public class ModMessages {
                 .encoder(PacketBoostLaunch::toBytes)
                 .consumerMainThread(PacketBoostLaunch::handle)
                 .add();
+
+        net.messageBuilder(PacketExtractReactor.class, id(), NetworkDirection.PLAY_TO_SERVER)
+                .decoder(PacketExtractReactor::new)
+                .encoder(PacketExtractReactor::toBytes)
+                .consumerMainThread(PacketExtractReactor::handle)
+                .add();
     }
 
     public static <MSG> void sendToServer(MSG message) {
