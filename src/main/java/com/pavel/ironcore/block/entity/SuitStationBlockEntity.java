@@ -19,7 +19,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class SuitStationBlockEntity extends BlockEntity {
-    private final ItemStackHandler itemHandler = new ItemStackHandler(2) { // 0: Chestplate, 1: Reactor
+    private final ItemStackHandler itemHandler = new ItemStackHandler(3) { // 0: Chestplate, 1: Reactor IN, 2: Reactor OUT
         @Override
         protected void onContentsChanged(int slot) {
             setChanged();
@@ -29,6 +29,7 @@ public class SuitStationBlockEntity extends BlockEntity {
         public boolean isItemValid(int slot, @NotNull ItemStack stack) {
             if (slot == 0) return stack.getItem() instanceof ArmorItem && ((ArmorItem)stack.getItem()).getType() == ArmorItem.Type.CHESTPLATE;
             if (slot == 1) return stack.getItem() instanceof ReactorItem;
+            if (slot == 2) return false; // Output only
             return super.isItemValid(slot, stack);
         }
     };
@@ -63,15 +64,16 @@ public class SuitStationBlockEntity extends BlockEntity {
         if (level.isClientSide()) return;
 
         ItemStack chestplate = entity.itemHandler.getStackInSlot(0);
-        ItemStack reactorSlot = entity.itemHandler.getStackInSlot(1);
+        ItemStack reactorIn = entity.itemHandler.getStackInSlot(1);
+        ItemStack reactorOut = entity.itemHandler.getStackInSlot(2);
 
         if (!chestplate.isEmpty() && chestplate.getItem() instanceof ArmorItem) {
             CompoundTag chestTag = chestplate.getOrCreateTag();
             String installedType = chestTag.getString("InstalledReactor");
             int storedEnergy = chestTag.getInt("SuitEnergy");
 
-            // ИЗВЛЕЧЕНИЕ: Если в броне есть реактор, а слот реактора пуст
-            if (!installedType.isEmpty() && !installedType.equals("none") && reactorSlot.isEmpty()) {
+            // ИЗВЛЕЧЕНИЕ: Если в броне есть реактор, а слот ВЫХОДА (2) пуст
+            if (!installedType.isEmpty() && !installedType.equals("none") && reactorOut.isEmpty()) {
                 net.minecraft.world.item.Item reactorItemToSpawn = null;
                 if (installedType.contains("palladium")) {
                     reactorItemToSpawn = com.pavel.ironcore.item.ModItems.PALLADIUM_REACTOR.get();
@@ -81,11 +83,10 @@ public class SuitStationBlockEntity extends BlockEntity {
 
                 if (reactorItemToSpawn != null) {
                     ItemStack extractedReactor = new ItemStack(reactorItemToSpawn);
-                    // Записываем оставшуюся энергию обратно в предмет реактора
                     extractedReactor.getOrCreateTag().putInt("Energy", storedEnergy);
                     
-                    // Кладем реактор в слот 1
-                    entity.itemHandler.insertItem(1, extractedReactor, false);
+                    // Кладем старый реактор в слот ВЫХОДА (2)
+                    entity.itemHandler.insertItem(2, extractedReactor, false);
                     
                     // Очищаем данные в нагруднике
                     chestTag.putString("InstalledReactor", "none");
@@ -94,17 +95,16 @@ public class SuitStationBlockEntity extends BlockEntity {
                     entity.setChanged();
                 }
             } 
-            // УСТАНОВКА: Если броня пустая, а в слоте есть реактор
-            else if ((installedType.isEmpty() || installedType.equals("none")) && !reactorSlot.isEmpty() && reactorSlot.getItem() instanceof ReactorItem) {
-                // Переносим данные
-                chestTag.putString("InstalledReactor", reactorSlot.getItem().toString()); 
+            // УСТАНОВКА: Если броня пустая, а в слоте ВХОДА (1) есть реактор
+            else if ((installedType.isEmpty() || installedType.equals("none")) && !reactorIn.isEmpty() && reactorIn.getItem() instanceof ReactorItem) {
+                chestTag.putString("InstalledReactor", reactorIn.getItem().toString()); 
                 
-                reactorSlot.getCapability(ForgeCapabilities.ENERGY).ifPresent(energy -> {
+                reactorIn.getCapability(ForgeCapabilities.ENERGY).ifPresent(energy -> {
                     chestTag.putInt("SuitEnergy", energy.getEnergyStored());
                     chestTag.putInt("SuitMaxEnergy", energy.getMaxEnergyStored());
                 });
 
-                // Удаляем предмет реактора из слота
+                // Удаляем предмет реактора из слота ВХОДА (1)
                 entity.itemHandler.extractItem(1, 1, false);
                 entity.setChanged();
             }
