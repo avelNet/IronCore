@@ -106,14 +106,16 @@ public class Mk3FrameItem extends ArmorItem {
                                 
                                 // MK3 SPEED (120 km/h = ~1.7 blocks/tick)
                                 double maxSpeed = 1.7; 
-                                double acceleration = 0.12; 
-                                double yBoost = look.y > 0 ? look.y * 1.5 : look.y;
+                                double accelerationXZ = 0.12; 
+                                double accelerationY = 0.3; // Сильнее толкаем по Y, чтобы пробить ванильное сопротивление полета
+                                
+                                double yBoost = look.y * 2.0; // Усиливаем вектор взгляда по вертикали
                                 Vec3 target = new Vec3(look.x, yBoost, look.z).normalize().scale(maxSpeed);
                                 
                                 Vec3 newMovement = new Vec3(
-                                    current.x + (target.x - current.x) * acceleration,
-                                    current.y + (target.y - current.y) * acceleration,
-                                    current.z + (target.z - current.z) * acceleration
+                                    current.x + (target.x - current.x) * accelerationXZ,
+                                    current.y + (target.y - current.y) * accelerationY,
+                                    current.z + (target.z - current.z) * accelerationXZ
                                 );
                                 
                                 player.setDeltaMovement(newMovement);
