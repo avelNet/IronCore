@@ -1,4 +1,4 @@
-// 1.20.1	2026-06-07T21:05:57.264428134	Item Models: ironcore
+// 1.20.1	2026-06-07T23:02:08.498274848	Item Models: ironcore
 ff16878e4cd6b5723bfbd903150e01e9d980625d assets/ironcore/models/item/chlorophyll_juice.json
 a07cfdbf763b6df33a3c501022eb7b2da1ef2cc6 assets/ironcore/models/item/coal_reactor.json
 1e07865f500ab5d8090ebbfa1eced544420eef60 assets/ironcore/models/item/gold_titanium_alloy.json
@@ -10,6 +10,10 @@ e4d3270bc130e913aada05aa06f9487444df392d assets/ironcore/models/item/mk1_legging
 4a9462222c8eb85b98ead8d1b131195b6861417e assets/ironcore/models/item/mk2_chestplate.json
 15ad0933969e771610d6b53df74887a761bf525a assets/ironcore/models/item/mk2_helmet.json
 d5ac3a47661803a2d75f260f617ab77425d3cf03 assets/ironcore/models/item/mk2_leggings.json
+83997231fd2a5a2561a7e23f84e67df8737a3d95 assets/ironcore/models/item/mk3_boots.json
+3608d5e98cdcf010a278f72364704197a9051b5c assets/ironcore/models/item/mk3_chestplate.json
+60cb38242d1f366398be843c960278b5b8232dab assets/ironcore/models/item/mk3_helmet.json
+d6ac4d3e05f1cfc4db8b90d58882f3f4b59f6fd6 assets/ironcore/models/item/mk3_leggings.json
 d6d4b6c07ee66db474a842e5bbe7189c7d335fc9 assets/ironcore/models/item/palladium_ingot.json
 293281c52237fedaaac701f0e79fa6a913f3dd65 assets/ironcore/models/item/palladium_reactor.json
 4f421dd17708790d801b8a077ffd9652c17a7787 assets/ironcore/models/item/raw_palladium.json

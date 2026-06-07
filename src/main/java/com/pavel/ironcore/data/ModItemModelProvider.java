@@ -35,6 +35,11 @@ public class ModItemModelProvider extends ItemModelProvider {
         simpleItem(ModItems.MK2_CHESTPLATE);
         simpleItem(ModItems.MK2_LEGGINGS);
         simpleItem(ModItems.MK2_BOOTS);
+
+        simpleItem(ModItems.MK3_HELMET);
+        simpleItem(ModItems.MK3_CHESTPLATE);
+        simpleItem(ModItems.MK3_LEGGINGS);
+        simpleItem(ModItems.MK3_BOOTS);
     }
 
     private ItemModelBuilder simpleItem(RegistryObject<Item> item) {
