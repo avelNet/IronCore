@@ -1,55 +1,63 @@
 package com.pavel.ironcore.block.entity;
 
+import com.pavel.ironcore.block.ModBlocks;
+import com.pavel.ironcore.item.ModItems;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.Containers;
 import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.inventory.ContainerData;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.energy.EnergyStorage;
+import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import net.minecraft.world.inventory.ContainerData;
-import net.minecraftforge.energy.EnergyStorage;
-import net.minecraftforge.energy.IEnergyStorage;
-
 public class AlloySmelterBlockEntity extends BlockEntity {
-    private final ItemStackHandler itemHandler = new ItemStackHandler(3) { // 0: Слот 1, 1: Слот 2, 2: Результат
+    private final ItemStackHandler itemHandler = new ItemStackHandler(3) {
         @Override
         protected void onContentsChanged(int slot) {
             setChanged();
         }
     };
 
-    private final EnergyStorage energyStorage = new EnergyStorage(50000, 1000, 0) {
+    private final CustomEnergyStorage energyStorage = new CustomEnergyStorage(50000, 1000);
+
+    private class CustomEnergyStorage extends EnergyStorage {
+        public CustomEnergyStorage(int capacity, int maxReceive) {
+            super(capacity, maxReceive, 0);
+        }
         @Override
         public int receiveEnergy(int maxReceive, boolean simulate) {
             setChanged();
             return super.receiveEnergy(maxReceive, simulate);
         }
-        
         @Override
         public int extractEnergy(int maxExtract, boolean simulate) {
             setChanged();
             return super.extractEnergy(maxExtract, simulate);
         }
-    };
+    }
     
     private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
     private LazyOptional<IEnergyStorage> lazyEnergyHandler = LazyOptional.empty();
 
     public final ContainerData data;
     private int progress = 0;
-    private int maxProgress = 100; // 5 секунд (100 тиков) на одну операцию
+    private int maxProgress = 400; // 20 секунд
     
-    private static final int ENERGY_REQ = 50; // 50 FE за тик (Всего 5000 FE за операцию)
+    private static final int ENERGY_REQ = 150; // 150 FE за тик (Всего 60,000 FE)
 
     public AlloySmelterBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.ALLOY_SMELTER_BE.get(), pos, state);
@@ -70,7 +78,6 @@ public class AlloySmelterBlockEntity extends BlockEntity {
                 switch (index) {
                     case 0: AlloySmelterBlockEntity.this.progress = value; break;
                     case 1: AlloySmelterBlockEntity.this.maxProgress = value; break;
-                    // Клиент не должен изменять энергию сервера напрямую
                 }
             }
 
@@ -82,13 +89,9 @@ public class AlloySmelterBlockEntity extends BlockEntity {
     }
 
     @Override
-    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable net.minecraft.core.Direction side) {
-        if(cap == ForgeCapabilities.ITEM_HANDLER) {
-            return lazyItemHandler.cast();
-        }
-        if(cap == ForgeCapabilities.ENERGY) {
-            return lazyEnergyHandler.cast();
-        }
+    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
+        if(cap == ForgeCapabilities.ITEM_HANDLER) return lazyItemHandler.cast();
+        if(cap == ForgeCapabilities.ENERGY) return lazyEnergyHandler.cast();
         return super.getCapability(cap, side);
     }
 
@@ -151,21 +154,18 @@ public class AlloySmelterBlockEntity extends BlockEntity {
     }
 
     private static boolean hasRecipe(AlloySmelterBlockEntity entity) {
-        Level level = entity.level;
-        if (level == null) return false;
+        ItemStack slot0 = entity.itemHandler.getStackInSlot(0);
+        ItemStack slot1 = entity.itemHandler.getStackInSlot(1);
 
-        // Slot 0: Золото (слиток или сырое), Slot 1: Титан (слиток или сырой)
-        // Для альфы сделаем простую проверку: Слиток золота + Слиток титана -> Палладий (пока нет предмета Сплава, будем делать Палладий для тестов)
-        // ВАЖНО: В будущем мы добавим отдельный предмет "Gold-Titanium Alloy"
-        
-        boolean hasInput1 = entity.itemHandler.getStackInSlot(0).getItem() == net.minecraft.world.item.Items.GOLD_INGOT;
-        boolean hasInput2 = entity.itemHandler.getStackInSlot(1).getItem() == com.pavel.ironcore.item.ModItems.TITANIUM_INGOT.get();
+        if (slot0.isEmpty() || slot1.isEmpty()) return false;
 
-        if (hasInput1 && hasInput2) {
+        boolean hasGold = slot0.getItem() == Items.GOLD_INGOT;
+        boolean hasTitanium = slot1.getItem() == ModItems.TITANIUM_INGOT.get();
+
+        if (hasGold && hasTitanium) {
             ItemStack resultSlot = entity.itemHandler.getStackInSlot(2);
-            // Проверяем, что слот выхода пуст или там уже лежит нужный предмет и есть место
             return resultSlot.isEmpty() || 
-                   (resultSlot.getItem() == com.pavel.ironcore.item.ModItems.PALLADIUM_INGOT.get() && resultSlot.getCount() < resultSlot.getMaxStackSize());
+                   (resultSlot.getItem() == ModItems.GOLD_TITANIUM_ALLOY.get() && resultSlot.getCount() < resultSlot.getMaxStackSize());
         }
         return false;
     }
@@ -174,7 +174,7 @@ public class AlloySmelterBlockEntity extends BlockEntity {
         entity.itemHandler.extractItem(0, 1, false);
         entity.itemHandler.extractItem(1, 1, false);
 
-        ItemStack resultStack = new ItemStack(com.pavel.ironcore.item.ModItems.PALLADIUM_INGOT.get(), 1); // Делаем Палладий для теста
+        ItemStack resultStack = new ItemStack(ModItems.GOLD_TITANIUM_ALLOY.get(), 1); 
         
         if (entity.itemHandler.getStackInSlot(2).isEmpty()) {
             entity.itemHandler.setStackInSlot(2, resultStack);
