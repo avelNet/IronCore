@@ -23,7 +23,8 @@ public class ModBlockTagsProvider extends BlockTagsProvider {
                         ModBlocks.DEEPSLATE_TITANIUM_ORE.get(),
                         ModBlocks.PALLADIUM_ORE.get(),
                         ModBlocks.ALLOY_SMELTER.get(),
-                        ModBlocks.COAL_GENERATOR.get());
+                        ModBlocks.COAL_GENERATOR.get(),
+                        ModBlocks.ASSEMBLY_TABLE.get());
 
         // Титан копается каменной киркой (Iron level in vanilla terms, but stone is base for iron ore)
         this.tag(BlockTags.NEEDS_STONE_TOOL)

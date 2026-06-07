@@ -21,6 +21,11 @@ public class ModBlockEntities {
                     BlockEntityType.Builder.of(CoalGeneratorBlockEntity::new,
                             com.pavel.ironcore.block.ModBlocks.COAL_GENERATOR.get()).build(null));
 
+    public static final RegistryObject<BlockEntityType<AssemblyTableBlockEntity>> ASSEMBLY_TABLE_BE =
+            BLOCK_ENTITIES.register("assembly_table", () ->
+                    BlockEntityType.Builder.of(AssemblyTableBlockEntity::new,
+                            com.pavel.ironcore.block.ModBlocks.ASSEMBLY_TABLE.get()).build(null));
+
     public static void register(IEventBus eventBus) {
         BLOCK_ENTITIES.register(eventBus);
     }

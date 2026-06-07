@@ -33,6 +33,9 @@ public class ModBlocks {
     public static final RegistryObject<Block> COAL_GENERATOR = registerBlock("coal_generator", 
             () -> new CoalGeneratorBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).noOcclusion()));
 
+    public static final RegistryObject<Block> ASSEMBLY_TABLE = registerBlock("assembly_table", 
+            () -> new AssemblyTableBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).noOcclusion()));
+
     private static <T extends Block> RegistryObject<T> registerBlock(String name, Supplier<T> block) {
         RegistryObject<T> toReturn = BLOCKS.register(name, block);
         registerBlockItem(name, toReturn);
