@@ -26,7 +26,9 @@ import com.pavel.ironcore.block.entity.ModBlockEntities;
 
 import com.pavel.ironcore.screen.AlloySmelterScreen;
 import com.pavel.ironcore.screen.AssemblyTableScreen;
+import com.pavel.ironcore.screen.ChargingStationScreen;
 import com.pavel.ironcore.screen.CoalGeneratorScreen;
+import com.pavel.ironcore.screen.SuitStationScreen;
 import com.pavel.ironcore.screen.ModMenuTypes;
 import net.minecraft.client.gui.screens.MenuScreens;
 
@@ -58,6 +60,8 @@ public class IronCore {
             MenuScreens.register(ModMenuTypes.ALLOY_SMELTER_MENU.get(), AlloySmelterScreen::new);
             MenuScreens.register(ModMenuTypes.COAL_GENERATOR_MENU.get(), CoalGeneratorScreen::new);
             MenuScreens.register(ModMenuTypes.ASSEMBLY_TABLE_MENU.get(), AssemblyTableScreen::new);
+            MenuScreens.register(ModMenuTypes.CHARGING_STATION_MENU.get(), ChargingStationScreen::new);
+            MenuScreens.register(ModMenuTypes.SUIT_STATION_MENU.get(), SuitStationScreen::new);
         });
     }
 

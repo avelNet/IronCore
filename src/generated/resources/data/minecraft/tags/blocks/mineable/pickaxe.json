@@ -5,6 +5,7 @@
     "ironcore:palladium_ore",
     "ironcore:alloy_smelter",
     "ironcore:coal_generator",
-    "ironcore:assembly_table"
+    "ironcore:assembly_table",
+    "ironcore:charging_station"
   ]
 }

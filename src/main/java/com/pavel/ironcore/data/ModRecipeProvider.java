@@ -62,6 +62,17 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .unlockedBy("has_crafting_table", has(Items.CRAFTING_TABLE))
                 .save(pWriter);
 
+        // Зарядная станция
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.CHARGING_STATION.get())
+                .pattern("CRC")
+                .pattern("RIR")
+                .pattern("CRC")
+                .define('I', Items.IRON_BLOCK)
+                .define('C', Items.COPPER_INGOT)
+                .define('R', Items.REDSTONE)
+                .unlockedBy("has_iron_block", has(Items.IRON_BLOCK))
+                .save(pWriter);
+
         // Хлорофилловый сок (Простой крафт: Пузырек + любая листва)
         ShapelessRecipeBuilder.shapeless(RecipeCategory.FOOD, ModItems.CHLOROPHYLL_JUICE.get())
                 .requires(Items.GLASS_BOTTLE)

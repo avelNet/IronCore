@@ -1,18 +1,21 @@
-// 1.20.1	2026-06-07T20:40:55.155369424	Block States: ironcore
+// 1.20.1	2026-06-07T21:50:21.32045172	Block States: ironcore
 7d1d0b64b649ba526d656f3b5167ebfa83a78e63 assets/ironcore/blockstates/alloy_smelter.json
 353a56dfb510a301571a17ed94dd102eacb5825e assets/ironcore/blockstates/assembly_table.json
+f387babac4a8ea4a4a2793b54fb62ec81eca09d7 assets/ironcore/blockstates/charging_station.json
 c706cbd669676f34ca5a62eccd3ed75ff7f3bb02 assets/ironcore/blockstates/coal_generator.json
 b08f56b8e84de17215e860a9de2997ec0220f6f8 assets/ironcore/blockstates/deepslate_titanium_ore.json
 a7f4960bcb24d3f18fd6c1d6c2ccb10ce700043c assets/ironcore/blockstates/palladium_ore.json
 6bbf7d4de5ca48dc089e68b874143bc34773c41a assets/ironcore/blockstates/titanium_ore.json
 b5b9f9778fa96ac99bc99fbf349659e2325ab8c6 assets/ironcore/models/block/alloy_smelter.json
 b5b9f9778fa96ac99bc99fbf349659e2325ab8c6 assets/ironcore/models/block/assembly_table.json
+b5b9f9778fa96ac99bc99fbf349659e2325ab8c6 assets/ironcore/models/block/charging_station.json
 b5b9f9778fa96ac99bc99fbf349659e2325ab8c6 assets/ironcore/models/block/coal_generator.json
 02af65c607900ebfd43aca2320e3c77bf009d9b9 assets/ironcore/models/block/deepslate_titanium_ore.json
 662944ca33a6efb8393063d779db5d4aea9336cf assets/ironcore/models/block/palladium_ore.json
 e69e7f23bbf0ab2eb1a72b9634e5e5209d369a05 assets/ironcore/models/block/titanium_ore.json
 55e3b36713fd0900445f4779d39065dd9fa98fcd assets/ironcore/models/item/alloy_smelter.json
 61e1051f75821cbb121a57d13d180365c5417045 assets/ironcore/models/item/assembly_table.json
+6b34b9e71c97fa7c368608a66279e287b3bd50af assets/ironcore/models/item/charging_station.json
 e74602a0fd45e536bf1ff4dff605726745feb8d6 assets/ironcore/models/item/coal_generator.json
 bf59747d8629c313cbe12bdb75421fda3d6e4c4f assets/ironcore/models/item/deepslate_titanium_ore.json
 7c191c1a301fcfaae5b746f543652fa8a94f5106 assets/ironcore/models/item/palladium_ore.json
