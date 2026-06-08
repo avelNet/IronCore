@@ -37,7 +37,16 @@ public class FlightRotationHandler {
                     net.minecraft.world.phys.Vec3 velocity = player.getDeltaMovement();
                     double totalSpeed = velocity.length();
                     
-                    boolean isFlyingHorizontally = totalSpeed > 0.25;
+                    // Проверяем, летит ли игрок на ускорении (Ctrl), а не просто парит
+                    boolean isBoosting = false;
+                    if (player == net.minecraft.client.Minecraft.getInstance().player) {
+                        isBoosting = net.minecraft.client.Minecraft.getInstance().options.keySprint.isDown();
+                    } else {
+                        // Для других игроков (мультиплеер) определяем по скорости
+                        isBoosting = totalSpeed > 0.35;
+                    }
+                    
+                    boolean isFlyingHorizontally = isBoosting && totalSpeed > 0.1;
                     
                     if (isFlyingHorizontally != wasFlyingHorizontally) {
                         wasFlyingHorizontally = isFlyingHorizontally;
@@ -51,17 +60,17 @@ public class FlightRotationHandler {
                         float pitch = player.getXRot();
                         targetTilt = pitch + 90.0f; 
                         
-                        // Рассчитываем дельту поворота (рыскания) для крена
-                        float yRotDelta = player.getYRot() - player.yRotO;
+                        // Используем yBodyRot вместо getYRot для более плавного и точного крена тела
+                        float yRotDelta = player.yBodyRot - player.yBodyRotO;
                         while (yRotDelta < -180.0f) yRotDelta += 360.0f;
                         while (yRotDelta >= 180.0f) yRotDelta -= 360.0f;
                         
-                        // Умножаем дельту на коэффициент, чтобы получить угол крена (ограничиваем до 45 градусов)
-                        targetRoll = Mth.clamp(yRotDelta * 4.0f, -45.0f, 45.0f);
+                        // Увеличили множитель (-8.0f), чтобы крен был заметнее. Знак минус для правильной стороны.
+                        targetRoll = Mth.clamp(yRotDelta * -8.0f, -60.0f, 60.0f);
                     }
                     
                     currentTilt += (targetTilt - currentTilt) * 0.25f;
-                    currentRoll += (targetRoll - currentRoll) * 0.15f;
+                    currentRoll += (targetRoll - currentRoll) * 0.25f;
                     
                     if (currentTilt > 0.5f || Math.abs(currentRoll) > 0.5f) {
                         PoseStack poseStack = event.getPoseStack();
