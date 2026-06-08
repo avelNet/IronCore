@@ -16,6 +16,7 @@ import net.minecraft.util.Mth;
 public class FlightRotationHandler {
     
     private static float currentTilt = 0.0f;
+    private static float currentRoll = 0.0f;
     private static boolean wasRenderedWithTilt = false;
     private static boolean wasFlyingHorizontally = false;
     
@@ -44,27 +45,38 @@ public class FlightRotationHandler {
                     }
                     
                     float targetTilt = 0.0f;
+                    float targetRoll = 0.0f;
+                    
                     if (isFlyingHorizontally) {
                         float pitch = player.getXRot();
-                        // Полный наклон во все стороны:
-                        // pitch -90 (вверх) -> 0 (вертикально)
-                        // pitch 0 (вперед) -> 90 (горизонтально)
-                        // pitch 90 (вниз) -> 180 (вниз головой)
                         targetTilt = pitch + 90.0f; 
+                        
+                        // Рассчитываем дельту поворота (рыскания) для крена
+                        float yRotDelta = player.getYRot() - player.yRotO;
+                        while (yRotDelta < -180.0f) yRotDelta += 360.0f;
+                        while (yRotDelta >= 180.0f) yRotDelta -= 360.0f;
+                        
+                        // Умножаем дельту на коэффициент, чтобы получить угол крена (ограничиваем до 45 градусов)
+                        targetRoll = Mth.clamp(yRotDelta * 4.0f, -45.0f, 45.0f);
                     }
                     
                     currentTilt += (targetTilt - currentTilt) * 0.25f;
+                    currentRoll += (targetRoll - currentRoll) * 0.15f;
                     
-                    if (currentTilt > 0.5f) {
+                    if (currentTilt > 0.5f || Math.abs(currentRoll) > 0.5f) {
                         PoseStack poseStack = event.getPoseStack();
                         poseStack.pushPose();
                         
                         float yBodyRot = Mth.lerp(event.getPartialTick(), player.yBodyRotO, player.yBodyRot);
                         
                         poseStack.translate(0, 0.9, 0);
+                        
+                        // Применяем вращения: отменяем поворот тела -> крен (Z) -> наклон (X) -> возвращаем поворот
                         poseStack.mulPose(Axis.YP.rotationDegrees(-yBodyRot));
+                        poseStack.mulPose(Axis.ZP.rotationDegrees(currentRoll));
                         poseStack.mulPose(Axis.XP.rotationDegrees(currentTilt));
                         poseStack.mulPose(Axis.YP.rotationDegrees(yBodyRot));
+                        
                         poseStack.translate(0, -0.9, 0);
                         
                         if (player instanceof AbstractClientPlayer clientPlayer) {

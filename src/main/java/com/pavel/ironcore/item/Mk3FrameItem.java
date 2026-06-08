@@ -161,9 +161,7 @@ public class Mk3FrameItem extends ArmorItem {
                                     serverPlayer.getAbilities().flying = false;
                                     serverPlayer.onUpdateAbilities();
                                 } else {
-                                    if (serverPlayer.tickCount % 2 == 0) {
-                                        suit.setEnergy(suit.getEnergy() - 1);
-                                    }
+                                    suit.setEnergy(suit.getEnergy() - 2);
                                     
                                     ItemStack chestplateServer = serverPlayer.getItemBySlot(EquipmentSlot.CHEST);
                                     if(chestplateServer.getItem() instanceof ArmorItem) {
