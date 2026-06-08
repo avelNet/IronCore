@@ -65,11 +65,12 @@ public class FlightRotationHandler {
                         while (yRotDelta < -180.0f) yRotDelta += 360.0f;
                         while (yRotDelta >= 180.0f) yRotDelta -= 360.0f;
                         
-                        // Увеличили множитель (-8.0f), чтобы крен был заметнее. Знак минус для правильной стороны.
-                        targetRoll = Mth.clamp(yRotDelta * -8.0f, -60.0f, 60.0f);
-                    }
-                    
-                    currentTilt += (targetTilt - currentTilt) * 0.25f;
+                        // Сильный множитель (8.0f) для видимого крена. 
+                        // Положительный знак обеспечивает крен в сторону поворота.
+                        targetRoll = Mth.clamp(yRotDelta * 8.0f, -60.0f, 60.0f);
+                        }
+
+                        currentTilt += (targetTilt - currentTilt) * 0.25f;
                     currentRoll += (targetRoll - currentRoll) * 0.25f;
                     
                     if (currentTilt > 0.5f || Math.abs(currentRoll) > 0.5f) {
