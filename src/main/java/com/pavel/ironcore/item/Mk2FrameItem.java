@@ -108,28 +108,20 @@ public class Mk2FrameItem extends ArmorItem {
                                 Vec3 look = player.getLookAngle();
                                 Vec3 current = player.getDeltaMovement();
                                 
-                                double maxSpeed = 0.85; 
+                                double maxSpeed = 0.85; // ~60 km/h
                                 double currentSpeed = current.length();
                                 double speedRatio = Math.min(currentSpeed / maxSpeed, 1.0);
                                 
-                                double acceleration;
-                                if (speedRatio < 0.3) {
-                                    // Фаза 1: Медленный старт
-                                    acceleration = 0.12; 
-                                } else {
-                                    // Фаза 2: Резкий рывок после 30% разгона
-                                    acceleration = 0.12 + Math.pow((speedRatio - 0.3) / 0.7, 2.0) * 1.0; 
-                                }
+                                // Стабильное ускорение без перерегулирования
+                                double acceleration = 0.15 + Math.pow(speedRatio, 2.0) * 0.4; 
                                 
                                 Vec3 target = look.scale(maxSpeed);
-                                
-                                // Майнкрафт очень сильно режет вертикальную скорость вверх (гравитация + сопротивление).
-                                // Чтобы лететь вверх так же быстро, как и вперед, усиливаем Y-компоненту прицеливания вверх.
                                 double targetY = target.y;
+                                
                                 if (targetY > 0) {
-                                    targetY *= 1.3; // Сбалансированная компенсация ванильного сопротивления при взлете
+                                    targetY = targetY * 1.2 + 0.1; 
                                 } else if (targetY < 0) {
-                                    targetY *= 1.5; // Пикирование (двигатели + гравитация) быстрее, чем взлет
+                                    targetY = targetY * 1.4; 
                                 }
                                 
                                 Vec3 newMovement = new Vec3(
