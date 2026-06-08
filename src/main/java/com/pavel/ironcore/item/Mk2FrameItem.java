@@ -128,6 +128,8 @@ public class Mk2FrameItem extends ArmorItem {
                                 double targetY = target.y;
                                 if (targetY > 0) {
                                     targetY *= 1.3; // Сбалансированная компенсация ванильного сопротивления при взлете
+                                } else if (targetY < 0) {
+                                    targetY *= 1.5; // Пикирование (двигатели + гравитация) быстрее, чем взлет
                                 }
                                 
                                 Vec3 newMovement = new Vec3(
