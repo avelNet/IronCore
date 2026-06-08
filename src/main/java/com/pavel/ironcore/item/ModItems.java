@@ -51,6 +51,21 @@ public class ModItems {
     public static final RegistryObject<Item> CHLOROPHYLL_JUICE = ITEMS.register("chlorophyll_juice",
             () -> new Item(new Item.Properties().food(new net.minecraft.world.food.FoodProperties.Builder().alwaysEat().nutrition(1).saturationMod(0.1f).build())) {
                 @Override
+                public net.minecraft.world.item.UseAnim getUseAnimation(net.minecraft.world.item.ItemStack stack) {
+                    return net.minecraft.world.item.UseAnim.DRINK;
+                }
+
+                @Override
+                public net.minecraft.sounds.SoundEvent getDrinkingSound() {
+                    return net.minecraft.sounds.SoundEvents.GENERIC_DRINK;
+                }
+
+                @Override
+                public net.minecraft.sounds.SoundEvent getEatingSound() {
+                    return net.minecraft.sounds.SoundEvents.GENERIC_DRINK;
+                }
+
+                @Override
                 public net.minecraft.world.item.ItemStack finishUsingItem(net.minecraft.world.item.ItemStack stack, net.minecraft.world.level.Level level, net.minecraft.world.entity.LivingEntity entity) {
                     if (!level.isClientSide && entity instanceof net.minecraft.world.entity.player.Player player) {
                         player.getCapability(com.pavel.ironcore.capability.SuitCapabilityProvider.SUIT_CAPABILITY).ifPresent(suit -> {
