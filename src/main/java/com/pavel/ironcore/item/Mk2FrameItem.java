@@ -107,12 +107,12 @@ public class Mk2FrameItem extends ArmorItem {
                             } else if (isBoosting && suit.getEnergy() > 1000 && !enginesFrozen) {
                                 Vec3 look = player.getLookAngle();
                                 Vec3 current = player.getDeltaMovement();
-                                if (current.length() < 0.3) current = look.scale(0.3);
                                 
                                 double maxSpeed = 0.85; 
-                                double acceleration = 0.08; 
-                                double yBoost = look.y > 0 ? look.y * 1.5 : look.y;
-                                Vec3 target = new Vec3(look.x, yBoost, look.z).normalize().scale(maxSpeed);
+                                double acceleration = 0.1; 
+                                
+                                // Чистый вектор взгляда без какой-либо стабилизации
+                                Vec3 target = look.scale(maxSpeed);
                                 
                                 Vec3 newMovement = new Vec3(
                                     current.x + (target.x - current.x) * acceleration,
