@@ -32,7 +32,8 @@ public class Mk3FrameItem extends ArmorItem {
     @Override
     public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
         if (entity instanceof Player player) {
-            if (player.getItemBySlot(this.getType().getSlot()) == stack) {
+            // Ограничиваем выполнение логики только нагрудником, чтобы она не срабатывала 4 раза за тик
+            if (this.getType() == ArmorItem.Type.CHESTPLATE && player.getItemBySlot(EquipmentSlot.CHEST) == stack) {
                 player.getCapability(SuitCapabilityProvider.SUIT_CAPABILITY).ifPresent(suit -> {
                     boolean isFull = isFullSuitEquipped(player);
 
@@ -100,13 +101,30 @@ public class Mk3FrameItem extends ArmorItem {
                                 Vec3 current = player.getDeltaMovement();
                                 
                                 double maxSpeed = 1.7; 
-                                double acceleration = 0.15; 
+                                double currentSpeed = current.length();
+                                double speedRatio = Math.min(currentSpeed / maxSpeed, 1.0);
+                                
+                                double acceleration;
+                                if (speedRatio < 0.3) {
+                                    // Фаза 1: Медленный старт (чтобы тело успело наклониться визуально)
+                                    acceleration = 0.12; 
+                                } else {
+                                    // Фаза 2: Резкий рывок после 30% разгона
+                                    acceleration = 0.12 + Math.pow((speedRatio - 0.3) / 0.7, 2.0) * 1.4; 
+                                }
                                 
                                 Vec3 target = look.scale(maxSpeed);
                                 
+                                // Майнкрафт очень сильно режет вертикальную скорость вверх (гравитация + сопротивление).
+                                // Чтобы лететь вверх так же быстро, как и вперед, усиливаем Y-компоненту прицеливания вверх.
+                                double targetY = target.y;
+                                if (targetY > 0) {
+                                    targetY *= 1.3; // Сбалансированная компенсация ванильного сопротивления при взлете
+                                }
+                                
                                 Vec3 newMovement = new Vec3(
                                     current.x + (target.x - current.x) * acceleration,
-                                    current.y + (target.y - current.y) * acceleration,
+                                    current.y + (targetY - current.y) * acceleration,
                                     current.z + (target.z - current.z) * acceleration
                                 );
                                 
@@ -147,7 +165,9 @@ public class Mk3FrameItem extends ArmorItem {
                                     serverPlayer.getAbilities().flying = false;
                                     serverPlayer.onUpdateAbilities();
                                 } else {
-                                    suit.setEnergy(suit.getEnergy() - 5);
+                                    if (serverPlayer.tickCount % 2 == 0) {
+                                        suit.setEnergy(suit.getEnergy() - 1);
+                                    }
                                     
                                     ItemStack chestplateServer = serverPlayer.getItemBySlot(EquipmentSlot.CHEST);
                                     if(chestplateServer.getItem() instanceof ArmorItem) {

@@ -28,7 +28,7 @@ public class Mk1FrameItem extends ArmorItem {
     @Override
     public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
         if (!level.isClientSide && entity instanceof ServerPlayer player) {
-            if (player.getItemBySlot(this.getType().getSlot()) == stack) {
+            if (this.getType() == ArmorItem.Type.CHESTPLATE && player.getItemBySlot(EquipmentSlot.CHEST) == stack) {
                 
                 player.getCapability(SuitCapabilityProvider.SUIT_CAPABILITY).ifPresent(suit -> {
                     boolean changed = false;

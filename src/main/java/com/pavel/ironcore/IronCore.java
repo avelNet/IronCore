@@ -75,6 +75,18 @@ public class IronCore {
 
     @Mod.EventBusSubscriber(modid = MODID)
     public static class ForgeEvents {
+        
+        @SubscribeEvent
+        public static void onEntitySize(net.minecraftforge.event.entity.EntityEvent.Size event) {
+            if (event.getEntity() instanceof Player player && player.getAbilities() != null && player.getAbilities().flying && !player.onGround()) {
+                double horizontalSpeed = player.getDeltaMovement().horizontalDistance();
+                if (horizontalSpeed > 0.1) {
+                    // Shrink hitbox height to allow flying through 1-block gaps
+                    event.setNewSize(net.minecraft.world.entity.EntityDimensions.fixed(0.6f, 0.6f), false);
+                }
+            }
+        }
+
         @SubscribeEvent
         public static void onPlayerTick(net.minecraftforge.event.TickEvent.PlayerTickEvent event) {
             if (event.phase == net.minecraftforge.event.TickEvent.Phase.END && !event.player.level().isClientSide()) {
