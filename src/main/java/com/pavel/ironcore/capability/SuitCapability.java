@@ -16,6 +16,9 @@ public class SuitCapability implements INBTSerializable<CompoundTag> {
     private boolean isFlying = false;
     private double failureYPos = -1.0; 
     private boolean isBoostKeyHeld = false; 
+    private int flightTimer = 0;
+    private boolean autoBoostEnabled = true;
+    private boolean isTurbo = false;
 
     public int getEnergy() { return energy; }
     public void setEnergy(int energy) { this.energy = Math.max(0, Math.min(energy, maxEnergy)); }
@@ -50,6 +53,15 @@ public class SuitCapability implements INBTSerializable<CompoundTag> {
     public boolean isBoostKeyHeld() { return isBoostKeyHeld; }
     public void setBoostKeyHeld(boolean held) { this.isBoostKeyHeld = held; }
 
+    public int getFlightTimer() { return flightTimer; }
+    public void setFlightTimer(int timer) { this.flightTimer = timer; }
+
+    public boolean isAutoBoostEnabled() { return autoBoostEnabled; }
+    public void setAutoBoostEnabled(boolean enabled) { this.autoBoostEnabled = enabled; }
+
+    public boolean isTurbo() { return isTurbo; }
+    public void setTurbo(boolean turbo) { this.isTurbo = turbo; }
+
     public void saveNBTData(CompoundTag nbt) {
         nbt.putInt("energy", energy);
         nbt.putInt("maxEnergy", maxEnergy);
@@ -62,6 +74,7 @@ public class SuitCapability implements INBTSerializable<CompoundTag> {
         nbt.putFloat("icing", icingLevel);
         nbt.putBoolean("flying", isFlying);
         nbt.putDouble("failureY", failureYPos);
+        nbt.putBoolean("autoBoost", autoBoostEnabled);
     }
 
     public void loadNBTData(CompoundTag nbt) {
@@ -76,6 +89,9 @@ public class SuitCapability implements INBTSerializable<CompoundTag> {
         icingLevel = nbt.getFloat("icing");
         isFlying = nbt.getBoolean("flying");
         failureYPos = nbt.getDouble("failureY");
+        if (nbt.contains("autoBoost")) {
+            autoBoostEnabled = nbt.getBoolean("autoBoost");
+        }
     }
 
     @Override

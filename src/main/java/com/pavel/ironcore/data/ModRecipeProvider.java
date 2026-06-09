@@ -84,6 +84,26 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .unlockedBy("has_redstone", has(Items.REDSTONE))
                 .save(pWriter);
 
+        // Угольный реактор
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.COAL_REACTOR.get())
+                .pattern("III")
+                .pattern("ICI")
+                .pattern("III")
+                .define('I', Items.IRON_INGOT)
+                .define('C', Items.COAL_BLOCK)
+                .unlockedBy("has_iron", has(Items.IRON_INGOT))
+                .save(pWriter);
+
+        // Палладиевый реактор
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.PALLADIUM_REACTOR.get())
+                .pattern("III")
+                .pattern("IPI")
+                .pattern("III")
+                .define('I', Items.IRON_INGOT)
+                .define('P', ModItems.PALLADIUM_INGOT.get())
+                .unlockedBy("has_palladium_ingot", has(ModItems.PALLADIUM_INGOT.get()))
+                .save(pWriter);
+
                 // Хлорофилловый сок (Простой крафт: Пузырек + любая листва)
         ShapelessRecipeBuilder.shapeless(RecipeCategory.FOOD, ModItems.CHLOROPHYLL_JUICE.get())
                 .requires(Items.GLASS_BOTTLE)

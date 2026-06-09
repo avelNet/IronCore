@@ -22,6 +22,14 @@ public class Mk2FrameItem extends ArmorItem {
         super(material, type, properties);
     }
 
+    @Override
+    public String getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, String type) {
+        if (slot == EquipmentSlot.LEGS) {
+            return "ironcore:textures/models/armor/mk2_layer_2.png";
+        }
+        return "ironcore:textures/models/armor/mk2_layer_1.png";
+    }
+
     private boolean isFullSuitEquipped(Player player) {
         return player.getItemBySlot(EquipmentSlot.HEAD).getItem() == ModItems.MK2_HELMET.get() &&
                player.getItemBySlot(EquipmentSlot.CHEST).getItem() == ModItems.MK2_CHESTPLATE.get() &&
@@ -32,7 +40,7 @@ public class Mk2FrameItem extends ArmorItem {
     @Override
     public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
         if (entity instanceof Player player) {
-            if (player.getItemBySlot(this.getType().getSlot()) == stack) {
+            if (this.getType() == ArmorItem.Type.CHESTPLATE && player.getItemBySlot(EquipmentSlot.CHEST) == stack) {
                 player.getCapability(SuitCapabilityProvider.SUIT_CAPABILITY).ifPresent(suit -> {
                     boolean isFull = isFullSuitEquipped(player);
 
@@ -60,7 +68,8 @@ public class Mk2FrameItem extends ArmorItem {
                                 ModMessages.sendToPlayer(new PacketSyncSuitData(
                                     suit.getEnergy(), suit.getMaxEnergy(), suit.getSuitTier(), 
                                     suit.getFrameDurability(), suit.getPalladiumPoisoning(), suit.getActiveReactorType(),
-                                    suit.getIcingLevel(), suit.getHeat(), suit.isFlying()), (ServerPlayer)player);
+                                    suit.getIcingLevel(), suit.getHeat(), suit.isFlying(),
+                                    suit.isAutoBoostEnabled(), suit.isTurbo()), (ServerPlayer)player);
                             }
                             return; 
                         }
@@ -93,7 +102,7 @@ public class Mk2FrameItem extends ArmorItem {
                             boolean enginesFrozen = suit.getIcingLevel() >= 100.0f;
                             boolean enginesOverheated = suit.getHeat() >= 100.0f;
 
-                            if (player.isInWater()) {
+                            if (player.isInWater() && !player.isCreative()) {
                                 player.getAbilities().flying = false;
                                 player.onUpdateAbilities();
                             } else if (enginesOverheated) {
@@ -108,15 +117,25 @@ public class Mk2FrameItem extends ArmorItem {
                                 Vec3 look = player.getLookAngle();
                                 Vec3 current = player.getDeltaMovement();
                                 
-                                double maxSpeed = 0.85; 
-                                double acceleration = 0.1; 
+                                double maxSpeed = 0.85; // ~60 km/h
+                                double currentSpeed = current.length();
+                                double speedRatio = Math.min(currentSpeed / maxSpeed, 1.0);
                                 
-                                // Чистый вектор взгляда без какой-либо стабилизации
+                                // Стабильное ускорение без перерегулирования
+                                double acceleration = 0.15 + Math.pow(speedRatio, 2.0) * 0.4; 
+                                
                                 Vec3 target = look.scale(maxSpeed);
+                                double targetY = target.y;
+                                
+                                if (targetY > 0) {
+                                    targetY = targetY * 1.2 + 0.1; 
+                                } else if (targetY < 0) {
+                                    targetY = targetY * 1.4; 
+                                }
                                 
                                 Vec3 newMovement = new Vec3(
                                     current.x + (target.x - current.x) * acceleration,
-                                    current.y + (target.y - current.y) * acceleration,
+                                    current.y + (targetY - current.y) * acceleration,
                                     current.z + (target.z - current.z) * acceleration
                                 );
                                 
@@ -151,18 +170,20 @@ public class Mk2FrameItem extends ArmorItem {
                             serverPlayer.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 40, 0, false, false, true));
                             
                             // Системы полета
-                            boolean systemsFunctional = suit.getIcingLevel() < 100.0f && suit.getHeat() < 100.0f && suit.getEnergy() >= 4 && !serverPlayer.isInWater();
+                            boolean systemsFunctional = serverPlayer.isCreative() || (suit.getIcingLevel() < 100.0f && suit.getHeat() < 100.0f && suit.getEnergy() >= 4 && !serverPlayer.isInWater());
                             serverPlayer.getAbilities().mayfly = systemsFunctional;
                             
                             if (serverPlayer.getAbilities().flying) {
                                 if (!systemsFunctional) {
                                     serverPlayer.getAbilities().flying = false;
-                                    if (serverPlayer.isInWater()) serverPlayer.displayClientMessage(net.minecraft.network.chat.Component.literal("§cSYSTEM FAILURE: WATER DETECTED!"), true);
+                                    if (serverPlayer.isInWater() && !serverPlayer.isCreative()) serverPlayer.displayClientMessage(net.minecraft.network.chat.Component.literal("§cSYSTEM FAILURE: WATER DETECTED!"), true);
                                     else if (suit.getHeat() >= 100.0f) serverPlayer.displayClientMessage(net.minecraft.network.chat.Component.literal("§cSYSTEM FAILURE: OVERHEATED!"), true);
                                     serverPlayer.onUpdateAbilities();
                                 } else {
-                                    suit.setEnergy(suit.getEnergy() - 4);
-                                    
+                                    if (serverPlayer.tickCount % 4 == 0) {
+                                        suit.setEnergy(suit.getEnergy() - 1);
+                                    }
+
                                     ItemStack chestplateServer = serverPlayer.getItemBySlot(EquipmentSlot.CHEST);
                                     if(chestplateServer.getItem() instanceof ArmorItem) {
                                          chestplateServer.getOrCreateTag().putInt("SuitEnergy", suit.getEnergy()); 
@@ -240,7 +261,8 @@ public class Mk2FrameItem extends ArmorItem {
                             ModMessages.sendToPlayer(new PacketSyncSuitData(
                                     suit.getEnergy(), suit.getMaxEnergy(), suit.getSuitTier(), 
                                     suit.getFrameDurability(), suit.getPalladiumPoisoning(), suit.getActiveReactorType(),
-                                    suit.getIcingLevel(), suit.getHeat(), suit.isFlying()), serverPlayer);
+                                    suit.getIcingLevel(), suit.getHeat(), suit.isFlying(),
+                                    suit.isAutoBoostEnabled(), suit.isTurbo()), serverPlayer);
                         }
                     }
                 });

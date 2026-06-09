@@ -2,13 +2,13 @@
 
 ![Minecraft Version](https://img.shields.io/badge/Minecraft-1.20.1-brightgreen)
 ![Loader](https://img.shields.io/badge/Loader-Forge-blue)
-![Status](https://img.shields.io/badge/Status-Alpha_v0.1-orange)
+![Status](https://img.shields.io/badge/Status-v1.0-green)
 
 **IronCore** — это хардкорный инженерный мод для Minecraft 1.20.1, вдохновленный историей Железного Человека. Забудьте о простой броне. Здесь вы — инженер, создающий сложнейшую машину, требующую энергии, охлаждения и технического обслуживания.
 
 ---
 
-## 🛠 Ключевые Особенности (v0.1)
+## 🛠 Ключевые Особенности (v1.0)
 
 ### 🦾 Костюмы (Tiers)
 *   **Mk1 (Escape Suit):** Тяжелая, примитивная броня. Дает защиту и огнемет, но не умеет летать. Работает на угольном топливе.

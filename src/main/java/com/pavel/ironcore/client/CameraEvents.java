@@ -12,30 +12,53 @@ import net.minecraftforge.fml.common.Mod;
 @Mod.EventBusSubscriber(modid = IronCore.MODID, value = Dist.CLIENT)
 public class CameraEvents {
     private static float currentRoll = 0.0f;
+    private static float currentFovModifier = 1.0f;
 
     @SubscribeEvent
     public static void onCameraSetup(ViewportEvent.ComputeCameraAngles event) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player != null) {
             mc.player.getCapability(SuitCapabilityProvider.SUIT_CAPABILITY).ifPresent(suit -> {
-                // If flying and sprinting (boosting), apply camera roll
-                if (suit.isFlying() && mc.player.getAbilities().flying && mc.player.isSprinting()) {
-                    // Calculate yaw delta (how fast the player is turning their head horizontally)
-                    float yawDelta = mc.player.getYRot() - mc.player.yRotO;
+                // Наклон камеры теперь срабатывает ТОЛЬКО в режиме ТУРБО
+                if (suit.isFlying() && mc.player.getAbilities().flying && suit.isTurbo()) {
+                    // Используем дельту поворота ТЕЛА (yBodyRot) вместо головы для синхронизации с моделью
+                    float yRotDelta = mc.player.yBodyRot - mc.player.yBodyRotO;
+                    while (yRotDelta < -180.0f) yRotDelta += 360.0f;
+                    while (yRotDelta >= 180.0f) yRotDelta -= 360.0f;
                     
-                    // Target roll based on turn speed (clamp to max 30 degrees tilt)
-                    float targetRoll = Mth.clamp(yawDelta * 1.5f, -30.0f, 30.0f);
+                    // Ограничиваем до 30 градусов
+                    float targetRoll = Mth.clamp(yRotDelta * 5.0f, -30.0f, 30.0f);
                     
-                    // Smoothly interpolate roll (frame-independent smoothing)
+                    // Возвращаю более отзывчивую интерполяцию для Турбо (0.1), так как на такой скорости важна динамика
                     currentRoll += (targetRoll - currentRoll) * 0.1f;
                 } else {
-                    // Smoothly return to 0 when not boosting
+                    // Плавно возвращаем камеру в горизонт, если вышли из Турбо
                     currentRoll += (0.0f - currentRoll) * 0.1f;
                 }
 
                 // Apply roll if it's significant enough
                 if (Math.abs(currentRoll) > 0.1f) {
                     event.setRoll(currentRoll);
+                }
+            });
+        }
+    }
+
+    @SubscribeEvent
+    public static void onComputeFov(ViewportEvent.ComputeFov event) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.player != null) {
+            mc.player.getCapability(SuitCapabilityProvider.SUIT_CAPABILITY).ifPresent(suit -> {
+                float targetFov = 1.0f;
+                if (suit.isTurbo() && suit.isFlying() && mc.player.getAbilities().flying) {
+                    targetFov = 1.20f; // +20% FOV
+                }
+                
+                // Smooth interpolation
+                currentFovModifier += (targetFov - currentFovModifier) * 0.05f;
+                
+                if (currentFovModifier > 1.001f || currentFovModifier < 0.999f) {
+                    event.setFOV(event.getFOV() * currentFovModifier);
                 }
             });
         }

@@ -16,8 +16,10 @@ public class PacketSyncSuitData {
     private final float icingLevel;
     private final float heatLevel;
     private final boolean isFlying;
+    private final boolean autoBoostEnabled;
+    private final boolean isTurbo;
 
-    public PacketSyncSuitData(int energy, int maxEnergy, String tier, int durability, float poisoning, String reactor, float icingLevel, float heatLevel, boolean isFlying) {
+    public PacketSyncSuitData(int energy, int maxEnergy, String tier, int durability, float poisoning, String reactor, float icingLevel, float heatLevel, boolean isFlying, boolean autoBoostEnabled, boolean isTurbo) {
         this.energy = energy;
         this.maxEnergy = maxEnergy;
         this.tier = tier;
@@ -27,6 +29,8 @@ public class PacketSyncSuitData {
         this.icingLevel = icingLevel;
         this.heatLevel = heatLevel;
         this.isFlying = isFlying;
+        this.autoBoostEnabled = autoBoostEnabled;
+        this.isTurbo = isTurbo;
     }
 
     public PacketSyncSuitData(FriendlyByteBuf buffer) {
@@ -39,6 +43,8 @@ public class PacketSyncSuitData {
         this.icingLevel = buffer.readFloat();
         this.heatLevel = buffer.readFloat();
         this.isFlying = buffer.readBoolean();
+        this.autoBoostEnabled = buffer.readBoolean();
+        this.isTurbo = buffer.readBoolean();
     }
 
     public void toBytes(FriendlyByteBuf buffer) {
@@ -51,6 +57,8 @@ public class PacketSyncSuitData {
         buffer.writeFloat(icingLevel);
         buffer.writeFloat(heatLevel);
         buffer.writeBoolean(isFlying);
+        buffer.writeBoolean(autoBoostEnabled);
+        buffer.writeBoolean(isTurbo);
     }
 
     public boolean handle(Supplier<NetworkEvent.Context> supplier) {
@@ -66,6 +74,8 @@ public class PacketSyncSuitData {
                 suit.setIcingLevel(icingLevel);
                 suit.setHeat(heatLevel);
                 suit.setFlying(isFlying);
+                suit.setAutoBoostEnabled(autoBoostEnabled);
+                suit.setTurbo(isTurbo);
             });
         });
         context.setPacketHandled(true);

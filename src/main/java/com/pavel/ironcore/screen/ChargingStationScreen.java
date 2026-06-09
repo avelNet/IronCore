@@ -11,7 +11,7 @@ import net.minecraft.world.entity.player.Inventory;
 
 public class ChargingStationScreen extends AbstractContainerScreen<ChargingStationMenu> {
     private static final ResourceLocation TEXTURE =
-            new ResourceLocation(IronCore.MODID, "textures/gui/alloy_smelter_gui.png");
+            new ResourceLocation(IronCore.MODID, "textures/gui/charging_station_gui.png");
 
     public ChargingStationScreen(ChargingStationMenu pMenu, Inventory pPlayerInventory, Component pTitle) {
         super(pMenu, pPlayerInventory, pTitle);

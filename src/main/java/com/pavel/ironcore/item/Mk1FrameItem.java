@@ -18,6 +18,14 @@ public class Mk1FrameItem extends ArmorItem {
         super(material, type, properties);
     }
 
+    @Override
+    public String getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, String type) {
+        if (slot == EquipmentSlot.LEGS) {
+            return "ironcore:textures/models/armor/mk1_layer_2.png";
+        }
+        return "ironcore:textures/models/armor/mk1_layer_1.png";
+    }
+
     private boolean isFullSuitEquipped(ServerPlayer player) {
         return player.getItemBySlot(EquipmentSlot.HEAD).getItem() == ModItems.MK1_HELMET.get() &&
                player.getItemBySlot(EquipmentSlot.CHEST).getItem() == ModItems.MK1_CHESTPLATE.get() &&
@@ -28,7 +36,7 @@ public class Mk1FrameItem extends ArmorItem {
     @Override
     public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
         if (!level.isClientSide && entity instanceof ServerPlayer player) {
-            if (player.getItemBySlot(this.getType().getSlot()) == stack) {
+            if (this.getType() == ArmorItem.Type.CHESTPLATE && player.getItemBySlot(EquipmentSlot.CHEST) == stack) {
                 
                 player.getCapability(SuitCapabilityProvider.SUIT_CAPABILITY).ifPresent(suit -> {
                     boolean changed = false;
@@ -53,7 +61,8 @@ public class Mk1FrameItem extends ArmorItem {
                                 ModMessages.sendToPlayer(new PacketSyncSuitData(
                                         suit.getEnergy(), suit.getMaxEnergy(), suit.getSuitTier(), 
                                         suit.getFrameDurability(), suit.getPalladiumPoisoning(), suit.getActiveReactorType(),
-                                        suit.getIcingLevel(), suit.getHeat(), suit.isFlying()), player);
+                                        suit.getIcingLevel(), suit.getHeat(), suit.isFlying(),
+                                        suit.isAutoBoostEnabled(), suit.isTurbo()), player);
                             }
                             return; 
                         }
@@ -97,7 +106,8 @@ public class Mk1FrameItem extends ArmorItem {
                         ModMessages.sendToPlayer(new PacketSyncSuitData(
                                 suit.getEnergy(), suit.getMaxEnergy(), suit.getSuitTier(), 
                                 suit.getFrameDurability(), suit.getPalladiumPoisoning(), suit.getActiveReactorType(),
-                                suit.getIcingLevel(), suit.getHeat(), suit.isFlying()), player);
+                                suit.getIcingLevel(), suit.getHeat(), suit.isFlying(),
+                                suit.isAutoBoostEnabled(), suit.isTurbo()), player);
                     }
                 });
             }

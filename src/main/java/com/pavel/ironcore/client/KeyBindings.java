@@ -3,6 +3,7 @@ package com.pavel.ironcore.client;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.pavel.ironcore.network.ModMessages;
 import com.pavel.ironcore.network.PacketFlamethrower;
+import com.pavel.ironcore.network.PacketSyncAutoBoost;
 import com.pavel.ironcore.network.PacketSyncBoostState;
 import com.pavel.ironcore.network.PacketBoostLaunch;
 import com.pavel.ironcore.network.PacketRepulsorFire;
@@ -18,9 +19,13 @@ import org.lwjgl.glfw.GLFW;
 public class KeyBindings {
     public static final String KEY_CATEGORY_IRONCORE = "key.category.ironcore";
     public static final String KEY_FLAMETHROWER = "key.ironcore.fire_weapon";
+    public static final String KEY_AUTO_BOOST = "key.ironcore.toggle_auto_boost";
 
     public static final KeyMapping flamethrowerKey = new KeyMapping(KEY_FLAMETHROWER, 
             KeyConflictContext.IN_GAME, InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_Z, KEY_CATEGORY_IRONCORE);
+
+    public static final KeyMapping autoBoostKey = new KeyMapping(KEY_AUTO_BOOST,
+            KeyConflictContext.IN_GAME, InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_R, KEY_CATEGORY_IRONCORE);
 
     public static void init() {
         MinecraftForge.EVENT_BUS.register(new KeyBindings());
@@ -49,6 +54,12 @@ public class KeyBindings {
                 }
                 lastFireTime = currentTime;
             }
+        }
+
+        while (autoBoostKey.consumeClick()) {
+            mc.player.getCapability(com.pavel.ironcore.capability.SuitCapabilityProvider.SUIT_CAPABILITY).ifPresent(suit -> {
+                ModMessages.sendToServer(new PacketSyncAutoBoost(!suit.isAutoBoostEnabled()));
+            });
         }
 
         boolean isSprintDown = mc.options.keySprint.isDown();

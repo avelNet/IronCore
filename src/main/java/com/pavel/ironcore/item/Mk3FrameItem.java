@@ -22,6 +22,14 @@ public class Mk3FrameItem extends ArmorItem {
         super(material, type, properties);
     }
 
+    @Override
+    public String getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, String type) {
+        if (slot == EquipmentSlot.LEGS) {
+            return "ironcore:textures/models/armor/mk3_layer_2.png";
+        }
+        return "ironcore:textures/models/armor/mk3_layer_1.png";
+    }
+
     private boolean isFullSuitEquipped(Player player) {
         return player.getItemBySlot(EquipmentSlot.HEAD).getItem() == ModItems.MK3_HELMET.get() &&
                player.getItemBySlot(EquipmentSlot.CHEST).getItem() == ModItems.MK3_CHESTPLATE.get() &&
@@ -32,7 +40,8 @@ public class Mk3FrameItem extends ArmorItem {
     @Override
     public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
         if (entity instanceof Player player) {
-            if (player.getItemBySlot(this.getType().getSlot()) == stack) {
+            // Ограничиваем выполнение логики только нагрудником, чтобы она не срабатывала 4 раза за тик
+            if (this.getType() == ArmorItem.Type.CHESTPLATE && player.getItemBySlot(EquipmentSlot.CHEST) == stack) {
                 player.getCapability(SuitCapabilityProvider.SUIT_CAPABILITY).ifPresent(suit -> {
                     boolean isFull = isFullSuitEquipped(player);
 
@@ -57,7 +66,8 @@ public class Mk3FrameItem extends ArmorItem {
                                 ModMessages.sendToPlayer(new PacketSyncSuitData(
                                     suit.getEnergy(), suit.getMaxEnergy(), suit.getSuitTier(), 
                                     suit.getFrameDurability(), suit.getPalladiumPoisoning(), suit.getActiveReactorType(),
-                                    suit.getIcingLevel(), suit.getHeat(), suit.isFlying()), (ServerPlayer)player);
+                                    suit.getIcingLevel(), suit.getHeat(), suit.isFlying(),
+                                    suit.isAutoBoostEnabled(), suit.isTurbo()), (ServerPlayer)player);
                             }
                             return; 
                         }
@@ -84,7 +94,7 @@ public class Mk3FrameItem extends ArmorItem {
                             boolean enginesFrozen = suit.getIcingLevel() >= 100.0f;
                             boolean enginesOverheated = suit.getHeat() >= 100.0f;
 
-                            if (player.isInWater()) {
+                            if (player.isInWater() && !player.isCreative()) {
                                 player.getAbilities().flying = false;
                                 player.onUpdateAbilities();
                             } else if (enginesOverheated) {
@@ -99,14 +109,26 @@ public class Mk3FrameItem extends ArmorItem {
                                 Vec3 look = player.getLookAngle();
                                 Vec3 current = player.getDeltaMovement();
                                 
-                                double maxSpeed = 1.7; 
-                                double acceleration = 0.15; 
+                                double maxSpeed = suit.isTurbo() ? 1.73 : 1.6; // Turbo: ~125 km/h, Normal: ~115 km/h
+                                double currentSpeed = current.length();
+                                double speedRatio = Math.min(currentSpeed / maxSpeed, 1.0);
+                                
+                                // Стабильное ускорение. Для Турбо делаем его чуть плавнее (0.7 вместо 0.8), чтобы не было резкого рывка.
+                                double acceleration = 0.15 + Math.pow(speedRatio, 2.0) * (suit.isTurbo() ? 0.7 : 0.6); 
                                 
                                 Vec3 target = look.scale(maxSpeed);
+                                double targetY = target.y;
+                                
+                                if (targetY > 0) {
+                                    // +0.1 дает жесткий пинок вверх, чтобы мгновенно пробить стену гравитации
+                                    targetY = targetY * 1.2 + 0.1; 
+                                } else if (targetY < 0) {
+                                    targetY = targetY * 1.4; // Контролируемое пикирование (~150 км/ч)
+                                }
                                 
                                 Vec3 newMovement = new Vec3(
                                     current.x + (target.x - current.x) * acceleration,
-                                    current.y + (target.y - current.y) * acceleration,
+                                    current.y + (targetY - current.y) * acceleration,
                                     current.z + (target.z - current.z) * acceleration
                                 );
                                 
@@ -139,7 +161,7 @@ public class Mk3FrameItem extends ArmorItem {
                             serverPlayer.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 40, 1, false, false, true));
                             serverPlayer.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 40, 1, false, false, true));
                             
-                            boolean systemsFunctional = suit.getIcingLevel() < 100.0f && suit.getHeat() < 100.0f && suit.getEnergy() >= 4 && !serverPlayer.isInWater();
+                            boolean systemsFunctional = serverPlayer.isCreative() || (suit.getIcingLevel() < 100.0f && suit.getHeat() < 100.0f && suit.getEnergy() >= 4 && !serverPlayer.isInWater());
                             serverPlayer.getAbilities().mayfly = systemsFunctional;
                             
                             if (serverPlayer.getAbilities().flying) {
@@ -147,22 +169,60 @@ public class Mk3FrameItem extends ArmorItem {
                                     serverPlayer.getAbilities().flying = false;
                                     serverPlayer.onUpdateAbilities();
                                 } else {
-                                    suit.setEnergy(suit.getEnergy() - 5);
+                                    suit.setEnergy(suit.getEnergy() - 2);
                                     
                                     ItemStack chestplateServer = serverPlayer.getItemBySlot(EquipmentSlot.CHEST);
                                     if(chestplateServer.getItem() instanceof ArmorItem) {
                                          chestplateServer.getOrCreateTag().putInt("SuitEnergy", suit.getEnergy()); 
                                     }
 
-                                    if (suit.isBoostKeyHeld()) suit.setHeat(suit.getHeat() + 0.025f);
+                                    boolean isBoosting = suit.isBoostKeyHeld();
+                                    
+                                    if (isBoosting && suit.getEnergy() > 1000) {
+                                        suit.setFlightTimer(suit.getFlightTimer() + 1);
+                                        suit.setHeat(suit.getHeat() + 0.025f);
+                                        
+                                        if (suit.isAutoBoostEnabled() && suit.getFlightTimer() >= 100) {
+                                            if (!suit.isTurbo()) {
+                                                suit.setTurbo(true);
+                                                changed = true;
+                                            }
+                                        }
+                                    } else {
+                                        if (suit.getFlightTimer() > 0 || suit.isTurbo()) {
+                                            suit.setFlightTimer(0);
+                                            suit.setTurbo(false);
+                                            changed = true;
+                                        }
+                                    }
                                     
                                     ServerLevel serverLevel = (ServerLevel) level;
                                     Vec3 pos = serverPlayer.position();
-                                    if (serverPlayer.tickCount % 2 == 0) {
+                                    
+                                    if (suit.isTurbo()) {
+                                        // Jet Stream Effect (Dense Particles)
+                                        for (int i = 0; i < 3; i++) {
+                                            serverLevel.sendParticles(ParticleTypes.SOUL_FIRE_FLAME, pos.x, pos.y + 0.1, pos.z, 1, 0.05, 0.05, 0.05, 0.05);
+                                            if (serverPlayer.tickCount % 2 == 0) {
+                                                serverLevel.sendParticles(ParticleTypes.FLAME, pos.x, pos.y + 0.1, pos.z, 1, 0.02, 0.02, 0.02, 0.01);
+                                            }
+                                        }
+                                        if (serverPlayer.tickCount % 5 == 0) {
+                                            serverLevel.sendParticles(ParticleTypes.LAVA, pos.x, pos.y + 0.1, pos.z, 1, 0.1, 0.1, 0.1, 0.01);
+                                        }
+                                        suit.setHeat(suit.getHeat() + 0.05f); // Extra heat in turbo
+                                    } else if (serverPlayer.tickCount % 2 == 0) {
                                         if (suit.getEnergy() > 1000 || serverPlayer.tickCount % 10 == 0) {
                                             serverLevel.sendParticles(ParticleTypes.SOUL_FIRE_FLAME, pos.x, pos.y + 0.1, pos.z, 1, 0.1, 0.0, 0.1, 0.02);
                                         }
                                     }
+                                }
+                            } else {
+                                // Сброс при приземлении или отключении полета
+                                if (suit.getFlightTimer() > 0 || suit.isTurbo()) {
+                                    suit.setFlightTimer(0);
+                                    suit.setTurbo(false);
+                                    changed = true;
                                 }
                             }
                             serverPlayer.onUpdateAbilities();
@@ -195,6 +255,8 @@ public class Mk3FrameItem extends ArmorItem {
                                 suit.setSuitTier("none");
                                 suit.setActiveReactorType("none");
                                 suit.setFlying(false);
+                                suit.setTurbo(false);
+                                suit.setFlightTimer(0);
                                 if (!serverPlayer.isCreative() && !serverPlayer.isSpectator()) {
                                     serverPlayer.getAbilities().mayfly = false;
                                     serverPlayer.getAbilities().flying = false;
@@ -208,7 +270,8 @@ public class Mk3FrameItem extends ArmorItem {
                             ModMessages.sendToPlayer(new PacketSyncSuitData(
                                     suit.getEnergy(), suit.getMaxEnergy(), suit.getSuitTier(), 
                                     suit.getFrameDurability(), suit.getPalladiumPoisoning(), suit.getActiveReactorType(),
-                                    suit.getIcingLevel(), suit.getHeat(), suit.isFlying()), serverPlayer);
+                                    suit.getIcingLevel(), suit.getHeat(), suit.isFlying(),
+                                    suit.isAutoBoostEnabled(), suit.isTurbo()), serverPlayer);
                         }
                     }
                 });
