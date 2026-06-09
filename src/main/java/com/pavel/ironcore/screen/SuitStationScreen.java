@@ -15,7 +15,7 @@ import net.minecraft.client.gui.components.Button;
 
 public class SuitStationScreen extends AbstractContainerScreen<SuitStationMenu> {
     private static final ResourceLocation TEXTURE =
-            new ResourceLocation(IronCore.MODID, "textures/gui/alloy_smelter_gui.png");
+            new ResourceLocation(IronCore.MODID, "textures/gui/suit_station_gui.png");
 
     public SuitStationScreen(SuitStationMenu pMenu, Inventory pPlayerInventory, Component pTitle) {
         super(pMenu, pPlayerInventory, pTitle);

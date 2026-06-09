@@ -11,7 +11,7 @@ import net.minecraft.world.entity.player.Inventory;
 
 public class CoalGeneratorScreen extends AbstractContainerScreen<CoalGeneratorMenu> {
     private static final ResourceLocation TEXTURE =
-            new ResourceLocation(IronCore.MODID, "textures/gui/alloy_smelter_gui.png"); // Используем ту же текстуру как заглушку
+            new ResourceLocation(IronCore.MODID, "textures/gui/coal_generator_gui.png");
 
     public CoalGeneratorScreen(CoalGeneratorMenu pMenu, Inventory pPlayerInventory, Component pTitle) {
         super(pMenu, pPlayerInventory, pTitle);

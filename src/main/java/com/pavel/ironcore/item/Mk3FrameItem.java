@@ -94,7 +94,7 @@ public class Mk3FrameItem extends ArmorItem {
                             boolean enginesFrozen = suit.getIcingLevel() >= 100.0f;
                             boolean enginesOverheated = suit.getHeat() >= 100.0f;
 
-                            if (player.isInWater()) {
+                            if (player.isInWater() && !player.isCreative()) {
                                 player.getAbilities().flying = false;
                                 player.onUpdateAbilities();
                             } else if (enginesOverheated) {
@@ -161,7 +161,7 @@ public class Mk3FrameItem extends ArmorItem {
                             serverPlayer.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 40, 1, false, false, true));
                             serverPlayer.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 40, 1, false, false, true));
                             
-                            boolean systemsFunctional = suit.getIcingLevel() < 100.0f && suit.getHeat() < 100.0f && suit.getEnergy() >= 4 && !serverPlayer.isInWater();
+                            boolean systemsFunctional = serverPlayer.isCreative() || (suit.getIcingLevel() < 100.0f && suit.getHeat() < 100.0f && suit.getEnergy() >= 4 && !serverPlayer.isInWater());
                             serverPlayer.getAbilities().mayfly = systemsFunctional;
                             
                             if (serverPlayer.getAbilities().flying) {

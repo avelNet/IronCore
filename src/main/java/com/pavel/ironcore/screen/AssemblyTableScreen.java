@@ -11,7 +11,7 @@ import net.minecraft.world.entity.player.Inventory;
 
 public class AssemblyTableScreen extends AbstractContainerScreen<AssemblyTableMenu> {
     private static final ResourceLocation TEXTURE =
-            new ResourceLocation(IronCore.MODID, "textures/gui/alloy_smelter_gui.png"); // Позже заменим на уникальную
+            new ResourceLocation(IronCore.MODID, "textures/gui/assembly_table_gui.png");
 
     public AssemblyTableScreen(AssemblyTableMenu pMenu, Inventory pPlayerInventory, Component pTitle) {
         super(pMenu, pPlayerInventory, pTitle);

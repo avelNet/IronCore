@@ -102,7 +102,7 @@ public class Mk2FrameItem extends ArmorItem {
                             boolean enginesFrozen = suit.getIcingLevel() >= 100.0f;
                             boolean enginesOverheated = suit.getHeat() >= 100.0f;
 
-                            if (player.isInWater()) {
+                            if (player.isInWater() && !player.isCreative()) {
                                 player.getAbilities().flying = false;
                                 player.onUpdateAbilities();
                             } else if (enginesOverheated) {
@@ -170,13 +170,13 @@ public class Mk2FrameItem extends ArmorItem {
                             serverPlayer.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 40, 0, false, false, true));
                             
                             // Системы полета
-                            boolean systemsFunctional = suit.getIcingLevel() < 100.0f && suit.getHeat() < 100.0f && suit.getEnergy() >= 4 && !serverPlayer.isInWater();
+                            boolean systemsFunctional = serverPlayer.isCreative() || (suit.getIcingLevel() < 100.0f && suit.getHeat() < 100.0f && suit.getEnergy() >= 4 && !serverPlayer.isInWater());
                             serverPlayer.getAbilities().mayfly = systemsFunctional;
                             
                             if (serverPlayer.getAbilities().flying) {
                                 if (!systemsFunctional) {
                                     serverPlayer.getAbilities().flying = false;
-                                    if (serverPlayer.isInWater()) serverPlayer.displayClientMessage(net.minecraft.network.chat.Component.literal("§cSYSTEM FAILURE: WATER DETECTED!"), true);
+                                    if (serverPlayer.isInWater() && !serverPlayer.isCreative()) serverPlayer.displayClientMessage(net.minecraft.network.chat.Component.literal("§cSYSTEM FAILURE: WATER DETECTED!"), true);
                                     else if (suit.getHeat() >= 100.0f) serverPlayer.displayClientMessage(net.minecraft.network.chat.Component.literal("§cSYSTEM FAILURE: OVERHEATED!"), true);
                                     serverPlayer.onUpdateAbilities();
                                 } else {
