@@ -29,9 +29,11 @@ public class PacketBoostLaunch {
                     player.onUpdateAbilities();
                     
                     Vec3 look = player.getLookAngle();
-                    // Launch straight up and slightly forward
-                    double yBoost = suit.getSuitTier().equals("mk3") ? 2.0 : 1.5; // Mk3 прыгает выше
-                    Vec3 boost = new Vec3(look.x * 0.5, yBoost, look.z * 0.5);
+                    // Launch UP regardless of look angle, with a slight forward momentum based on look
+                    double yBoost = suit.getSuitTier().equals("mk3") ? 1.8 : 1.4; 
+                    // Horizontal momentum should be a small fraction of the look direction, 
+                    // but we ensure Y is always positive and strong.
+                    Vec3 boost = new Vec3(look.x * 0.3, yBoost, look.z * 0.3);
                     player.setDeltaMovement(boost);
                     player.hasImpulse = true;
                     player.hurtMarked = true;
