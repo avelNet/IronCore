@@ -4,7 +4,7 @@ license="MIT"
 
 [[mods]]
 modId="ironcore"
-version="1.0.0-alpha"
+version="1.0.0"
 displayName="IronCore"
 authors="Pavel"
 description='''Iron Man mod for Minecraft. Engineering-focused, hardcore gameplay.'''

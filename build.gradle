@@ -10,7 +10,7 @@ buildscript {
 
 apply plugin: 'net.minecraftforge.gradle'
 
-version = 'alpha'
+version = '1.0'
 group = 'com.pavel.ironcore'
 archivesBaseName = 'ironcore'
 
