@@ -70,6 +70,7 @@ public class IronCore {
         @SubscribeEvent
         public static void onKeyRegister(net.minecraftforge.client.event.RegisterKeyMappingsEvent event) {
             event.register(KeyBindings.flamethrowerKey);
+            event.register(KeyBindings.autoBoostKey);
         }
     }
 
@@ -100,7 +101,8 @@ public class IronCore {
                             ModMessages.sendToPlayer(new com.pavel.ironcore.network.PacketSyncSuitData(
                                     suit.getEnergy(), suit.getMaxEnergy(), suit.getSuitTier(), 
                                     suit.getFrameDurability(), suit.getPalladiumPoisoning(), suit.getActiveReactorType(),
-                                    suit.getIcingLevel(), suit.getHeat(), suit.isFlying()), (net.minecraft.server.level.ServerPlayer)event.player);
+                                    suit.getIcingLevel(), suit.getHeat(), suit.isFlying(),
+                                    suit.isAutoBoostEnabled(), suit.isTurbo()), (net.minecraft.server.level.ServerPlayer)event.player);
                         }
 
                         if (suit.getPalladiumPoisoning() > 30.0f) {
@@ -121,7 +123,8 @@ public class IronCore {
                             ModMessages.sendToPlayer(new com.pavel.ironcore.network.PacketSyncSuitData(
                                     suit.getEnergy(), suit.getMaxEnergy(), suit.getSuitTier(), 
                                     suit.getFrameDurability(), suit.getPalladiumPoisoning(), suit.getActiveReactorType(),
-                                    suit.getIcingLevel(), suit.getHeat(), suit.isFlying()), (net.minecraft.server.level.ServerPlayer)event.player);
+                                    suit.getIcingLevel(), suit.getHeat(), suit.isFlying(),
+                                    suit.isAutoBoostEnabled(), suit.isTurbo()), (net.minecraft.server.level.ServerPlayer)event.player);
                         }
                     }
 
@@ -145,7 +148,8 @@ public class IronCore {
                             ModMessages.sendToPlayer(new com.pavel.ironcore.network.PacketSyncSuitData(
                                     suit.getEnergy(), suit.getMaxEnergy(), suit.getSuitTier(), 
                                     suit.getFrameDurability(), suit.getPalladiumPoisoning(), suit.getActiveReactorType(),
-                                    suit.getIcingLevel(), suit.getHeat(), suit.isFlying()), (net.minecraft.server.level.ServerPlayer)event.player);
+                                    suit.getIcingLevel(), suit.getHeat(), suit.isFlying(),
+                                    suit.isAutoBoostEnabled(), suit.isTurbo()), (net.minecraft.server.level.ServerPlayer)event.player);
                         }
                     }
                 });

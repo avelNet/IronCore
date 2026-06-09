@@ -22,6 +22,14 @@ public class Mk2FrameItem extends ArmorItem {
         super(material, type, properties);
     }
 
+    @Override
+    public String getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, String type) {
+        if (slot == EquipmentSlot.LEGS) {
+            return "ironcore:textures/models/armor/mk2_layer_2.png";
+        }
+        return "ironcore:textures/models/armor/mk2_layer_1.png";
+    }
+
     private boolean isFullSuitEquipped(Player player) {
         return player.getItemBySlot(EquipmentSlot.HEAD).getItem() == ModItems.MK2_HELMET.get() &&
                player.getItemBySlot(EquipmentSlot.CHEST).getItem() == ModItems.MK2_CHESTPLATE.get() &&
@@ -60,7 +68,8 @@ public class Mk2FrameItem extends ArmorItem {
                                 ModMessages.sendToPlayer(new PacketSyncSuitData(
                                     suit.getEnergy(), suit.getMaxEnergy(), suit.getSuitTier(), 
                                     suit.getFrameDurability(), suit.getPalladiumPoisoning(), suit.getActiveReactorType(),
-                                    suit.getIcingLevel(), suit.getHeat(), suit.isFlying()), (ServerPlayer)player);
+                                    suit.getIcingLevel(), suit.getHeat(), suit.isFlying(),
+                                    suit.isAutoBoostEnabled(), suit.isTurbo()), (ServerPlayer)player);
                             }
                             return; 
                         }
@@ -252,7 +261,8 @@ public class Mk2FrameItem extends ArmorItem {
                             ModMessages.sendToPlayer(new PacketSyncSuitData(
                                     suit.getEnergy(), suit.getMaxEnergy(), suit.getSuitTier(), 
                                     suit.getFrameDurability(), suit.getPalladiumPoisoning(), suit.getActiveReactorType(),
-                                    suit.getIcingLevel(), suit.getHeat(), suit.isFlying()), serverPlayer);
+                                    suit.getIcingLevel(), suit.getHeat(), suit.isFlying(),
+                                    suit.isAutoBoostEnabled(), suit.isTurbo()), serverPlayer);
                         }
                     }
                 });

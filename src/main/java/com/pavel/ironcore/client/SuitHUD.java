@@ -80,6 +80,20 @@ public class SuitHUD {
 
                 if (suit.getPalladiumPoisoning() > 0) {
                     guiGraphics.drawString(minecraft.font, "TOXICITY: " + String.format("%.1f%%", suit.getPalladiumPoisoning()), x, currentY, 0xFF00FF);
+                    currentY += 10;
+                }
+
+                // Turbo Status
+                if (!suit.getSuitTier().equals("mk1") && !suit.getSuitTier().equals("mk2")) {
+                    String boostStatus = suit.isAutoBoostEnabled() ? "§aREADY" : "§cOFF";
+                    guiGraphics.drawString(minecraft.font, "AUTO-BOOST: " + boostStatus, x, currentY, 0xFFFFFF);
+                    currentY += 10;
+                    
+                    if (suit.isTurbo()) {
+                        guiGraphics.drawString(minecraft.font, "§b§lTURBO BOOST ACTIVE", x, currentY, 0x00FFFF);
+                    } else if (suit.isBoostKeyHeld() && suit.isAutoBoostEnabled() && suit.isFlying()) {
+                        guiGraphics.drawString(minecraft.font, "TURBO: CHARGING...", x, currentY, 0x55FFFF);
+                    }
                 }
             });
         });
