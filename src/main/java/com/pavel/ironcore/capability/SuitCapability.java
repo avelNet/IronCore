@@ -19,6 +19,7 @@ public class SuitCapability implements INBTSerializable<CompoundTag> {
     private int flightTimer = 0;
     private boolean autoBoostEnabled = true;
     private boolean isTurbo = false;
+    private boolean wasFlyingHorizontally = false;
 
     public int getEnergy() { return energy; }
     public void setEnergy(int energy) { this.energy = Math.max(0, Math.min(energy, maxEnergy)); }
@@ -61,6 +62,9 @@ public class SuitCapability implements INBTSerializable<CompoundTag> {
 
     public boolean isTurbo() { return isTurbo; }
     public void setTurbo(boolean turbo) { this.isTurbo = turbo; }
+
+    public boolean wasFlyingHorizontally() { return wasFlyingHorizontally; }
+    public void setWasFlyingHorizontally(boolean wasFlyingHorizontally) { this.wasFlyingHorizontally = wasFlyingHorizontally; }
 
     public void saveNBTData(CompoundTag nbt) {
         nbt.putInt("energy", energy);

@@ -14,33 +14,33 @@ public class ModItems {
 
     // Полный сет Mk1
     public static final RegistryObject<Item> MK1_HELMET = ITEMS.register("mk1_helmet",
-            () -> new Mk1FrameItem(ArmorMaterials.IRON, ArmorItem.Type.HELMET, new Item.Properties()));
+            () -> new Mk1FrameItem(ModArmorMaterials.MK1, ArmorItem.Type.HELMET, new Item.Properties()));
     public static final RegistryObject<Item> MK1_CHESTPLATE = ITEMS.register("mk1_chestplate",
-            () -> new Mk1FrameItem(ArmorMaterials.IRON, ArmorItem.Type.CHESTPLATE, new Item.Properties()));
+            () -> new Mk1FrameItem(ModArmorMaterials.MK1, ArmorItem.Type.CHESTPLATE, new Item.Properties()));
     public static final RegistryObject<Item> MK1_LEGGINGS = ITEMS.register("mk1_leggings",
-            () -> new Mk1FrameItem(ArmorMaterials.IRON, ArmorItem.Type.LEGGINGS, new Item.Properties()));
+            () -> new Mk1FrameItem(ModArmorMaterials.MK1, ArmorItem.Type.LEGGINGS, new Item.Properties()));
     public static final RegistryObject<Item> MK1_BOOTS = ITEMS.register("mk1_boots",
-            () -> new Mk1FrameItem(ArmorMaterials.IRON, ArmorItem.Type.BOOTS, new Item.Properties()));
+            () -> new Mk1FrameItem(ModArmorMaterials.MK1, ArmorItem.Type.BOOTS, new Item.Properties()));
 
     // Полный сет Mk2
     public static final RegistryObject<Item> MK2_HELMET = ITEMS.register("mk2_helmet",
-            () -> new Mk2FrameItem(ArmorMaterials.IRON, ArmorItem.Type.HELMET, new Item.Properties()));
+            () -> new Mk2FrameItem(ModArmorMaterials.MK2, ArmorItem.Type.HELMET, new Item.Properties()));
     public static final RegistryObject<Item> MK2_CHESTPLATE = ITEMS.register("mk2_chestplate",
-            () -> new Mk2FrameItem(ArmorMaterials.IRON, ArmorItem.Type.CHESTPLATE, new Item.Properties()));
+            () -> new Mk2FrameItem(ModArmorMaterials.MK2, ArmorItem.Type.CHESTPLATE, new Item.Properties()));
     public static final RegistryObject<Item> MK2_LEGGINGS = ITEMS.register("mk2_leggings",
-            () -> new Mk2FrameItem(ArmorMaterials.IRON, ArmorItem.Type.LEGGINGS, new Item.Properties()));
+            () -> new Mk2FrameItem(ModArmorMaterials.MK2, ArmorItem.Type.LEGGINGS, new Item.Properties()));
     public static final RegistryObject<Item> MK2_BOOTS = ITEMS.register("mk2_boots",
-            () -> new Mk2FrameItem(ArmorMaterials.IRON, ArmorItem.Type.BOOTS, new Item.Properties()));
+            () -> new Mk2FrameItem(ModArmorMaterials.MK2, ArmorItem.Type.BOOTS, new Item.Properties()));
 
     // Полный сет Mk3 (Золото-титановый сплав)
     public static final RegistryObject<Item> MK3_HELMET = ITEMS.register("mk3_helmet",
-            () -> new Mk3FrameItem(ArmorMaterials.GOLD, ArmorItem.Type.HELMET, new Item.Properties()));
+            () -> new Mk3FrameItem(ModArmorMaterials.MK3, ArmorItem.Type.HELMET, new Item.Properties()));
     public static final RegistryObject<Item> MK3_CHESTPLATE = ITEMS.register("mk3_chestplate",
-            () -> new Mk3FrameItem(ArmorMaterials.GOLD, ArmorItem.Type.CHESTPLATE, new Item.Properties()));
+            () -> new Mk3FrameItem(ModArmorMaterials.MK3, ArmorItem.Type.CHESTPLATE, new Item.Properties()));
     public static final RegistryObject<Item> MK3_LEGGINGS = ITEMS.register("mk3_leggings",
-            () -> new Mk3FrameItem(ArmorMaterials.GOLD, ArmorItem.Type.LEGGINGS, new Item.Properties()));
+            () -> new Mk3FrameItem(ModArmorMaterials.MK3, ArmorItem.Type.LEGGINGS, new Item.Properties()));
     public static final RegistryObject<Item> MK3_BOOTS = ITEMS.register("mk3_boots",
-            () -> new Mk3FrameItem(ArmorMaterials.GOLD, ArmorItem.Type.BOOTS, new Item.Properties()));
+            () -> new Mk3FrameItem(ModArmorMaterials.MK3, ArmorItem.Type.BOOTS, new Item.Properties()));
 
     public static final RegistryObject<Item> COAL_REACTOR = ITEMS.register("coal_reactor",
             () -> new ReactorItem(new Item.Properties().stacksTo(1), 5000, "coal"));
@@ -72,6 +72,13 @@ public class ModItems {
                             suit.setPalladiumPoisoning(suit.getPalladiumPoisoning() - 25.0f); // Снижаем на 25%
                             player.displayClientMessage(net.minecraft.network.chat.Component.literal("§aToxicity reduced!"), true);
                         });
+                        
+                        if (!player.getAbilities().instabuild) {
+                            if (stack.getCount() <= 1) {
+                                return new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.GLASS_BOTTLE);
+                            }
+                            player.getInventory().add(new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.GLASS_BOTTLE));
+                        }
                     }
                     return super.finishUsingItem(stack, level, entity);
                 }

@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "G": {
+      "item": "ironcore:gold_titanium_alloy"
+    },
+    "P": {
+      "item": "ironcore:palladium_ingot"
+    },
+    "T": {
+      "item": "ironcore:titanium_ingot"
+    }
+  },
+  "pattern": [
+    "TGT",
+    "GPG",
+    "TGT"
+  ],
+  "result": {
+    "item": "ironcore:palladium_reactor"
+  },
+  "show_notification": true
+}

@@ -22,18 +22,10 @@ public class ModBlockStateProvider extends BlockStateProvider {
                 modLoc("block/alloy_smelter_side"), 
                 modLoc("block/alloy_smelter_bottom"), 
                 modLoc("block/alloy_smelter_top")));
-        simpleBlockWithItem(ModBlocks.COAL_GENERATOR.get(), models().cubeBottomTop("coal_generator", 
-                modLoc("block/alloy_smelter_side"), 
-                modLoc("block/alloy_smelter_bottom"), 
-                modLoc("block/alloy_smelter_top"))); // Reuse textures for now
-        simpleBlockWithItem(ModBlocks.ASSEMBLY_TABLE.get(), models().cubeBottomTop("assembly_table", 
-                modLoc("block/alloy_smelter_side"), 
-                modLoc("block/alloy_smelter_bottom"), 
-                modLoc("block/alloy_smelter_top"))); // Reuse textures for now
-        simpleBlockWithItem(ModBlocks.CHARGING_STATION.get(), models().cubeBottomTop("charging_station", 
-                modLoc("block/alloy_smelter_side"), 
-                modLoc("block/alloy_smelter_bottom"), 
-                modLoc("block/alloy_smelter_top"))); // Reuse textures for now
+        simpleBlockWithItem(ModBlocks.COAL_GENERATOR.get(), cubeAll(ModBlocks.COAL_GENERATOR.get()));
+        simpleBlockWithItem(ModBlocks.ASSEMBLY_TABLE.get(), cubeAll(ModBlocks.ASSEMBLY_TABLE.get()));
+        simpleBlockWithItem(ModBlocks.CHARGING_STATION.get(), cubeAll(ModBlocks.CHARGING_STATION.get()));
+        simpleBlockWithItem(ModBlocks.SUIT_STATION.get(), cubeAll(ModBlocks.SUIT_STATION.get()));
     }
 
     private void blockWithItem(RegistryObject<Block> blockRegistryObject) {

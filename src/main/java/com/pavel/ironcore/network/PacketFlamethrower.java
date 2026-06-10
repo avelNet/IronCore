@@ -27,7 +27,7 @@ public class PacketFlamethrower {
             if (player == null) return;
 
             player.getCapability(SuitCapabilityProvider.SUIT_CAPABILITY).ifPresent(suit -> {
-                if (suit.getSuitTier().equals("mk1") && suit.getEnergy() >= 10) {
+                if ((suit.getSuitTier().equals("mk1") || suit.getSuitTier().equals("mk2")) && suit.getEnergy() >= 10) {
                     suit.setEnergy(suit.getEnergy() - 10);
                     
                     ServerLevel level = player.serverLevel();

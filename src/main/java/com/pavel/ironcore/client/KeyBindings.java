@@ -70,9 +70,7 @@ public class KeyBindings {
             if (isSprintDown) {
                 long currentTime = System.currentTimeMillis();
                 if (currentTime - lastSprintTime < 300) {
-                    if (mc.player.onGround()) {
-                        ModMessages.sendToServer(new PacketBoostLaunch());
-                    }
+                    ModMessages.sendToServer(new PacketBoostLaunch());
                 }
                 lastSprintTime = currentTime;
             }
