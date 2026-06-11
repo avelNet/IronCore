@@ -21,6 +21,8 @@ public class SuitCapability implements INBTSerializable<CompoundTag> {
     private boolean isTurbo = false;
     private boolean wasFlyingHorizontally = false;
     private boolean hasEmbeddedReactor = false;
+    private boolean isFirstNightTriggered = false;
+    private int cinematicStage = 0; // 0-none, 1-ambush, 2-critical, 3-completed
 
     public int getEnergy() { return energy; }
     public void setEnergy(int energy) { this.energy = Math.max(0, Math.min(energy, maxEnergy)); }
@@ -70,6 +72,12 @@ public class SuitCapability implements INBTSerializable<CompoundTag> {
     public boolean hasEmbeddedReactor() { return hasEmbeddedReactor; }
     public void setEmbeddedReactor(boolean embedded) { this.hasEmbeddedReactor = embedded; }
 
+    public boolean isFirstNightTriggered() { return isFirstNightTriggered; }
+    public void setFirstNightTriggered(boolean triggered) { this.isFirstNightTriggered = triggered; }
+
+    public int getCinematicStage() { return cinematicStage; }
+    public void setCinematicStage(int stage) { this.cinematicStage = stage; }
+
     public void saveNBTData(CompoundTag nbt) {
         nbt.putInt("energy", energy);
         nbt.putInt("maxEnergy", maxEnergy);
@@ -84,6 +92,8 @@ public class SuitCapability implements INBTSerializable<CompoundTag> {
         nbt.putDouble("failureY", failureYPos);
         nbt.putBoolean("autoBoost", autoBoostEnabled);
         nbt.putBoolean("embeddedReactor", hasEmbeddedReactor);
+        nbt.putBoolean("firstNightTriggered", isFirstNightTriggered);
+        nbt.putInt("cinematicStage", cinematicStage);
     }
 
     public void loadNBTData(CompoundTag nbt) {
@@ -103,6 +113,12 @@ public class SuitCapability implements INBTSerializable<CompoundTag> {
         }
         if (nbt.contains("embeddedReactor")) {
             hasEmbeddedReactor = nbt.getBoolean("embeddedReactor");
+        }
+        if (nbt.contains("firstNightTriggered")) {
+            isFirstNightTriggered = nbt.getBoolean("firstNightTriggered");
+        }
+        if (nbt.contains("cinematicStage")) {
+            cinematicStage = nbt.getInt("cinematicStage");
         }
     }
 
