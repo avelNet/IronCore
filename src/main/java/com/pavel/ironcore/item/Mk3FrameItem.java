@@ -1,14 +1,11 @@
 package com.pavel.ironcore.item;
 
-import com.pavel.ironcore.capability.SuitCapabilityProvider;
-import com.pavel.ironcore.network.ModMessages;
-import com.pavel.ironcore.network.PacketSyncSuitData;
+import com.pavel.ironcore.capability.SuitCapability;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ArmorItem;
@@ -17,268 +14,125 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
-public class Mk3FrameItem extends ArmorItem {
+public class Mk3FrameItem extends BaseSuitItem {
     public Mk3FrameItem(ArmorMaterial material, ArmorItem.Type type, Properties properties) {
         super(material, type, properties);
     }
 
     @Override
-    public String getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, String type) {
-        if (slot == EquipmentSlot.LEGS) {
-            return "ironcore:textures/models/armor/mk3_layer_2.png";
-        }
-        return "ironcore:textures/models/armor/mk3_layer_1.png";
-    }
-
-    private boolean isFullSuitEquipped(Player player) {
-        return player.getItemBySlot(EquipmentSlot.HEAD).getItem() == ModItems.MK3_HELMET.get() &&
-               player.getItemBySlot(EquipmentSlot.CHEST).getItem() == ModItems.MK3_CHESTPLATE.get() &&
-               player.getItemBySlot(EquipmentSlot.LEGS).getItem() == ModItems.MK3_LEGGINGS.get() &&
-               player.getItemBySlot(EquipmentSlot.FEET).getItem() == ModItems.MK3_BOOTS.get();
+    public String getTierId() {
+        return "mk3";
     }
 
     @Override
-    public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
-        if (entity instanceof Player player) {
-            // Ограничиваем выполнение логики только нагрудником, чтобы она не срабатывала 4 раза за тик
-            if (this.getType() == ArmorItem.Type.CHESTPLATE && player.getItemBySlot(EquipmentSlot.CHEST) == stack) {
-                player.getCapability(SuitCapabilityProvider.SUIT_CAPABILITY).ifPresent(suit -> {
-                    boolean isFull = isFullSuitEquipped(player);
+    protected void applyClientPhysics(Player player, SuitCapability suit, ItemStack stack, Level level) {
+        if (player.getAbilities().flying) {
+            boolean isBoosting = net.minecraft.client.Minecraft.getInstance().options.keySprint.isDown();
+            boolean enginesOverheated = suit.getHeat() >= 100.0f;
 
-                    if (isFull) {
-                        ItemStack chestplate = player.getItemBySlot(EquipmentSlot.CHEST);
-                        net.minecraft.nbt.CompoundTag chestTag = chestplate.getOrCreateTag();
-                        
-                        String installedReactor = chestTag.getString("InstalledReactor");
-                        int suitEnergy = chestTag.getInt("SuitEnergy");
-                        int suitMaxEnergy = chestTag.getInt("SuitMaxEnergy");
-
-                        if (installedReactor.isEmpty() || installedReactor.equals("none")) {
-                            suit.setActiveReactorType("none");
-                            suit.setEnergy(0);
-                            suit.setMaxEnergy(0);
-                            if (suit.isFlying()) suit.setFlying(false);
-                            if (player.getAbilities().flying) {
-                                player.getAbilities().flying = false;
-                                player.onUpdateAbilities();
-                            }
-                            if (!level.isClientSide && player.tickCount % 20 == 0) {
-                                ModMessages.sendToPlayer(new PacketSyncSuitData(
-                                    suit.getEnergy(), suit.getMaxEnergy(), suit.getSuitTier(), 
-                                    suit.getFrameDurability(), suit.getPalladiumPoisoning(), suit.getActiveReactorType(),
-                                    suit.getIcingLevel(), suit.getHeat(), suit.isFlying(),
-                                    suit.isAutoBoostEnabled(), suit.isTurbo()), (ServerPlayer)player);
-                            }
-                            return; 
-                        }
-
-                        if (installedReactor.contains("palladium")) suit.setActiveReactorType("palladium");
-                        else if (installedReactor.contains("coal")) suit.setActiveReactorType("coal");
-                        
-                        suit.setMaxEnergy(suitMaxEnergy);
-                        if (suit.getEnergy() != suitEnergy) {
-                           suit.setEnergy(suitEnergy); 
-                        }
-
-                        if (suit.getHeat() < 100.0f) {
-                            if (!suit.isFlying()) {
-                                suit.setFlying(true);
-                            }
-                        }
-
-                        if (player.getAbilities().flying) {
-                            boolean isBoosting = level.isClientSide ? 
-                                net.minecraft.client.Minecraft.getInstance().options.keySprint.isDown() : 
-                                suit.isBoostKeyHeld();
-
-                            boolean enginesFrozen = suit.getIcingLevel() >= 100.0f;
-                            boolean enginesOverheated = suit.getHeat() >= 100.0f;
-
-                            if (player.isInWater() && !player.isCreative()) {
-                                player.getAbilities().flying = false;
-                                player.onUpdateAbilities();
-                            } else if (enginesOverheated) {
-                                Vec3 current = player.getDeltaMovement();
-                                player.setDeltaMovement(current.x * 0.9, current.y - 0.1, current.z * 0.9);
-                                player.hasImpulse = true;
-                            } else if (suit.getEnergy() <= 1000 && suit.getEnergy() >= 4 && !enginesFrozen) {
-                                Vec3 current = player.getDeltaMovement();
-                                player.setDeltaMovement(current.x * 0.9, current.y - 0.1, current.z * 0.9);
-                                player.hasImpulse = true;
-                            } else if (isBoosting && suit.getEnergy() > 1000 && !enginesFrozen) {
-                                Vec3 look = player.getLookAngle();
-                                Vec3 current = player.getDeltaMovement();
-                                
-                                // Нерф Mk3: Турбо снижен с 1.73 до 1.35 (~95 км/ч), Нормал с 1.6 до 1.1 (~80 км/ч)
-                                double maxSpeed = suit.isTurbo() ? 1.35 : 1.1; 
-                                double currentSpeed = current.length();
-                                double speedRatio = Math.min(currentSpeed / maxSpeed, 1.0);
-                                
-                                // Стабильное ускорение. Для Турбо делаем его чуть плавнее (0.7 вместо 0.8), чтобы не было резкого рывка.
-                                double acceleration = 0.15 + Math.pow(speedRatio, 2.0) * (suit.isTurbo() ? 0.7 : 0.6); 
-                                
-                                Vec3 target = look.scale(maxSpeed);
-                                double targetY = target.y;
-                                
-                                if (targetY > 0) {
-                                    // +0.1 дает жесткий пинок вверх, чтобы мгновенно пробить стену гравитации
-                                    targetY = targetY * 1.2 + 0.1; 
-                                } else if (targetY < 0) {
-                                    targetY = targetY * 1.4; // Контролируемое пикирование (~150 км/ч)
-                                }
-                                
-                                Vec3 newMovement = new Vec3(
-                                    current.x + (target.x - current.x) * acceleration,
-                                    current.y + (targetY - current.y) * acceleration,
-                                    current.z + (target.z - current.z) * acceleration
-                                );
-                                
-                                player.setDeltaMovement(newMovement);
-                                player.hasImpulse = true;
-                            } else if (suit.getEnergy() >= 4 && !enginesFrozen) {
-                                Vec3 current = player.getDeltaMovement();
-                                double hoverMaxSpeed = 0.35; // Нерф: было 0.4
-                                if (current.length() > hoverMaxSpeed) {
-                                    player.setDeltaMovement(current.scale(0.85)); 
-                                    if (player.getDeltaMovement().length() > hoverMaxSpeed) {
-                                        player.setDeltaMovement(player.getDeltaMovement().normalize().scale(hoverMaxSpeed));
-                                    }
-                                    player.hasImpulse = true;
-                                }
-                            }
-                        }
-                    }
-
-                    if (!level.isClientSide && player instanceof ServerPlayer serverPlayer) {
-                        boolean changed = false;
-
-                        if (isFull) {
-                            if (!suit.getSuitTier().equals("mk3")) {
-                                suit.setSuitTier("mk3");
-                                suit.setMaxEnergy(100000);
-                                changed = true;
-                            }
-
-                            serverPlayer.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 40, 1, false, false, true));
-                            serverPlayer.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 40, 1, false, false, true));
-                            
-                            boolean systemsFunctional = serverPlayer.isCreative() || (suit.getIcingLevel() < 100.0f && suit.getHeat() < 100.0f && suit.getEnergy() >= 4 && !serverPlayer.isInWater());
-                            serverPlayer.getAbilities().mayfly = systemsFunctional;
-                            
-                            if (serverPlayer.getAbilities().flying) {
-                                if (!systemsFunctional) {
-                                    serverPlayer.getAbilities().flying = false;
-                                    serverPlayer.onUpdateAbilities();
-                                } else {
-                                    // Нерф: Турбо жрет катастрофически много энергии
-                                    int energyDrain = suit.isTurbo() ? 50 : 2;
-                                    suit.setEnergy(suit.getEnergy() - energyDrain);
-                                    
-                                    ItemStack chestplateServer = serverPlayer.getItemBySlot(EquipmentSlot.CHEST);
-                                    if(chestplateServer.getItem() instanceof ArmorItem) {
-                                         chestplateServer.getOrCreateTag().putInt("SuitEnergy", suit.getEnergy()); 
-                                    }
-
-                                    boolean isBoosting = suit.isBoostKeyHeld();
-                                    
-                                    if (isBoosting && suit.getEnergy() > 1000) {
-                                        suit.setFlightTimer(suit.getFlightTimer() + 1);
-                                        suit.setHeat(suit.getHeat() + 0.025f);
-                                        
-                                        if (suit.isAutoBoostEnabled() && suit.getFlightTimer() >= 100) {
-                                            if (!suit.isTurbo()) {
-                                                suit.setTurbo(true);
-                                                changed = true;
-                                            }
-                                        }
-                                    } else {
-                                        if (suit.getFlightTimer() > 0 || suit.isTurbo()) {
-                                            suit.setFlightTimer(0);
-                                            suit.setTurbo(false);
-                                            changed = true;
-                                        }
-                                    }
-                                    
-                                    ServerLevel serverLevel = (ServerLevel) level;
-                                    Vec3 pos = serverPlayer.position();
-                                    
-                                    if (suit.isTurbo()) {
-                                        // Jet Stream Effect (Dense Particles)
-                                        for (int i = 0; i < 3; i++) {
-                                            serverLevel.sendParticles(ParticleTypes.SOUL_FIRE_FLAME, pos.x, pos.y + 0.1, pos.z, 1, 0.05, 0.05, 0.05, 0.05);
-                                            if (serverPlayer.tickCount % 2 == 0) {
-                                                serverLevel.sendParticles(ParticleTypes.FLAME, pos.x, pos.y + 0.1, pos.z, 1, 0.02, 0.02, 0.02, 0.01);
-                                            }
-                                        }
-                                        if (serverPlayer.tickCount % 5 == 0) {
-                                            serverLevel.sendParticles(ParticleTypes.LAVA, pos.x, pos.y + 0.1, pos.z, 1, 0.1, 0.1, 0.1, 0.01);
-                                        }
-                                        suit.setHeat(suit.getHeat() + 0.05f); // Extra heat in turbo
-                                    } else if (serverPlayer.tickCount % 2 == 0) {
-                                        if (suit.getEnergy() > 1000 || serverPlayer.tickCount % 10 == 0) {
-                                            serverLevel.sendParticles(ParticleTypes.SOUL_FIRE_FLAME, pos.x, pos.y + 0.1, pos.z, 1, 0.1, 0.0, 0.1, 0.02);
-                                        }
-                                    }
-                                }
-                            } else {
-                                // Сброс при приземлении или отключении полета
-                                if (suit.getFlightTimer() > 0 || suit.isTurbo()) {
-                                    suit.setFlightTimer(0);
-                                    suit.setTurbo(false);
-                                    changed = true;
-                                }
-                            }
-                            serverPlayer.onUpdateAbilities();
-
-                            if (suit.getIcingLevel() > 0.0f) {
-                                suit.setIcingLevel(suit.getIcingLevel() - 0.5f);
-                            }
-
-                            float coolingRate = 0.2f;
-                            if (serverPlayer.isInWater()) coolingRate = 0.8f;
-                            else if (level.getBiome(serverPlayer.blockPosition()).value().getBaseTemperature() < 0.2f) coolingRate = 0.4f;
-                            if (level.dimension() == net.minecraft.world.level.Level.NETHER) suit.setHeat(suit.getHeat() + 0.03f);
-                            if (serverPlayer.isOnFire() || serverPlayer.isInLava()) suit.setHeat(suit.getHeat() + 0.5f);
-                            if (!suit.isBoostKeyHeld() || !serverPlayer.getAbilities().flying) {
-                                suit.setHeat(suit.getHeat() - coolingRate);
-                            }
-
-                            if (suit.getHeat() >= 100.0f) {
-                                if (serverPlayer.getAbilities().flying) {
-                                    serverPlayer.getAbilities().flying = false;
-                                    serverPlayer.onUpdateAbilities();
-                                }
-                                serverPlayer.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 60, 1, false, false, true));
-                            }
-
-                            serverPlayer.setTicksFrozen(0);
-                            changed = true;
-                        } else {
-                            if (suit.getSuitTier().equals("mk3")) {
-                                suit.setSuitTier("none");
-                                suit.setActiveReactorType("none");
-                                suit.setFlying(false);
-                                suit.setTurbo(false);
-                                suit.setFlightTimer(0);
-                                if (!serverPlayer.isCreative() && !serverPlayer.isSpectator()) {
-                                    serverPlayer.getAbilities().mayfly = false;
-                                    serverPlayer.getAbilities().flying = false;
-                                    serverPlayer.onUpdateAbilities();
-                                }
-                                changed = true;
-                            }
-                        }
-
-                        if (changed || serverPlayer.tickCount % 20 == 0) {
-                            ModMessages.sendToPlayer(new PacketSyncSuitData(
-                                    suit.getEnergy(), suit.getMaxEnergy(), suit.getSuitTier(), 
-                                    suit.getFrameDurability(), suit.getPalladiumPoisoning(), suit.getActiveReactorType(),
-                                    suit.getIcingLevel(), suit.getHeat(), suit.isFlying(),
-                                    suit.isAutoBoostEnabled(), suit.isTurbo()), serverPlayer);
-                        }
-                    }
-                });
+            if (player.isInWater() && !player.isCreative()) {
+                player.getAbilities().flying = false;
+                player.onUpdateAbilities();
+            } else if (enginesOverheated) {
+                Vec3 current = player.getDeltaMovement();
+                player.setDeltaMovement(current.x * 0.9, current.y - 0.1, current.z * 0.9);
+                player.hasImpulse = true;
+            } else if (suit.getEnergy() <= 1000 && suit.getEnergy() >= 4) {
+                Vec3 current = player.getDeltaMovement();
+                player.setDeltaMovement(current.x * 0.9, current.y - 0.1, current.z * 0.9);
+                player.hasImpulse = true;
+            } else if (isBoosting && suit.getEnergy() > 1000) {
+                Vec3 look = player.getLookAngle();
+                Vec3 current = player.getDeltaMovement();
+                double maxSpeed = suit.isTurbo() ? 1.25 : 1.0; 
+                double currentSpeed = current.length();
+                double speedRatio = Math.min(currentSpeed / maxSpeed, 1.0);
+                double acceleration = 0.15 + Math.pow(speedRatio, 2.0) * (suit.isTurbo() ? 0.7 : 0.6); 
+                Vec3 target = look.scale(maxSpeed);
+                double targetY = target.y > 0 ? target.y * 1.2 + 0.1 : target.y * 1.4;
+                player.setDeltaMovement(new Vec3(
+                    current.x + (target.x - current.x) * acceleration,
+                    current.y + (targetY - current.y) * acceleration,
+                    current.z + (target.z - current.z) * acceleration
+                ));
+                player.hasImpulse = true;
+            } else if (suit.getEnergy() >= 4) {
+                Vec3 current = player.getDeltaMovement();
+                double hoverMaxSpeed = 0.3; 
+                if (current.length() > hoverMaxSpeed) {
+                    player.setDeltaMovement(current.scale(0.85)); 
+                    player.hasImpulse = true;
+                }
             }
         }
+    }
+
+    @Override
+    protected boolean applyServerLogic(ServerPlayer player, SuitCapability suit, ItemStack stack, Level level) {
+        boolean changed = false;
+
+        player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 40, 0, false, false, true));
+        player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 40, 0, false, false, true));
+        
+        boolean systemsFunctional = player.isCreative() || (suit.getIcingLevel() < 100.0f && suit.getHeat() < 100.0f && suit.getEnergy() >= 4 && !player.isInWater());
+        player.getAbilities().mayfly = systemsFunctional;
+        
+        if (player.getAbilities().flying) {
+            if (!systemsFunctional) {
+                player.getAbilities().flying = false;
+                player.onUpdateAbilities();
+            } else {
+                int energyDrain = suit.isTurbo() ? 80 : 4;
+                suit.setEnergy(suit.getEnergy() - energyDrain);
+                stack.getOrCreateTag().putInt("SuitEnergy", suit.getEnergy());
+
+                boolean isBoosting = suit.isBoostKeyHeld();
+                if (isBoosting && suit.getEnergy() > 1000) {
+                    suit.setFlightTimer(suit.getFlightTimer() + 1);
+                    suit.setHeat(suit.getHeat() + 0.04f);
+                    if (suit.isAutoBoostEnabled() && suit.getFlightTimer() >= 100) {
+                        if (!suit.isTurbo()) {
+                            suit.setTurbo(true);
+                            changed = true;
+                        }
+                    }
+                } else {
+                    if (suit.getFlightTimer() > 0 || suit.isTurbo()) {
+                        suit.setFlightTimer(0);
+                        suit.setTurbo(false);
+                        changed = true;
+                    }
+                }
+                
+                ServerLevel serverLevel = (ServerLevel) level;
+                Vec3 pos = player.position();
+                if (suit.isTurbo()) {
+                    for (int i = 0; i < 3; i++) {
+                        serverLevel.sendParticles(ParticleTypes.SOUL_FIRE_FLAME, pos.x, pos.y + 0.1, pos.z, 1, 0.05, 0.05, 0.05, 0.05);
+                    }
+                    suit.setHeat(suit.getHeat() + 0.08f); 
+                } else if (player.tickCount % 2 == 0) {
+                    serverLevel.sendParticles(ParticleTypes.SOUL_FIRE_FLAME, pos.x, pos.y + 0.1, pos.z, 1, 0.1, 0.0, 0.1, 0.02);
+                }
+            }
+        } else {
+            if (suit.getFlightTimer() > 0 || suit.isTurbo()) {
+                suit.setFlightTimer(0);
+                suit.setTurbo(false);
+                changed = true;
+            }
+        }
+
+        player.onUpdateAbilities();
+
+        if (suit.getIcingLevel() > 0) suit.setIcingLevel(suit.getIcingLevel() - 0.5f);
+
+        float coolingRate = player.isInWater() ? 0.8f : (level.getBiome(player.blockPosition()).value().getBaseTemperature() < 0.2f ? 0.4f : 0.2f);
+        if (level.dimension() == Level.NETHER) suit.setHeat(suit.getHeat() + 0.03f);
+        if (player.isOnFire() || player.isInLava()) suit.setHeat(suit.getHeat() + 0.5f);
+        if (!suit.isBoostKeyHeld() || !player.getAbilities().flying) suit.setHeat(suit.getHeat() - coolingRate);
+
+        player.setTicksFrozen(0);
+        return true; 
     }
 }
