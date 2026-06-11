@@ -53,7 +53,7 @@ public class Mk3FrameItem extends ArmorItem {
                         int suitEnergy = chestTag.getInt("SuitEnergy");
                         int suitMaxEnergy = chestTag.getInt("SuitMaxEnergy");
 
-                        if (installedReactor.isEmpty() || installedReactor.equals("none")) {
+                        if ((installedReactor.isEmpty() || installedReactor.equals("none")) && !suit.hasEmbeddedReactor()) {
                             suit.setActiveReactorType("none");
                             suit.setEnergy(0);
                             suit.setMaxEnergy(0);
@@ -67,17 +67,21 @@ public class Mk3FrameItem extends ArmorItem {
                                     suit.getEnergy(), suit.getMaxEnergy(), suit.getSuitTier(), 
                                     suit.getFrameDurability(), suit.getPalladiumPoisoning(), suit.getActiveReactorType(),
                                     suit.getIcingLevel(), suit.getHeat(), suit.isFlying(),
-                                    suit.isAutoBoostEnabled(), suit.isTurbo()), (ServerPlayer)player);
+                                    suit.isAutoBoostEnabled(), suit.isTurbo(), suit.hasEmbeddedReactor()), (ServerPlayer)player);
                             }
                             return; 
                         }
 
-                        if (installedReactor.contains("palladium")) suit.setActiveReactorType("palladium");
-                        else if (installedReactor.contains("coal")) suit.setActiveReactorType("coal");
-                        
-                        suit.setMaxEnergy(suitMaxEnergy);
-                        if (suit.getEnergy() != suitEnergy) {
-                           suit.setEnergy(suitEnergy); 
+                        if (suit.hasEmbeddedReactor()) {
+                            suit.setActiveReactorType("palladium");
+                        } else {
+                            if (installedReactor.contains("palladium")) suit.setActiveReactorType("palladium");
+                            else if (installedReactor.contains("coal")) suit.setActiveReactorType("coal");
+                            
+                            suit.setMaxEnergy(suitMaxEnergy);
+                            if (suit.getEnergy() != suitEnergy) {
+                               suit.setEnergy(suitEnergy); 
+                            }
                         }
 
                         if (suit.getHeat() < 100.0f) {
@@ -172,7 +176,7 @@ public class Mk3FrameItem extends ArmorItem {
                                     suit.setEnergy(suit.getEnergy() - 2);
                                     
                                     ItemStack chestplateServer = serverPlayer.getItemBySlot(EquipmentSlot.CHEST);
-                                    if(chestplateServer.getItem() instanceof ArmorItem) {
+                                    if(chestplateServer.getItem() instanceof ArmorItem && !suit.hasEmbeddedReactor()) {
                                          chestplateServer.getOrCreateTag().putInt("SuitEnergy", suit.getEnergy()); 
                                     }
 
@@ -271,7 +275,7 @@ public class Mk3FrameItem extends ArmorItem {
                                     suit.getEnergy(), suit.getMaxEnergy(), suit.getSuitTier(), 
                                     suit.getFrameDurability(), suit.getPalladiumPoisoning(), suit.getActiveReactorType(),
                                     suit.getIcingLevel(), suit.getHeat(), suit.isFlying(),
-                                    suit.isAutoBoostEnabled(), suit.isTurbo()), serverPlayer);
+                                    suit.isAutoBoostEnabled(), suit.isTurbo(), suit.hasEmbeddedReactor()), serverPlayer);
                         }
                     }
                 });

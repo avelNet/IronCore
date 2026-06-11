@@ -20,6 +20,7 @@ public class SuitCapability implements INBTSerializable<CompoundTag> {
     private boolean autoBoostEnabled = true;
     private boolean isTurbo = false;
     private boolean wasFlyingHorizontally = false;
+    private boolean hasEmbeddedReactor = false;
 
     public int getEnergy() { return energy; }
     public void setEnergy(int energy) { this.energy = Math.max(0, Math.min(energy, maxEnergy)); }
@@ -66,6 +67,9 @@ public class SuitCapability implements INBTSerializable<CompoundTag> {
     public boolean wasFlyingHorizontally() { return wasFlyingHorizontally; }
     public void setWasFlyingHorizontally(boolean wasFlyingHorizontally) { this.wasFlyingHorizontally = wasFlyingHorizontally; }
 
+    public boolean hasEmbeddedReactor() { return hasEmbeddedReactor; }
+    public void setEmbeddedReactor(boolean embedded) { this.hasEmbeddedReactor = embedded; }
+
     public void saveNBTData(CompoundTag nbt) {
         nbt.putInt("energy", energy);
         nbt.putInt("maxEnergy", maxEnergy);
@@ -79,6 +83,7 @@ public class SuitCapability implements INBTSerializable<CompoundTag> {
         nbt.putBoolean("flying", isFlying);
         nbt.putDouble("failureY", failureYPos);
         nbt.putBoolean("autoBoost", autoBoostEnabled);
+        nbt.putBoolean("embeddedReactor", hasEmbeddedReactor);
     }
 
     public void loadNBTData(CompoundTag nbt) {
@@ -95,6 +100,9 @@ public class SuitCapability implements INBTSerializable<CompoundTag> {
         failureYPos = nbt.getDouble("failureY");
         if (nbt.contains("autoBoost")) {
             autoBoostEnabled = nbt.getBoolean("autoBoost");
+        }
+        if (nbt.contains("embeddedReactor")) {
+            hasEmbeddedReactor = nbt.getBoolean("embeddedReactor");
         }
     }
 

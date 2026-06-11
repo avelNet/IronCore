@@ -35,7 +35,7 @@ public class PacketSyncAutoBoost {
                             suit.getEnergy(), suit.getMaxEnergy(), suit.getSuitTier(),
                             suit.getFrameDurability(), suit.getPalladiumPoisoning(), suit.getActiveReactorType(),
                             suit.getIcingLevel(), suit.getHeat(), suit.isFlying(),
-                            suit.isAutoBoostEnabled(), suit.isTurbo()), player);
+                            suit.isAutoBoostEnabled(), suit.isTurbo(), suit.hasEmbeddedReactor()), player);
                     
                     String status = enabled ? "§aENABLED" : "§cDISABLED";
                     player.displayClientMessage(net.minecraft.network.chat.Component.literal("§6TURBO MODE: " + status), true);

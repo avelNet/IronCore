@@ -115,16 +115,26 @@ public class IronCore {
 
                     if (event.player.level().isClientSide()) return; // Server only logic follows
 
-                    // Глобальная логика отравления палладием (работает всегда)
-                    if (suit.getActiveReactorType().equals("palladium")) {
-                        suit.setPalladiumPoisoning(suit.getPalladiumPoisoning() + 0.01f);
+                    // Проверка инвентаря на наличие токсичных отходов
+                    boolean hasDepletedCore = event.player.getInventory().contains(new net.minecraft.world.item.ItemStack(ModItems.DEPLETED_PALLADIUM_CORE.get()).getItem().getDefaultInstance());
+
+                    // Глобальная логика отравления палладием
+                    if (suit.hasEmbeddedReactor() || suit.getActiveReactorType().equals("palladium") || hasDepletedCore) {
+                        float poisonRate = 0.01f;
+                        if (suit.hasEmbeddedReactor() && suit.getEnergy() < suit.getMaxEnergy() * 0.1f) {
+                            poisonRate = 0.03f; // Яд растет быстрее, если стержень почти пуст
+                        }
+                        if (hasDepletedCore) {
+                            poisonRate += 0.05f; // Штраф за ношение отходов
+                        }
+                        suit.setPalladiumPoisoning(suit.getPalladiumPoisoning() + poisonRate);
                         
                         if (event.player.tickCount % 20 == 0) {
                             ModMessages.sendToPlayer(new com.pavel.ironcore.network.PacketSyncSuitData(
                                     suit.getEnergy(), suit.getMaxEnergy(), suit.getSuitTier(), 
                                     suit.getFrameDurability(), suit.getPalladiumPoisoning(), suit.getActiveReactorType(),
                                     suit.getIcingLevel(), suit.getHeat(), suit.isFlying(),
-                                    suit.isAutoBoostEnabled(), suit.isTurbo()), (net.minecraft.server.level.ServerPlayer)event.player);
+                                    suit.isAutoBoostEnabled(), suit.isTurbo(), suit.hasEmbeddedReactor()), (net.minecraft.server.level.ServerPlayer)event.player);
                         }
 
                         if (suit.getPalladiumPoisoning() > 30.0f && event.player.tickCount % 40 == 0) {
@@ -146,7 +156,7 @@ public class IronCore {
                                     suit.getEnergy(), suit.getMaxEnergy(), suit.getSuitTier(), 
                                     suit.getFrameDurability(), suit.getPalladiumPoisoning(), suit.getActiveReactorType(),
                                     suit.getIcingLevel(), suit.getHeat(), suit.isFlying(),
-                                    suit.isAutoBoostEnabled(), suit.isTurbo()), (net.minecraft.server.level.ServerPlayer)event.player);
+                                    suit.isAutoBoostEnabled(), suit.isTurbo(), suit.hasEmbeddedReactor()), (net.minecraft.server.level.ServerPlayer)event.player);
                         }
                     }
 
@@ -171,7 +181,7 @@ public class IronCore {
                                     suit.getEnergy(), suit.getMaxEnergy(), suit.getSuitTier(), 
                                     suit.getFrameDurability(), suit.getPalladiumPoisoning(), suit.getActiveReactorType(),
                                     suit.getIcingLevel(), suit.getHeat(), suit.isFlying(),
-                                    suit.isAutoBoostEnabled(), suit.isTurbo()), (net.minecraft.server.level.ServerPlayer)event.player);
+                                    suit.isAutoBoostEnabled(), suit.isTurbo(), suit.hasEmbeddedReactor()), (net.minecraft.server.level.ServerPlayer)event.player);
                         }
                     }
                 });
