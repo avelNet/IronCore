@@ -67,6 +67,12 @@ public class ModMessages {
                 .encoder(PacketSyncAutoBoost::toBytes)
                 .consumerMainThread(PacketSyncAutoBoost::handle)
                 .add();
+
+        net.messageBuilder(PacketSyncMaskState.class, id(), NetworkDirection.PLAY_TO_SERVER)
+                .decoder(PacketSyncMaskState::new)
+                .encoder(PacketSyncMaskState::toBytes)
+                .consumerMainThread(PacketSyncMaskState::handle)
+                .add();
     }
 
     public static <MSG> void sendToServer(MSG message) {
