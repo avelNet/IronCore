@@ -95,6 +95,12 @@ public class ModItems {
             () -> new Item(new Item.Properties()));
     public static final RegistryObject<Item> GOLD_TITANIUM_ALLOY = ITEMS.register("gold_titanium_alloy",
             () -> new Item(new Item.Properties()));
+            
+    public static final RegistryObject<Item> PALLADIUM_CORE = ITEMS.register("palladium_core",
+            () -> new PalladiumCoreItem(new Item.Properties().stacksTo(16)));
+            
+    public static final RegistryObject<Item> DEPLETED_PALLADIUM_CORE = ITEMS.register("depleted_palladium_core",
+            () -> new Item(new Item.Properties().stacksTo(16)));
 
     public static void register(IEventBus eventBus) {
         ITEMS.register(eventBus);

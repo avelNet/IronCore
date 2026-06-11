@@ -18,8 +18,9 @@ public class PacketSyncSuitData {
     private final boolean isFlying;
     private final boolean autoBoostEnabled;
     private final boolean isTurbo;
+    private final boolean hasEmbeddedReactor;
 
-    public PacketSyncSuitData(int energy, int maxEnergy, String tier, int durability, float poisoning, String reactor, float icingLevel, float heatLevel, boolean isFlying, boolean autoBoostEnabled, boolean isTurbo) {
+    public PacketSyncSuitData(int energy, int maxEnergy, String tier, int durability, float poisoning, String reactor, float icingLevel, float heatLevel, boolean isFlying, boolean autoBoostEnabled, boolean isTurbo, boolean hasEmbeddedReactor) {
         this.energy = energy;
         this.maxEnergy = maxEnergy;
         this.tier = tier;
@@ -31,6 +32,7 @@ public class PacketSyncSuitData {
         this.isFlying = isFlying;
         this.autoBoostEnabled = autoBoostEnabled;
         this.isTurbo = isTurbo;
+        this.hasEmbeddedReactor = hasEmbeddedReactor;
     }
 
     public PacketSyncSuitData(FriendlyByteBuf buffer) {
@@ -45,6 +47,7 @@ public class PacketSyncSuitData {
         this.isFlying = buffer.readBoolean();
         this.autoBoostEnabled = buffer.readBoolean();
         this.isTurbo = buffer.readBoolean();
+        this.hasEmbeddedReactor = buffer.readBoolean();
     }
 
     public void toBytes(FriendlyByteBuf buffer) {
@@ -59,6 +62,7 @@ public class PacketSyncSuitData {
         buffer.writeBoolean(isFlying);
         buffer.writeBoolean(autoBoostEnabled);
         buffer.writeBoolean(isTurbo);
+        buffer.writeBoolean(hasEmbeddedReactor);
     }
 
     public boolean handle(Supplier<NetworkEvent.Context> supplier) {
@@ -76,6 +80,7 @@ public class PacketSyncSuitData {
                 suit.setFlying(isFlying);
                 suit.setAutoBoostEnabled(autoBoostEnabled);
                 suit.setTurbo(isTurbo);
+                suit.setEmbeddedReactor(hasEmbeddedReactor);
             });
         });
         context.setPacketHandled(true);
