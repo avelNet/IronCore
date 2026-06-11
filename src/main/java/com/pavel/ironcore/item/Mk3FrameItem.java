@@ -109,7 +109,8 @@ public class Mk3FrameItem extends ArmorItem {
                                 Vec3 look = player.getLookAngle();
                                 Vec3 current = player.getDeltaMovement();
                                 
-                                double maxSpeed = suit.isTurbo() ? 1.73 : 1.6; // Turbo: ~125 km/h, Normal: ~115 km/h
+                                // Нерф Mk3: Турбо снижен с 1.73 до 1.35 (~95 км/ч), Нормал с 1.6 до 1.1 (~80 км/ч)
+                                double maxSpeed = suit.isTurbo() ? 1.35 : 1.1; 
                                 double currentSpeed = current.length();
                                 double speedRatio = Math.min(currentSpeed / maxSpeed, 1.0);
                                 
@@ -136,7 +137,7 @@ public class Mk3FrameItem extends ArmorItem {
                                 player.hasImpulse = true;
                             } else if (suit.getEnergy() >= 4 && !enginesFrozen) {
                                 Vec3 current = player.getDeltaMovement();
-                                double hoverMaxSpeed = 0.4; 
+                                double hoverMaxSpeed = 0.35; // Нерф: было 0.4
                                 if (current.length() > hoverMaxSpeed) {
                                     player.setDeltaMovement(current.scale(0.85)); 
                                     if (player.getDeltaMovement().length() > hoverMaxSpeed) {
@@ -169,7 +170,9 @@ public class Mk3FrameItem extends ArmorItem {
                                     serverPlayer.getAbilities().flying = false;
                                     serverPlayer.onUpdateAbilities();
                                 } else {
-                                    suit.setEnergy(suit.getEnergy() - 2);
+                                    // Нерф: Турбо жрет катастрофически много энергии
+                                    int energyDrain = suit.isTurbo() ? 50 : 2;
+                                    suit.setEnergy(suit.getEnergy() - energyDrain);
                                     
                                     ItemStack chestplateServer = serverPlayer.getItemBySlot(EquipmentSlot.CHEST);
                                     if(chestplateServer.getItem() instanceof ArmorItem) {

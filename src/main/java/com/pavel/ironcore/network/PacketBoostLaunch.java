@@ -31,7 +31,8 @@ public class PacketBoostLaunch {
                     Vec3 look = player.getLookAngle();
                     // Переходим от фиксированного "прыжка" к направленному взлету
                     // Множитель скорости зависит от тира костюма
-                    double speedMultiplier = suit.getSuitTier().equals("mk3") ? 1.6 : 1.3;
+                    // Нерф Mk3: снижен с 1.6 до 1.45 для баланса
+                    double speedMultiplier = suit.getSuitTier().equals("mk3") ? 1.45 : 1.3;
                     
                     // Основной вектор - направление взгляда с ускорением
                     // Добавляем обязательный вертикальный "подхват", чтобы оторваться от земли
