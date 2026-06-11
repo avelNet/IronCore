@@ -187,7 +187,7 @@ public abstract class BaseSuitItem extends ArmorItem implements GeoItem {
                 suit.getEnergy(), suit.getMaxEnergy(), suit.getSuitTier(), 
                 suit.getFrameDurability(), suit.getPalladiumPoisoning(), suit.getActiveReactorType(),
                 suit.getIcingLevel(), suit.getHeat(), suit.isFlying(),
-                suit.isAutoBoostEnabled(), suit.isTurbo()), player);
+                suit.isAutoBoostEnabled(), suit.isTurbo(), suit.hasEmbeddedReactor(), suit.isMaskOpen()), player);
     }
 
     protected boolean isFullSuitEquipped(Player player) {

@@ -85,6 +85,38 @@ public class StoryEvents {
             }
         });
         
+        // Очищаем эффекты и даем временную неуязвимость
+        player.removeAllEffects();
+        
+        // Надеваем невидимую броню для анимации
+        player.setItemSlot(net.minecraft.world.entity.EquipmentSlot.CHEST, com.pavel.ironcore.item.ModItems.CINEMATIC_CHESTPLATE.get().getDefaultInstance());
+        
         player.sendSystemMessage(Component.literal("§e[СИСТЕМА]: Критическое состояние. Обнаружен поврежденный источник энергии..."));
+    }
+
+    @Mod.EventBusSubscriber(modid = IronCore.MODID, value = net.minecraftforge.api.distmarker.Dist.CLIENT)
+    public static class ClientStoryEvents {
+        @SubscribeEvent
+        public static void onClientTick(TickEvent.PlayerTickEvent event) {
+            if (event.phase == TickEvent.Phase.END && event.player.level().isClientSide) {
+                event.player.getCapability(SuitCapabilityProvider.SUIT_CAPABILITY).ifPresent(suit -> {
+                    if (suit.getCinematicStage() == 2 && net.minecraft.client.Minecraft.getInstance().screen == null) {
+                        net.minecraft.client.Minecraft.getInstance().setScreen(new com.pavel.ironcore.screen.CinematicChoiceScreen());
+                    }
+                });
+            }
+        }
+
+        @SubscribeEvent
+        public static void onOpenGui(net.minecraftforge.client.event.ScreenEvent.Opening event) {
+            net.minecraft.client.player.LocalPlayer player = net.minecraft.client.Minecraft.getInstance().player;
+            if (player != null) {
+                player.getCapability(SuitCapabilityProvider.SUIT_CAPABILITY).ifPresent(suit -> {
+                    if (suit.getCinematicStage() == 2) {
+                        event.setCanceled(true); // Блокируем инвентарь во время синематика
+                    }
+                });
+            }
+        }
     }
 }

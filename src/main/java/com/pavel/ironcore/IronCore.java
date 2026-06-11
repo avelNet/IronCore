@@ -134,7 +134,7 @@ public class IronCore {
                                     suit.getEnergy(), suit.getMaxEnergy(), suit.getSuitTier(), 
                                     suit.getFrameDurability(), suit.getPalladiumPoisoning(), suit.getActiveReactorType(),
                                     suit.getIcingLevel(), suit.getHeat(), suit.isFlying(),
-                                    suit.isAutoBoostEnabled(), suit.isTurbo(), suit.hasEmbeddedReactor()), (net.minecraft.server.level.ServerPlayer)event.player);
+                                    suit.isAutoBoostEnabled(), suit.isTurbo(), suit.hasEmbeddedReactor(), suit.isMaskOpen()), (net.minecraft.server.level.ServerPlayer)event.player);
                         }
 
                         if (suit.getPalladiumPoisoning() > 30.0f && event.player.tickCount % 40 == 0) {
@@ -156,7 +156,7 @@ public class IronCore {
                                     suit.getEnergy(), suit.getMaxEnergy(), suit.getSuitTier(), 
                                     suit.getFrameDurability(), suit.getPalladiumPoisoning(), suit.getActiveReactorType(),
                                     suit.getIcingLevel(), suit.getHeat(), suit.isFlying(),
-                                    suit.isAutoBoostEnabled(), suit.isTurbo(), suit.hasEmbeddedReactor()), (net.minecraft.server.level.ServerPlayer)event.player);
+                                    suit.isAutoBoostEnabled(), suit.isTurbo(), suit.hasEmbeddedReactor(), suit.isMaskOpen()), (net.minecraft.server.level.ServerPlayer)event.player);
                         }
                     }
 
@@ -181,7 +181,7 @@ public class IronCore {
                                     suit.getEnergy(), suit.getMaxEnergy(), suit.getSuitTier(), 
                                     suit.getFrameDurability(), suit.getPalladiumPoisoning(), suit.getActiveReactorType(),
                                     suit.getIcingLevel(), suit.getHeat(), suit.isFlying(),
-                                    suit.isAutoBoostEnabled(), suit.isTurbo(), suit.hasEmbeddedReactor()), (net.minecraft.server.level.ServerPlayer)event.player);
+                                    suit.isAutoBoostEnabled(), suit.isTurbo(), suit.hasEmbeddedReactor(), suit.isMaskOpen()), (net.minecraft.server.level.ServerPlayer)event.player);
                         }
                     }
                 });

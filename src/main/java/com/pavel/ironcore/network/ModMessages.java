@@ -73,6 +73,12 @@ public class ModMessages {
                 .encoder(PacketSyncMaskState::toBytes)
                 .consumerMainThread(PacketSyncMaskState::handle)
                 .add();
+
+        net.messageBuilder(PacketCinematicChoice.class, id(), NetworkDirection.PLAY_TO_SERVER)
+                .decoder(PacketCinematicChoice::new)
+                .encoder(PacketCinematicChoice::toBytes)
+                .consumerMainThread(PacketCinematicChoice::handle)
+                .add();
     }
 
     public static <MSG> void sendToServer(MSG message) {

@@ -19,8 +19,9 @@ public class PacketSyncSuitData {
     private final boolean autoBoostEnabled;
     private final boolean isTurbo;
     private final boolean hasEmbeddedReactor;
+    private final boolean isMaskOpen;
 
-    public PacketSyncSuitData(int energy, int maxEnergy, String tier, int durability, float poisoning, String reactor, float icingLevel, float heatLevel, boolean isFlying, boolean autoBoostEnabled, boolean isTurbo, boolean hasEmbeddedReactor) {
+    public PacketSyncSuitData(int energy, int maxEnergy, String tier, int durability, float poisoning, String reactor, float icingLevel, float heatLevel, boolean isFlying, boolean autoBoostEnabled, boolean isTurbo, boolean hasEmbeddedReactor, boolean isMaskOpen) {
         this.energy = energy;
         this.maxEnergy = maxEnergy;
         this.tier = tier;
@@ -33,6 +34,7 @@ public class PacketSyncSuitData {
         this.autoBoostEnabled = autoBoostEnabled;
         this.isTurbo = isTurbo;
         this.hasEmbeddedReactor = hasEmbeddedReactor;
+        this.isMaskOpen = isMaskOpen;
     }
 
     public PacketSyncSuitData(FriendlyByteBuf buffer) {
@@ -48,6 +50,7 @@ public class PacketSyncSuitData {
         this.autoBoostEnabled = buffer.readBoolean();
         this.isTurbo = buffer.readBoolean();
         this.hasEmbeddedReactor = buffer.readBoolean();
+        this.isMaskOpen = buffer.readBoolean();
     }
 
     public void toBytes(FriendlyByteBuf buffer) {
@@ -63,6 +66,7 @@ public class PacketSyncSuitData {
         buffer.writeBoolean(autoBoostEnabled);
         buffer.writeBoolean(isTurbo);
         buffer.writeBoolean(hasEmbeddedReactor);
+        buffer.writeBoolean(isMaskOpen);
     }
 
     public boolean handle(Supplier<NetworkEvent.Context> supplier) {
@@ -81,6 +85,7 @@ public class PacketSyncSuitData {
                 suit.setAutoBoostEnabled(autoBoostEnabled);
                 suit.setTurbo(isTurbo);
                 suit.setEmbeddedReactor(hasEmbeddedReactor);
+                suit.setMaskOpen(isMaskOpen);
             });
         });
         context.setPacketHandled(true);

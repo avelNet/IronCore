@@ -42,6 +42,9 @@ public class ModItems {
     public static final RegistryObject<Item> MK3_BOOTS = ITEMS.register("mk3_boots",
             () -> new Mk3FrameItem(ModArmorMaterials.MK3, ArmorItem.Type.BOOTS, new Item.Properties()));
 
+    public static final RegistryObject<Item> CINEMATIC_CHESTPLATE = ITEMS.register("cinematic_chestplate",
+            () -> new CinematicArmorItem(ModArmorMaterials.MK1, ArmorItem.Type.CHESTPLATE, new Item.Properties()));
+
     public static final RegistryObject<Item> COAL_REACTOR = ITEMS.register("coal_reactor",
             () -> new ReactorItem(new Item.Properties().stacksTo(1), 5000, "coal"));
 

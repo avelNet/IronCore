@@ -23,6 +23,7 @@ public class SuitCapability implements INBTSerializable<CompoundTag> {
     private boolean hasEmbeddedReactor = false;
     private boolean isFirstNightTriggered = false;
     private int cinematicStage = 0; // 0-none, 1-ambush, 2-critical, 3-completed
+    private boolean isMaskOpen = false;
 
     public int getEnergy() { return energy; }
     public void setEnergy(int energy) { this.energy = Math.max(0, Math.min(energy, maxEnergy)); }
@@ -78,6 +79,9 @@ public class SuitCapability implements INBTSerializable<CompoundTag> {
     public int getCinematicStage() { return cinematicStage; }
     public void setCinematicStage(int stage) { this.cinematicStage = stage; }
 
+    public boolean isMaskOpen() { return isMaskOpen; }
+    public void setMaskOpen(boolean open) { this.isMaskOpen = open; }
+
     public void saveNBTData(CompoundTag nbt) {
         nbt.putInt("energy", energy);
         nbt.putInt("maxEnergy", maxEnergy);
@@ -94,6 +98,7 @@ public class SuitCapability implements INBTSerializable<CompoundTag> {
         nbt.putBoolean("embeddedReactor", hasEmbeddedReactor);
         nbt.putBoolean("firstNightTriggered", isFirstNightTriggered);
         nbt.putInt("cinematicStage", cinematicStage);
+        nbt.putBoolean("maskOpen", isMaskOpen);
     }
 
     public void loadNBTData(CompoundTag nbt) {
@@ -119,6 +124,9 @@ public class SuitCapability implements INBTSerializable<CompoundTag> {
         }
         if (nbt.contains("cinematicStage")) {
             cinematicStage = nbt.getInt("cinematicStage");
+        }
+        if (nbt.contains("maskOpen")) {
+            isMaskOpen = nbt.getBoolean("maskOpen");
         }
     }
 
