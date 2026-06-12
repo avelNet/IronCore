@@ -52,17 +52,13 @@ public class Mk1FrameItem extends ArmorItem {
                         int suitMaxEnergy = chestTag.getInt("SuitMaxEnergy");
 
                         // Если реактора нет - выключаем системы
-                        if (installedReactor.isEmpty() || installedReactor.equals("none")) {
+                        if ((installedReactor.isEmpty() || installedReactor.equals("none")) && !suit.hasEmbeddedReactor()) {
                             if (!suit.getSuitTier().equals("none")) {
                                 suit.setSuitTier("none");
                                 suit.setActiveReactorType("none");
                                 suit.setEnergy(0);
                                 suit.setMaxEnergy(0);
-                                ModMessages.sendToPlayer(new PacketSyncSuitData(
-                                        suit.getEnergy(), suit.getMaxEnergy(), suit.getSuitTier(), 
-                                        suit.getFrameDurability(), suit.getPalladiumPoisoning(), suit.getActiveReactorType(),
-                                        suit.getIcingLevel(), suit.getHeat(), suit.isFlying(),
-                                        suit.isAutoBoostEnabled(), suit.isTurbo()), player);
+                                ModMessages.sendSyncPacket(serverPlayer);
                             }
                             return; 
                         }
@@ -72,13 +68,17 @@ public class Mk1FrameItem extends ArmorItem {
                             changed = true;
                         }
 
-                        // Синхронизируем реактор
-                        if (installedReactor.contains("palladium")) suit.setActiveReactorType("palladium");
-                        else if (installedReactor.contains("coal")) suit.setActiveReactorType("coal");
-                        
-                        suit.setMaxEnergy(suitMaxEnergy);
-                        if (suit.getEnergy() != suitEnergy) {
-                           suit.setEnergy(suitEnergy); 
+                        if (suit.hasEmbeddedReactor()) {
+                            suit.setActiveReactorType("palladium");
+                        } else {
+                            // Синхронизируем реактор
+                            if (installedReactor.contains("palladium")) suit.setActiveReactorType("palladium");
+                            else if (installedReactor.contains("coal")) suit.setActiveReactorType("coal");
+                            
+                            suit.setMaxEnergy(suitMaxEnergy);
+                            if (suit.getEnergy() != suitEnergy) {
+                               suit.setEnergy(suitEnergy); 
+                            }
                         }
 
                         // Каноничные баффы Mk1 (если есть энергия)
@@ -90,7 +90,9 @@ public class Mk1FrameItem extends ArmorItem {
                         if (player.isOnFire() || player.isInLava()) {
                             if (suit.getEnergy() >= 8) {
                                 suit.setEnergy(suit.getEnergy() - 8);
-                                chestTag.putInt("SuitEnergy", suit.getEnergy()); // СОХРАНЯЕМ В НАГРУДНИК
+                                if (!suit.hasEmbeddedReactor()) {
+                                    chestTag.putInt("SuitEnergy", suit.getEnergy()); // СОХРАНЯЕМ В НАГРУДНИК
+                                }
                                 player.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 40, 0, false, false, true));
                                 changed = true;
                             }
@@ -103,11 +105,7 @@ public class Mk1FrameItem extends ArmorItem {
                     }
 
                     if (changed || player.tickCount % 20 == 0) {
-                        ModMessages.sendToPlayer(new PacketSyncSuitData(
-                                suit.getEnergy(), suit.getMaxEnergy(), suit.getSuitTier(), 
-                                suit.getFrameDurability(), suit.getPalladiumPoisoning(), suit.getActiveReactorType(),
-                                suit.getIcingLevel(), suit.getHeat(), suit.isFlying(),
-                                suit.isAutoBoostEnabled(), suit.isTurbo()), player);
+                        ModMessages.sendSyncPacket(serverPlayer);
                     }
                 });
             }

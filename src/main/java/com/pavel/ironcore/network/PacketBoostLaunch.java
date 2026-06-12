@@ -29,11 +29,21 @@ public class PacketBoostLaunch {
                     player.onUpdateAbilities();
                     
                     Vec3 look = player.getLookAngle();
-                    // Launch UP regardless of look angle, with a slight forward momentum based on look
-                    double yBoost = suit.getSuitTier().equals("mk3") ? 1.8 : 1.4; 
-                    // Horizontal momentum should be a small fraction of the look direction, 
-                    // but we ensure Y is always positive and strong.
-                    Vec3 boost = new Vec3(look.x * 0.3, yBoost, look.z * 0.3);
+                    // Переходим от фиксированного "прыжка" к направленному взлету
+                    // Множитель скорости зависит от тира костюма
+                    // Нерф Mk3: снижен с 1.6 до 1.45 для баланса
+                    double speedMultiplier = suit.getSuitTier().equals("mk3") ? 1.45 : 1.3;
+                    
+                    // Основной вектор - направление взгляда с ускорением
+                    // Добавляем обязательный вертикальный "подхват", чтобы оторваться от земли
+                    Vec3 boost = look.scale(speedMultiplier).add(0, 0.6, 0);
+                    
+                    // Если вектор всё еще слишком пологий (смотрим вниз или прямо), 
+                    // принудительно задаем минимальный подъем вверх для "взлета"
+                    if (boost.y < 0.7) {
+                        boost = new Vec3(boost.x, 0.7, boost.z);
+                    }
+                    
                     player.setDeltaMovement(boost);
                     player.hasImpulse = true;
                     player.hurtMarked = true;

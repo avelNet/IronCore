@@ -29,13 +29,9 @@ public class PacketSyncAutoBoost {
             if (player != null) {
                 player.getCapability(SuitCapabilityProvider.SUIT_CAPABILITY).ifPresent(suit -> {
                     suit.setAutoBoostEnabled(enabled);
-                    
-                    // Sync back to client to confirm
-                    ModMessages.sendToPlayer(new PacketSyncSuitData(
-                            suit.getEnergy(), suit.getMaxEnergy(), suit.getSuitTier(),
-                            suit.getFrameDurability(), suit.getPalladiumPoisoning(), suit.getActiveReactorType(),
-                            suit.getIcingLevel(), suit.getHeat(), suit.isFlying(),
-                            suit.isAutoBoostEnabled(), suit.isTurbo()), player);
+
+                    // Sync back to all clients
+                    ModMessages.sendSyncPacket(player);
                     
                     String status = enabled ? "§aENABLED" : "§cDISABLED";
                     player.displayClientMessage(net.minecraft.network.chat.Component.literal("§6TURBO MODE: " + status), true);

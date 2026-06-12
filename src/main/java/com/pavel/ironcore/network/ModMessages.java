@@ -67,6 +67,18 @@ public class ModMessages {
                 .encoder(PacketSyncAutoBoost::toBytes)
                 .consumerMainThread(PacketSyncAutoBoost::handle)
                 .add();
+
+        net.messageBuilder(PacketSyncMaskState.class, id(), NetworkDirection.PLAY_TO_SERVER)
+                .decoder(PacketSyncMaskState::new)
+                .encoder(PacketSyncMaskState::toBytes)
+                .consumerMainThread(PacketSyncMaskState::handle)
+                .add();
+
+        net.messageBuilder(PacketCinematicChoice.class, id(), NetworkDirection.PLAY_TO_SERVER)
+                .decoder(PacketCinematicChoice::new)
+                .encoder(PacketCinematicChoice::toBytes)
+                .consumerMainThread(PacketCinematicChoice::handle)
+                .add();
     }
 
     public static <MSG> void sendToServer(MSG message) {
@@ -75,5 +87,35 @@ public class ModMessages {
 
     public static <MSG> void sendToPlayer(MSG message, ServerPlayer player) {
         INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), message);
+    }
+
+    public static void sendToClients(Object message) {
+        INSTANCE.send(PacketDistributor.ALL.noArg(), message);
+    }
+
+    public static void sendToAllTracking(Object message, net.minecraft.world.entity.Entity entity) {
+        INSTANCE.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> entity), message);
+    }
+
+    public static void sendSyncPacket(ServerPlayer player) {
+        player.getCapability(com.pavel.ironcore.capability.SuitCapabilityProvider.SUIT_CAPABILITY).ifPresent(suit -> {
+            sendToAllTracking(new PacketSyncSuitData(
+                    suit.getEnergy(),
+                    suit.getMaxEnergy(),
+                    suit.getSuitTier(),
+                    suit.getFrameDurability(),
+                    suit.getPalladiumPoisoning(),
+                    suit.getActiveReactorType(),
+                    suit.getIcingLevel(),
+                    suit.getHeat(),
+                    suit.isFlying(),
+                    suit.isAutoBoostEnabled(),
+                    suit.isTurbo(),
+                    suit.hasEmbeddedReactor(),
+                    suit.isMaskOpen(),
+                    suit.wasFlyingHorizontally(),
+                    player.getId()
+            ), player);
+        });
     }
 }

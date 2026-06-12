@@ -54,7 +54,7 @@ public class Mk2FrameItem extends ArmorItem {
                         int suitMaxEnergy = chestTag.getInt("SuitMaxEnergy");
 
                         // Если реактора нет - выключаем системы
-                        if (installedReactor.isEmpty() || installedReactor.equals("none")) {
+                        if ((installedReactor.isEmpty() || installedReactor.equals("none")) && !suit.hasEmbeddedReactor()) {
                             suit.setActiveReactorType("none");
                             suit.setEnergy(0);
                             suit.setMaxEnergy(0);
@@ -65,25 +65,21 @@ public class Mk2FrameItem extends ArmorItem {
                             }
                             // Ранний выход из тика - без реактора броня мертва
                             if (!level.isClientSide && player.tickCount % 20 == 0) {
-                                ModMessages.sendToPlayer(new PacketSyncSuitData(
-                                    suit.getEnergy(), suit.getMaxEnergy(), suit.getSuitTier(), 
-                                    suit.getFrameDurability(), suit.getPalladiumPoisoning(), suit.getActiveReactorType(),
-                                    suit.getIcingLevel(), suit.getHeat(), suit.isFlying(),
-                                    suit.isAutoBoostEnabled(), suit.isTurbo()), (ServerPlayer)player);
+                                ModMessages.sendSyncPacket(serverPlayer);
                             }
                             return; 
                         }
 
-                        // Если реактор есть, обновляем капку игрока для работы старой логики
-                        // В будущем можно будет полностью перенести логику на NBT предмета
-                        if (installedReactor.contains("palladium")) suit.setActiveReactorType("palladium");
-                        else if (installedReactor.contains("coal")) suit.setActiveReactorType("coal");
-                        
-                        suit.setMaxEnergy(suitMaxEnergy);
-                        // Для совместимости со старым кодом полета, который тратит энергию из suit.getEnergy()
-                        // мы пока что синхронизируем их каждый тик, но НАСТОЯЩАЯ энергия хранится в нагруднике
-                        if (suit.getEnergy() != suitEnergy) {
-                           suit.setEnergy(suitEnergy); 
+                        if (suit.hasEmbeddedReactor()) {
+                            suit.setActiveReactorType("palladium");
+                        } else {
+                            if (installedReactor.contains("palladium")) suit.setActiveReactorType("palladium");
+                            else if (installedReactor.contains("coal")) suit.setActiveReactorType("coal");
+                            
+                            suit.setMaxEnergy(suitMaxEnergy);
+                            if (suit.getEnergy() != suitEnergy) {
+                               suit.setEnergy(suitEnergy); 
+                            }
                         }
 
                         // Авто-активация STANDBY только если системы не заморожены/перегреты
@@ -185,7 +181,7 @@ public class Mk2FrameItem extends ArmorItem {
                                     }
 
                                     ItemStack chestplateServer = serverPlayer.getItemBySlot(EquipmentSlot.CHEST);
-                                    if(chestplateServer.getItem() instanceof ArmorItem) {
+                                    if(chestplateServer.getItem() instanceof ArmorItem && !suit.hasEmbeddedReactor()) {
                                          chestplateServer.getOrCreateTag().putInt("SuitEnergy", suit.getEnergy()); 
                                     }
 
@@ -258,11 +254,7 @@ public class Mk2FrameItem extends ArmorItem {
                         }
 
                         if (changed || serverPlayer.tickCount % 20 == 0) {
-                            ModMessages.sendToPlayer(new PacketSyncSuitData(
-                                    suit.getEnergy(), suit.getMaxEnergy(), suit.getSuitTier(), 
-                                    suit.getFrameDurability(), suit.getPalladiumPoisoning(), suit.getActiveReactorType(),
-                                    suit.getIcingLevel(), suit.getHeat(), suit.isFlying(),
-                                    suit.isAutoBoostEnabled(), suit.isTurbo()), serverPlayer);
+                            ModMessages.sendSyncPacket(serverPlayer);
                         }
                     }
                 });

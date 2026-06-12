@@ -18,8 +18,12 @@ public class PacketSyncSuitData {
     private final boolean isFlying;
     private final boolean autoBoostEnabled;
     private final boolean isTurbo;
+    private final boolean hasEmbeddedReactor;
+    private final boolean isMaskOpen;
+    private final boolean wasFlyingHorizontally;
+    private final int entityId;
 
-    public PacketSyncSuitData(int energy, int maxEnergy, String tier, int durability, float poisoning, String reactor, float icingLevel, float heatLevel, boolean isFlying, boolean autoBoostEnabled, boolean isTurbo) {
+    public PacketSyncSuitData(int energy, int maxEnergy, String tier, int durability, float poisoning, String reactor, float icingLevel, float heatLevel, boolean isFlying, boolean autoBoostEnabled, boolean isTurbo, boolean hasEmbeddedReactor, boolean isMaskOpen, boolean wasFlyingHorizontally, int entityId) {
         this.energy = energy;
         this.maxEnergy = maxEnergy;
         this.tier = tier;
@@ -31,6 +35,10 @@ public class PacketSyncSuitData {
         this.isFlying = isFlying;
         this.autoBoostEnabled = autoBoostEnabled;
         this.isTurbo = isTurbo;
+        this.hasEmbeddedReactor = hasEmbeddedReactor;
+        this.isMaskOpen = isMaskOpen;
+        this.wasFlyingHorizontally = wasFlyingHorizontally;
+        this.entityId = entityId;
     }
 
     public PacketSyncSuitData(FriendlyByteBuf buffer) {
@@ -45,6 +53,10 @@ public class PacketSyncSuitData {
         this.isFlying = buffer.readBoolean();
         this.autoBoostEnabled = buffer.readBoolean();
         this.isTurbo = buffer.readBoolean();
+        this.hasEmbeddedReactor = buffer.readBoolean();
+        this.isMaskOpen = buffer.readBoolean();
+        this.wasFlyingHorizontally = buffer.readBoolean();
+        this.entityId = buffer.readInt();
     }
 
     public void toBytes(FriendlyByteBuf buffer) {
@@ -59,24 +71,37 @@ public class PacketSyncSuitData {
         buffer.writeBoolean(isFlying);
         buffer.writeBoolean(autoBoostEnabled);
         buffer.writeBoolean(isTurbo);
+        buffer.writeBoolean(hasEmbeddedReactor);
+        buffer.writeBoolean(isMaskOpen);
+        buffer.writeBoolean(wasFlyingHorizontally);
+        buffer.writeInt(entityId);
     }
 
     public boolean handle(Supplier<NetworkEvent.Context> supplier) {
         NetworkEvent.Context context = supplier.get();
         context.enqueueWork(() -> {
-            net.minecraft.client.Minecraft.getInstance().player.getCapability(SuitCapabilityProvider.SUIT_CAPABILITY).ifPresent(suit -> {
-                suit.setMaxEnergy(maxEnergy);
-                suit.setEnergy(energy);
-                suit.setSuitTier(tier);
-                suit.setFrameDurability(durability);
-                suit.setPalladiumPoisoning(poisoning);
-                suit.setActiveReactorType(reactor);
-                suit.setIcingLevel(icingLevel);
-                suit.setHeat(heatLevel);
-                suit.setFlying(isFlying);
-                suit.setAutoBoostEnabled(autoBoostEnabled);
-                suit.setTurbo(isTurbo);
-            });
+            net.minecraft.client.multiplayer.ClientLevel level = net.minecraft.client.Minecraft.getInstance().level;
+            if (level != null) {
+                net.minecraft.world.entity.Entity entity = level.getEntity(entityId);
+                if (entity instanceof net.minecraft.world.entity.player.Player player) {
+                    player.getCapability(SuitCapabilityProvider.SUIT_CAPABILITY).ifPresent(suit -> {
+                        suit.setMaxEnergy(maxEnergy);
+                        suit.setEnergy(energy);
+                        suit.setSuitTier(tier);
+                        suit.setFrameDurability(durability);
+                        suit.setPalladiumPoisoning(poisoning);
+                        suit.setActiveReactorType(reactor);
+                        suit.setIcingLevel(icingLevel);
+                        suit.setHeat(heatLevel);
+                        suit.setFlying(isFlying);
+                        suit.setAutoBoostEnabled(autoBoostEnabled);
+                        suit.setTurbo(isTurbo);
+                        suit.setEmbeddedReactor(hasEmbeddedReactor);
+                        suit.setMaskOpen(isMaskOpen);
+                        suit.setWasFlyingHorizontally(wasFlyingHorizontally);
+                    });
+                }
+            }
         });
         context.setPacketHandled(true);
         return true;

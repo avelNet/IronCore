@@ -20,12 +20,16 @@ public class KeyBindings {
     public static final String KEY_CATEGORY_IRONCORE = "key.category.ironcore";
     public static final String KEY_FLAMETHROWER = "key.ironcore.fire_weapon";
     public static final String KEY_AUTO_BOOST = "key.ironcore.toggle_auto_boost";
+    public static final String KEY_TOGGLE_MASK = "key.ironcore.toggle_mask";
 
     public static final KeyMapping flamethrowerKey = new KeyMapping(KEY_FLAMETHROWER, 
             KeyConflictContext.IN_GAME, InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_Z, KEY_CATEGORY_IRONCORE);
 
     public static final KeyMapping autoBoostKey = new KeyMapping(KEY_AUTO_BOOST,
             KeyConflictContext.IN_GAME, InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_R, KEY_CATEGORY_IRONCORE);
+
+    public static final KeyMapping toggleMaskKey = new KeyMapping(KEY_TOGGLE_MASK,
+            KeyConflictContext.IN_GAME, InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_V, KEY_CATEGORY_IRONCORE);
 
     public static void init() {
         MinecraftForge.EVENT_BUS.register(new KeyBindings());
@@ -62,6 +66,20 @@ public class KeyBindings {
             });
         }
 
+        while (toggleMaskKey.consumeClick()) {
+            mc.player.getCapability(com.pavel.ironcore.capability.SuitCapabilityProvider.SUIT_CAPABILITY).ifPresent(suit -> {
+                if (suit.getSuitTier().equals("mk1")) {
+                    mc.player.displayClientMessage(net.minecraft.network.chat.Component.literal("§cHelmet is fixed on this model."), true);
+                    return;
+                }
+                boolean newState = !suit.isMaskOpen();
+                ModMessages.sendToServer(new com.pavel.ironcore.network.PacketSyncMaskState(newState));
+                // Client-side instant feedback
+                suit.setMaskOpen(newState);
+                mc.player.displayClientMessage(net.minecraft.network.chat.Component.literal(newState ? "§eHelmet: OPENED" : "§aHelmet: CLOSED"), true);
+            });
+        }
+
         boolean isSprintDown = mc.options.keySprint.isDown();
         
         if (isSprintDown != wasSprintDown) {
@@ -70,9 +88,7 @@ public class KeyBindings {
             if (isSprintDown) {
                 long currentTime = System.currentTimeMillis();
                 if (currentTime - lastSprintTime < 300) {
-                    if (mc.player.onGround()) {
-                        ModMessages.sendToServer(new PacketBoostLaunch());
-                    }
+                    ModMessages.sendToServer(new PacketBoostLaunch());
                 }
                 lastSprintTime = currentTime;
             }

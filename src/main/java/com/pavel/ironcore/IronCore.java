@@ -80,36 +80,70 @@ public class IronCore {
         @SubscribeEvent
         public static void onEntitySize(net.minecraftforge.event.entity.EntityEvent.Size event) {
             if (event.getEntity() instanceof Player player && player.getAbilities() != null && player.getAbilities().flying && !player.onGround()) {
-                double horizontalSpeed = player.getDeltaMovement().horizontalDistance();
-                if (horizontalSpeed > 0.1) {
-                    // Shrink hitbox height to allow flying through 1-block gaps
-                    event.setNewSize(net.minecraft.world.entity.EntityDimensions.fixed(0.6f, 0.6f), false);
-                }
+                player.getCapability(SuitCapabilityProvider.SUIT_CAPABILITY).ifPresent(suit -> {
+                    if (suit.wasFlyingHorizontally()) {
+                        // Shrink hitbox height to allow flying through 1-block gaps
+                        event.setNewSize(net.minecraft.world.entity.EntityDimensions.fixed(0.6f, 0.6f), false);
+                    }
+                });
             }
         }
 
         @SubscribeEvent
         public static void onPlayerTick(net.minecraftforge.event.TickEvent.PlayerTickEvent event) {
-            if (event.phase == net.minecraftforge.event.TickEvent.Phase.END && !event.player.level().isClientSide()) {
+            if (event.phase == net.minecraftforge.event.TickEvent.Phase.END) {
                 event.player.getCapability(SuitCapabilityProvider.SUIT_CAPABILITY).ifPresent(suit -> {
                     
-                    // Глобальная логика отравления палладием (работает всегда)
-                    if (suit.getActiveReactorType().equals("palladium")) {
-                        suit.setPalladiumPoisoning(suit.getPalladiumPoisoning() + 0.01f);
+                    // Client-side & Server-side horizontal flight detection for dimension refreshing
+                    boolean isFlying = event.player.getAbilities().flying && !event.player.onGround();
+                    boolean isBoosting = false;
+                    
+                    if (event.player.level().isClientSide()) {
+                        // Client: check key
+                        isBoosting = net.minecraft.client.Minecraft.getInstance().options.keySprint.isDown();
+                    } else {
+                        // Server: check stored state or speed
+                        isBoosting = suit.isBoostKeyHeld() || event.player.getDeltaMovement().length() > 0.35;
+                    }
+
+                    boolean isFlyingHorizontally = isFlying && isBoosting && event.player.getDeltaMovement().length() > 0.1;
+                    
+                    if (isFlyingHorizontally != suit.wasFlyingHorizontally()) {
+                        suit.setWasFlyingHorizontally(isFlyingHorizontally);
+                        event.player.refreshDimensions();
+                        if (!event.player.level().isClientSide()) {
+                            ModMessages.sendSyncPacket((net.minecraft.server.level.ServerPlayer) event.player);
+                        }
+                    }
+
+                    if (event.player.level().isClientSide()) return; // Server only logic follows
+                    ServerPlayer serverPlayer = (ServerPlayer) event.player;
+
+                    // Проверка инвентаря на наличие токсичных отходов
+                    boolean hasDepletedCore = event.player.getInventory().contains(new net.minecraft.world.item.ItemStack(ModItems.DEPLETED_PALLADIUM_CORE.get()).getItem().getDefaultInstance());
+
+                    // Глобальная логика отравления палладием
+                    if (suit.hasEmbeddedReactor() || suit.getActiveReactorType().equals("palladium") || hasDepletedCore) {
+                        float poisonRate = 0.01f;
+                        if (suit.hasEmbeddedReactor() && suit.getEnergy() < suit.getMaxEnergy() * 0.1f) {
+                            poisonRate = 0.03f; // Яд растет быстрее, если стержень почти пуст
+                        }
+                        if (hasDepletedCore) {
+                            poisonRate += 0.05f; // Штраф за ношение отходов
+                        }
+                        suit.setPalladiumPoisoning(suit.getPalladiumPoisoning() + poisonRate);
                         
                         if (event.player.tickCount % 20 == 0) {
-                            ModMessages.sendToPlayer(new com.pavel.ironcore.network.PacketSyncSuitData(
-                                    suit.getEnergy(), suit.getMaxEnergy(), suit.getSuitTier(), 
-                                    suit.getFrameDurability(), suit.getPalladiumPoisoning(), suit.getActiveReactorType(),
-                                    suit.getIcingLevel(), suit.getHeat(), suit.isFlying(),
-                                    suit.isAutoBoostEnabled(), suit.isTurbo()), (net.minecraft.server.level.ServerPlayer)event.player);
+                            ModMessages.sendSyncPacket(serverPlayer);
                         }
 
-                        if (suit.getPalladiumPoisoning() > 30.0f) {
-                            event.player.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.WEAKNESS, 40, 0, false, false, true));
-                        }
-                        if (suit.getPalladiumPoisoning() > 60.0f) {
-                            event.player.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.MOVEMENT_SLOWDOWN, 40, 0, false, false, true));
+                        if (event.player.tickCount % 40 == 0) {
+                            if (suit.getPalladiumPoisoning() > 30.0f) {
+                                event.player.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.WEAKNESS, 80, 0, false, false, true));
+                            }
+                            if (suit.getPalladiumPoisoning() > 60.0f) {
+                                event.player.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.MOVEMENT_SLOWDOWN, 80, 0, false, false, true));
+                            }
                         }
                         if (suit.getPalladiumPoisoning() > 85.0f) {
                             if (event.player.tickCount % 100 == 0) {
@@ -120,11 +154,7 @@ public class IronCore {
                         suit.setPalladiumPoisoning(suit.getPalladiumPoisoning() - 0.005f);
                         // Если костюм снят, но токсичность есть - синхронизируем HUD, чтобы шкала пропадала плавно
                         if (suit.getSuitTier().equals("none") && event.player.tickCount % 20 == 0) {
-                            ModMessages.sendToPlayer(new com.pavel.ironcore.network.PacketSyncSuitData(
-                                    suit.getEnergy(), suit.getMaxEnergy(), suit.getSuitTier(), 
-                                    suit.getFrameDurability(), suit.getPalladiumPoisoning(), suit.getActiveReactorType(),
-                                    suit.getIcingLevel(), suit.getHeat(), suit.isFlying(),
-                                    suit.isAutoBoostEnabled(), suit.isTurbo()), (net.minecraft.server.level.ServerPlayer)event.player);
+                            ModMessages.sendSyncPacket(serverPlayer);
                         }
                     }
 
@@ -145,11 +175,7 @@ public class IronCore {
                                 event.player.getAbilities().flying = false;
                                 event.player.onUpdateAbilities();
                             }
-                            ModMessages.sendToPlayer(new com.pavel.ironcore.network.PacketSyncSuitData(
-                                    suit.getEnergy(), suit.getMaxEnergy(), suit.getSuitTier(), 
-                                    suit.getFrameDurability(), suit.getPalladiumPoisoning(), suit.getActiveReactorType(),
-                                    suit.getIcingLevel(), suit.getHeat(), suit.isFlying(),
-                                    suit.isAutoBoostEnabled(), suit.isTurbo()), (net.minecraft.server.level.ServerPlayer)event.player);
+                            ModMessages.sendSyncPacket(serverPlayer);
                         }
                     }
                 });
