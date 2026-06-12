@@ -183,11 +183,7 @@ public abstract class BaseSuitItem extends ArmorItem implements GeoItem {
     protected abstract boolean applyServerLogic(ServerPlayer player, com.pavel.ironcore.capability.SuitCapability suit, ItemStack stack, Level level);
 
     protected void sync(ServerPlayer player, com.pavel.ironcore.capability.SuitCapability suit) {
-        ModMessages.sendToPlayer(new PacketSyncSuitData(
-                suit.getEnergy(), suit.getMaxEnergy(), suit.getSuitTier(), 
-                suit.getFrameDurability(), suit.getPalladiumPoisoning(), suit.getActiveReactorType(),
-                suit.getIcingLevel(), suit.getHeat(), suit.isFlying(),
-                suit.isAutoBoostEnabled(), suit.isTurbo(), suit.hasEmbeddedReactor(), suit.isMaskOpen()), player);
+        ModMessages.sendSyncPacket(player);
     }
 
     protected boolean isFullSuitEquipped(Player player) {

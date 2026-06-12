@@ -88,4 +88,34 @@ public class ModMessages {
     public static <MSG> void sendToPlayer(MSG message, ServerPlayer player) {
         INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), message);
     }
+
+    public static void sendToClients(Object message) {
+        INSTANCE.send(PacketDistributor.ALL.noArg(), message);
+    }
+
+    public static void sendToAllTracking(Object message, net.minecraft.world.entity.Entity entity) {
+        INSTANCE.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> entity), message);
+    }
+
+    public static void sendSyncPacket(ServerPlayer player) {
+        player.getCapability(com.pavel.ironcore.capability.SuitCapabilityProvider.SUIT_CAPABILITY).ifPresent(suit -> {
+            sendToAllTracking(new PacketSyncSuitData(
+                    suit.getEnergy(),
+                    suit.getMaxEnergy(),
+                    suit.getSuitTier(),
+                    suit.getFrameDurability(),
+                    suit.getPalladiumPoisoning(),
+                    suit.getActiveReactorType(),
+                    suit.getIcingLevel(),
+                    suit.getHeat(),
+                    suit.isFlying(),
+                    suit.isAutoBoostEnabled(),
+                    suit.isTurbo(),
+                    suit.hasEmbeddedReactor(),
+                    suit.isMaskOpen(),
+                    suit.wasFlyingHorizontally(),
+                    player.getId()
+            ), player);
+        });
+    }
 }

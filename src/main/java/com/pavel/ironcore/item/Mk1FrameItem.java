@@ -58,11 +58,7 @@ public class Mk1FrameItem extends ArmorItem {
                                 suit.setActiveReactorType("none");
                                 suit.setEnergy(0);
                                 suit.setMaxEnergy(0);
-                                ModMessages.sendToPlayer(new PacketSyncSuitData(
-                                        suit.getEnergy(), suit.getMaxEnergy(), suit.getSuitTier(), 
-                                        suit.getFrameDurability(), suit.getPalladiumPoisoning(), suit.getActiveReactorType(),
-                                        suit.getIcingLevel(), suit.getHeat(), suit.isFlying(),
-                                        suit.isAutoBoostEnabled(), suit.isTurbo(), suit.hasEmbeddedReactor()), player);
+                                ModMessages.sendSyncPacket(serverPlayer);
                             }
                             return; 
                         }
@@ -109,11 +105,7 @@ public class Mk1FrameItem extends ArmorItem {
                     }
 
                     if (changed || player.tickCount % 20 == 0) {
-                        ModMessages.sendToPlayer(new PacketSyncSuitData(
-                                suit.getEnergy(), suit.getMaxEnergy(), suit.getSuitTier(), 
-                                suit.getFrameDurability(), suit.getPalladiumPoisoning(), suit.getActiveReactorType(),
-                                suit.getIcingLevel(), suit.getHeat(), suit.isFlying(),
-                                suit.isAutoBoostEnabled(), suit.isTurbo(), suit.hasEmbeddedReactor()), player);
+                        ModMessages.sendSyncPacket(serverPlayer);
                     }
                 });
             }

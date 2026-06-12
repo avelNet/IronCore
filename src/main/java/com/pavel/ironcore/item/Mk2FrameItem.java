@@ -65,11 +65,7 @@ public class Mk2FrameItem extends ArmorItem {
                             }
                             // Ранний выход из тика - без реактора броня мертва
                             if (!level.isClientSide && player.tickCount % 20 == 0) {
-                                ModMessages.sendToPlayer(new PacketSyncSuitData(
-                                    suit.getEnergy(), suit.getMaxEnergy(), suit.getSuitTier(), 
-                                    suit.getFrameDurability(), suit.getPalladiumPoisoning(), suit.getActiveReactorType(),
-                                    suit.getIcingLevel(), suit.getHeat(), suit.isFlying(),
-                                    suit.isAutoBoostEnabled(), suit.isTurbo(), suit.hasEmbeddedReactor()), (ServerPlayer)player);
+                                ModMessages.sendSyncPacket(serverPlayer);
                             }
                             return; 
                         }
@@ -258,11 +254,7 @@ public class Mk2FrameItem extends ArmorItem {
                         }
 
                         if (changed || serverPlayer.tickCount % 20 == 0) {
-                            ModMessages.sendToPlayer(new PacketSyncSuitData(
-                                    suit.getEnergy(), suit.getMaxEnergy(), suit.getSuitTier(), 
-                                    suit.getFrameDurability(), suit.getPalladiumPoisoning(), suit.getActiveReactorType(),
-                                    suit.getIcingLevel(), suit.getHeat(), suit.isFlying(),
-                                    suit.isAutoBoostEnabled(), suit.isTurbo(), suit.hasEmbeddedReactor()), serverPlayer);
+                            ModMessages.sendSyncPacket(serverPlayer);
                         }
                     }
                 });

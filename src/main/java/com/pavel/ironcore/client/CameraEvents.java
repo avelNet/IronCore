@@ -19,6 +19,19 @@ public class CameraEvents {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player != null) {
             mc.player.getCapability(SuitCapabilityProvider.SUIT_CAPABILITY).ifPresent(suit -> {
+                // СИИНЕМАТИК: Стадия 2 (падение на колено)
+                if (suit.getCinematicStage() == 2) {
+                    if (mc.options.getCameraType() != net.minecraft.client.CameraType.THIRD_PERSON_BACK) {
+                        mc.options.setCameraType(net.minecraft.client.CameraType.THIRD_PERSON_BACK);
+                    }
+                    
+                    // Позиционирование: Снизу-слева, чуть сзади
+                    // Вращаем камеру так, чтобы она смотрела на игрока под углом
+                    event.setPitch(-15.0f); // Смотрим чуть вверх
+                    event.setYaw(mc.player.getYRot() + 150.0f); // Ракурс сбоку-сзади
+                    return;
+                }
+
                 // Наклон камеры теперь срабатывает ТОЛЬКО в режиме ТУРБО
                 if (suit.isFlying() && mc.player.getAbilities().flying && suit.isTurbo()) {
                     // Используем дельту поворота ТЕЛА (yBodyRot) вместо головы для синхронизации с моделью

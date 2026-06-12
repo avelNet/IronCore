@@ -41,17 +41,7 @@ public class FlightRotationHandler {
         if (player.getAbilities().flying && !player.onGround()) {
             player.getCapability(SuitCapabilityProvider.SUIT_CAPABILITY).ifPresent(suit -> {
                 if (!suit.getSuitTier().equals("none")) {
-                    net.minecraft.world.phys.Vec3 velocity = player.getDeltaMovement();
-                    double totalSpeed = velocity.length();
-                    
-                    boolean isBoosting = false;
-                    if (player == net.minecraft.client.Minecraft.getInstance().player) {
-                        isBoosting = net.minecraft.client.Minecraft.getInstance().options.keySprint.isDown();
-                    } else {
-                        isBoosting = totalSpeed > 0.35;
-                    }
-                    
-                    boolean isFlyingHorizontally = isBoosting && totalSpeed > 0.1;
+                    boolean isFlyingHorizontally = suit.wasFlyingHorizontally();
                     
                     float targetTilt = 0.0f;
                     float targetRoll = 0.0f;

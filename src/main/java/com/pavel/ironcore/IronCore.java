@@ -111,9 +111,13 @@ public class IronCore {
                     if (isFlyingHorizontally != suit.wasFlyingHorizontally()) {
                         suit.setWasFlyingHorizontally(isFlyingHorizontally);
                         event.player.refreshDimensions();
+                        if (!event.player.level().isClientSide()) {
+                            ModMessages.sendSyncPacket((net.minecraft.server.level.ServerPlayer) event.player);
+                        }
                     }
 
                     if (event.player.level().isClientSide()) return; // Server only logic follows
+                    ServerPlayer serverPlayer = (ServerPlayer) event.player;
 
                     // Проверка инвентаря на наличие токсичных отходов
                     boolean hasDepletedCore = event.player.getInventory().contains(new net.minecraft.world.item.ItemStack(ModItems.DEPLETED_PALLADIUM_CORE.get()).getItem().getDefaultInstance());
@@ -130,18 +134,16 @@ public class IronCore {
                         suit.setPalladiumPoisoning(suit.getPalladiumPoisoning() + poisonRate);
                         
                         if (event.player.tickCount % 20 == 0) {
-                            ModMessages.sendToPlayer(new com.pavel.ironcore.network.PacketSyncSuitData(
-                                    suit.getEnergy(), suit.getMaxEnergy(), suit.getSuitTier(), 
-                                    suit.getFrameDurability(), suit.getPalladiumPoisoning(), suit.getActiveReactorType(),
-                                    suit.getIcingLevel(), suit.getHeat(), suit.isFlying(),
-                                    suit.isAutoBoostEnabled(), suit.isTurbo(), suit.hasEmbeddedReactor(), suit.isMaskOpen()), (net.minecraft.server.level.ServerPlayer)event.player);
+                            ModMessages.sendSyncPacket(serverPlayer);
                         }
 
-                        if (suit.getPalladiumPoisoning() > 30.0f && event.player.tickCount % 40 == 0) {
-                            event.player.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.WEAKNESS, 80, 0, false, false, true));
-                        }
-                        if (suit.getPalladiumPoisoning() > 60.0f && event.player.tickCount % 40 == 0) {
-                            event.player.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.MOVEMENT_SLOWDOWN, 80, 0, false, false, true));
+                        if (event.player.tickCount % 40 == 0) {
+                            if (suit.getPalladiumPoisoning() > 30.0f) {
+                                event.player.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.WEAKNESS, 80, 0, false, false, true));
+                            }
+                            if (suit.getPalladiumPoisoning() > 60.0f) {
+                                event.player.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.MOVEMENT_SLOWDOWN, 80, 0, false, false, true));
+                            }
                         }
                         if (suit.getPalladiumPoisoning() > 85.0f) {
                             if (event.player.tickCount % 100 == 0) {
@@ -152,11 +154,7 @@ public class IronCore {
                         suit.setPalladiumPoisoning(suit.getPalladiumPoisoning() - 0.005f);
                         // Если костюм снят, но токсичность есть - синхронизируем HUD, чтобы шкала пропадала плавно
                         if (suit.getSuitTier().equals("none") && event.player.tickCount % 20 == 0) {
-                            ModMessages.sendToPlayer(new com.pavel.ironcore.network.PacketSyncSuitData(
-                                    suit.getEnergy(), suit.getMaxEnergy(), suit.getSuitTier(), 
-                                    suit.getFrameDurability(), suit.getPalladiumPoisoning(), suit.getActiveReactorType(),
-                                    suit.getIcingLevel(), suit.getHeat(), suit.isFlying(),
-                                    suit.isAutoBoostEnabled(), suit.isTurbo(), suit.hasEmbeddedReactor(), suit.isMaskOpen()), (net.minecraft.server.level.ServerPlayer)event.player);
+                            ModMessages.sendSyncPacket(serverPlayer);
                         }
                     }
 
@@ -177,11 +175,7 @@ public class IronCore {
                                 event.player.getAbilities().flying = false;
                                 event.player.onUpdateAbilities();
                             }
-                            ModMessages.sendToPlayer(new com.pavel.ironcore.network.PacketSyncSuitData(
-                                    suit.getEnergy(), suit.getMaxEnergy(), suit.getSuitTier(), 
-                                    suit.getFrameDurability(), suit.getPalladiumPoisoning(), suit.getActiveReactorType(),
-                                    suit.getIcingLevel(), suit.getHeat(), suit.isFlying(),
-                                    suit.isAutoBoostEnabled(), suit.isTurbo(), suit.hasEmbeddedReactor(), suit.isMaskOpen()), (net.minecraft.server.level.ServerPlayer)event.player);
+                            ModMessages.sendSyncPacket(serverPlayer);
                         }
                     }
                 });

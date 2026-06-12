@@ -19,7 +19,7 @@ public class CinematicArmorItem extends BaseSuitItem {
 
     @Override
     public String getTierId() {
-        return "cinematic";
+        return "mk1"; // Используем модель mk1 как базу
     }
 
     @Override
@@ -28,6 +28,7 @@ public class CinematicArmorItem extends BaseSuitItem {
             if (state.getData(software.bernie.geckolib.constant.DataTickets.ENTITY) instanceof Player player) {
                 return player.getCapability(SuitCapabilityProvider.SUIT_CAPABILITY).map(suit -> {
                     if (suit.getCinematicStage() == 2) {
+                        // Используем анимацию из файла suit.animation.json
                         return state.setAndContinue(RawAnimation.begin().thenPlayAndHold("animation.suit.kneel"));
                     }
                     return PlayState.STOP;
@@ -35,6 +36,11 @@ public class CinematicArmorItem extends BaseSuitItem {
             }
             return PlayState.STOP;
         }));
+    }
+
+    @Override
+    public String getArmorTexture(ItemStack stack, net.minecraft.world.entity.Entity entity, net.minecraft.world.entity.EquipmentSlot slot, String type) {
+        return "ironcore:textures/armor/blank.png"; // Всегда невидимая
     }
 
     @Override

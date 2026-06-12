@@ -18,6 +18,7 @@ public class SuitModel extends GeoModel<BaseSuitItem> {
 
     @Override
     public ResourceLocation getAnimationResource(BaseSuitItem animatable) {
-        return new ResourceLocation(IronCore.MODID, "animations/" + animatable.getTierId() + ".animation.json");
+        // Все анимации теперь хранятся в общем файле suit.animation.json для удобства
+        return new ResourceLocation(IronCore.MODID, "animations/suit.animation.json");
     }
 }
