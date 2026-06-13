@@ -41,7 +41,17 @@ public class FlightRotationHandler {
         if (player.getAbilities().flying && !player.onGround()) {
             player.getCapability(SuitCapabilityProvider.SUIT_CAPABILITY).ifPresent(suit -> {
                 if (!suit.getSuitTier().equals("none")) {
-                    boolean isFlyingHorizontally = suit.wasFlyingHorizontally();
+                    boolean isFlyingHorizontally = false;
+                    
+                    // Локальное предсказание для самого игрока (убирает дергание)
+                    if (player == net.minecraft.client.Minecraft.getInstance().player) {
+                        boolean isBoosting = net.minecraft.client.Minecraft.getInstance().options.keySprint.isDown();
+                        if (suit.isMaskOpen()) isBoosting = false; // Учитываем маску
+                        isFlyingHorizontally = isBoosting && player.getDeltaMovement().length() > 0.1;
+                    } else {
+                        // Для остальных игроков используем синхронизированные данные с сервера
+                        isFlyingHorizontally = suit.wasFlyingHorizontally();
+                    }
                     
                     float targetTilt = 0.0f;
                     float targetRoll = 0.0f;

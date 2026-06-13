@@ -24,9 +24,13 @@ public class PacketSyncMaskState {
     public boolean handle(Supplier<NetworkEvent.Context> supplier) {
         NetworkEvent.Context context = supplier.get();
         context.enqueueWork(() -> {
-            context.getSender().getCapability(SuitCapabilityProvider.SUIT_CAPABILITY).ifPresent(suit -> {
-                suit.setMaskOpen(isOpen);
-            });
+            net.minecraft.server.level.ServerPlayer player = context.getSender();
+            if (player != null) {
+                player.getCapability(SuitCapabilityProvider.SUIT_CAPABILITY).ifPresent(suit -> {
+                    suit.setMaskOpen(isOpen);
+                    ModMessages.sendSyncPacket(player); // КРИТИЧЕСКИ ВАЖНО: Синхронизируем обратно на клиент!
+                });
+            }
         });
         return true;
     }

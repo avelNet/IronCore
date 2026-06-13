@@ -13,12 +13,12 @@ public class SuitModel extends GeoModel<BaseSuitItem> {
 
     @Override
     public ResourceLocation getTextureResource(BaseSuitItem animatable) {
-        return new ResourceLocation(IronCore.MODID, "textures/armor/" + animatable.getTierId() + ".png");
+        String tier = animatable.getTierId();
+        return new ResourceLocation(IronCore.MODID, "textures/armor/" + tier + ".png");
     }
 
     @Override
     public ResourceLocation getAnimationResource(BaseSuitItem animatable) {
-        // Все анимации теперь хранятся в общем файле suit.animation.json для удобства
-        return new ResourceLocation(IronCore.MODID, "animations/suit.animation.json");
+        return new ResourceLocation(IronCore.MODID, "animations/" + animatable.getTierId() + ".animation.json");
     }
 }
