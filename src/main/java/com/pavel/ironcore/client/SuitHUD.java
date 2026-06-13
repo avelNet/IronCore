@@ -3,18 +3,12 @@ package com.pavel.ironcore.client;
 import com.pavel.ironcore.capability.SuitCapabilityProvider;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import com.pavel.ironcore.IronCore;
-import com.pavel.ironcore.capability.SuitCapabilityProvider;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import com.pavel.ironcore.IronCore;
 
 @Mod.EventBusSubscriber(modid = IronCore.MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class SuitHUD {
@@ -89,7 +83,7 @@ public class SuitHUD {
         guiGraphics.drawString(mc.font, "MARK " + suit.getSuitTier().toUpperCase().replace("MK", ""), lx, ly, 0xFFFFFF);
         
         // Energy Bar
-        float energyPercent = (float) suit.getEnergy() / suit.getMaxEnergy();
+        float energyPercent = suit.getMaxEnergy() > 0 ? (float) suit.getEnergy() / suit.getMaxEnergy() : 0;
         int energyBarColor = (energyPercent < 0.1) ? ((mc.player.tickCount % 20 < 10) ? red : orange) : cyan;
         
         guiGraphics.fill(lx, ly + 12, lx + 100, ly + 14, 0x44FFFFFF); // Background

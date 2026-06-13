@@ -48,6 +48,9 @@ public class AlloySmelterBlockEntity extends BlockEntity {
             setChanged();
             return super.extractEnergy(maxExtract, simulate);
         }
+        public void setEnergyDirect(int amount) {
+            this.energy = Math.max(0, Math.min(amount, capacity));
+        }
     }
     
     private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
@@ -130,7 +133,7 @@ public class AlloySmelterBlockEntity extends BlockEntity {
         super.load(tag);
         itemHandler.deserializeNBT(tag.getCompound("inventory"));
         progress = tag.getInt("alloy_smelter.progress");
-        energyStorage.receiveEnergy(tag.getInt("alloy_smelter.energy"), false);
+        energyStorage.setEnergyDirect(tag.getInt("alloy_smelter.energy"));
     }
 
     public static void tick(Level level, BlockPos pos, BlockState state, AlloySmelterBlockEntity pEntity) {

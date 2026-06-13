@@ -48,6 +48,9 @@ public class CoalGeneratorBlockEntity extends BlockEntity {
             if(this.energy > this.capacity) this.energy = this.capacity;
             setChanged();
         }
+        public void setEnergyDirect(int amount) {
+            this.energy = Math.max(0, Math.min(amount, capacity));
+        }
     }
 
     private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
@@ -129,7 +132,7 @@ public class CoalGeneratorBlockEntity extends BlockEntity {
         itemHandler.deserializeNBT(tag.getCompound("inventory"));
         burnTime = tag.getInt("burnTime");
         maxBurnTime = tag.getInt("maxBurnTime");
-        energyStorage.receiveEnergy(tag.getInt("energy"), false);
+        energyStorage.setEnergyDirect(tag.getInt("energy"));
     }
 
     public static void tick(Level level, BlockPos pos, BlockState state, CoalGeneratorBlockEntity entity) {

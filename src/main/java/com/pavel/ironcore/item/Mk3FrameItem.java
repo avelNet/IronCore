@@ -75,6 +75,7 @@ public class Mk3FrameItem extends BaseSuitItem {
         player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 40, 0, false, false, true));
         
         boolean systemsFunctional = player.isCreative() || (suit.getIcingLevel() < 100.0f && suit.getHeat() < 100.0f && suit.getEnergy() >= 4 && !player.isInWater());
+        boolean prevMayfly = player.getAbilities().mayfly;
         player.getAbilities().mayfly = systemsFunctional;
         
         if (player.getAbilities().flying) {
@@ -123,7 +124,9 @@ public class Mk3FrameItem extends BaseSuitItem {
             }
         }
 
-        player.onUpdateAbilities();
+        if (prevMayfly != player.getAbilities().mayfly) {
+            player.onUpdateAbilities();
+        }
 
         if (suit.getIcingLevel() > 0) suit.setIcingLevel(suit.getIcingLevel() - 0.5f);
 

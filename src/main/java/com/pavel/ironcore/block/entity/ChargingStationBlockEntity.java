@@ -54,6 +54,9 @@ public class ChargingStationBlockEntity extends BlockEntity {
             }
             return energyExtracted;
         }
+        public void setEnergyDirect(int amount) {
+            this.energy = Math.max(0, Math.min(amount, capacity));
+        }
     }
 
     private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
@@ -123,7 +126,7 @@ public class ChargingStationBlockEntity extends BlockEntity {
     public void load(CompoundTag tag) {
         super.load(tag);
         itemHandler.deserializeNBT(tag.getCompound("inventory"));
-        energyStorage.receiveEnergy(tag.getInt("energy"), false);
+        energyStorage.setEnergyDirect(tag.getInt("energy"));
     }
 
     public static void tick(Level level, BlockPos pos, BlockState state, ChargingStationBlockEntity entity) {

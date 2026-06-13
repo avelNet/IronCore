@@ -52,10 +52,12 @@ public class StoryEvents {
             if (stack.getItem() == com.pavel.ironcore.item.ModItems.PALLADIUM_REACTOR.get()) {
                 player.getCapability(SuitCapabilityProvider.SUIT_CAPABILITY).ifPresent(suit -> {
                     if (!suit.hasEmbeddedReactor() && suit.getCinematicStage() == 0) {
-                        stack.shrink(1); // Поглощаем реактор
+                        stack.shrink(1);
                         triggerSurgeryShock(player, suit);
                         event.setCancellationResult(net.minecraft.world.InteractionResult.SUCCESS);
                         event.setCanceled(true);
+                    } else if (suit.hasEmbeddedReactor()) {
+                        player.displayClientMessage(Component.literal("§cРеактор уже интегрирован. Используйте Suit Station для замены."), true);
                     }
                 });
             }

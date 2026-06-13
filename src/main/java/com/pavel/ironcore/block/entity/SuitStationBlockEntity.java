@@ -1,5 +1,6 @@
 package com.pavel.ironcore.block.entity;
 
+import com.pavel.ironcore.item.ModItems;
 import com.pavel.ironcore.item.ReactorItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -72,7 +73,8 @@ public class SuitStationBlockEntity extends BlockEntity {
 
             // УСТАНОВКА: Если броня пустая, а в слоте ВХОДА (1) есть реактор
             if ((installedType.isEmpty() || installedType.equals("none")) && !reactorIn.isEmpty() && reactorIn.getItem() instanceof ReactorItem) {
-                chestTag.putString("InstalledReactor", reactorIn.getItem().toString()); 
+                String reactorType = reactorIn.getItem() == ModItems.PALLADIUM_REACTOR.get() ? "palladium" : "coal";
+                chestTag.putString("InstalledReactor", reactorType);
                 
                 reactorIn.getCapability(ForgeCapabilities.ENERGY).ifPresent(energy -> {
                     chestTag.putInt("SuitEnergy", energy.getEnergyStored());

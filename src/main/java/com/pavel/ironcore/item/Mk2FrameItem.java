@@ -67,6 +67,7 @@ public class Mk2FrameItem extends BaseSuitItem {
         player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 40, 0, false, false, true));
         
         boolean systemsFunctional = player.isCreative() || (suit.getIcingLevel() < 100.0f && suit.getHeat() < 100.0f && suit.getEnergy() >= 4 && !player.isInWater());
+        boolean prevMayfly = player.getAbilities().mayfly;
         player.getAbilities().mayfly = systemsFunctional;
         
         if (player.getAbilities().flying) {
@@ -86,7 +87,7 @@ public class Mk2FrameItem extends BaseSuitItem {
         }
 
         // Icing and Heat logic
-        if (player.getY() > 170) {
+        if (player.getY() > 170 && player.getAbilities().flying) {
             suit.setIcingLevel(suit.getIcingLevel() + 0.1f);
         } else {
             suit.setIcingLevel(Math.max(0, suit.getIcingLevel() - 0.2f));
@@ -95,7 +96,9 @@ public class Mk2FrameItem extends BaseSuitItem {
         float coolingRate = player.isInWater() ? 0.5f : 0.1f;
         if (!suit.isBoostKeyHeld() || !player.getAbilities().flying) suit.setHeat(Math.max(0, suit.getHeat() - coolingRate));
 
-        player.onUpdateAbilities();
+        if (prevMayfly != player.getAbilities().mayfly) {
+            player.onUpdateAbilities();
+        }
         return true; 
     }
 }
