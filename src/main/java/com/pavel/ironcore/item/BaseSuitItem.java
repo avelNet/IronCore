@@ -121,7 +121,7 @@ public abstract class BaseSuitItem extends ArmorItem implements GeoItem {
                 int suitEnergy = chestTag.getInt("SuitEnergy");
                 int suitMaxEnergy = chestTag.getInt("SuitMaxEnergy");
 
-                if (installedReactor.isEmpty() || installedReactor.equals("none")) {
+                if ((installedReactor.isEmpty() || installedReactor.equals("none")) && !suit.hasEmbeddedReactor()) {
                     if (!suit.getSuitTier().equals("none")) {
                         handleNoReactor(player, suit);
                         sync(player, suit);
@@ -134,12 +134,21 @@ public abstract class BaseSuitItem extends ArmorItem implements GeoItem {
                     changed = true;
                 }
 
-                if (installedReactor.contains("palladium")) suit.setActiveReactorType("palladium");
-                else if (installedReactor.contains("coal")) suit.setActiveReactorType("coal");
-                
-                suit.setMaxEnergy(suitMaxEnergy);
-                if (suit.getEnergy() != suitEnergy) {
-                   suit.setEnergy(suitEnergy); 
+                if (suit.hasEmbeddedReactor()) {
+                    suit.setActiveReactorType("palladium");
+                    suit.setMaxEnergy(50000);
+                    if (suit.getEnergy() < suit.getMaxEnergy()) {
+                        suit.setEnergy(suit.getMaxEnergy());
+                        changed = true;
+                    }
+                } else {
+                    if (installedReactor.contains("palladium")) suit.setActiveReactorType("palladium");
+                    else if (installedReactor.contains("coal")) suit.setActiveReactorType("coal");
+                    
+                    suit.setMaxEnergy(suitMaxEnergy);
+                    if (suit.getEnergy() != suitEnergy) {
+                       suit.setEnergy(suitEnergy); 
+                    }
                 }
 
                 changed |= applyServerLogic(player, suit, stack, level);

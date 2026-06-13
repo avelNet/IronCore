@@ -8,6 +8,7 @@ import com.pavel.ironcore.item.ModCreativeTabs;
 import com.pavel.ironcore.item.ModItems;
 import com.pavel.ironcore.network.ModMessages;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.MinecraftForge;

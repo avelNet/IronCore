@@ -2,6 +2,7 @@ package com.pavel.ironcore.event;
 
 import com.pavel.ironcore.IronCore;
 import com.pavel.ironcore.capability.SuitCapabilityProvider;
+import com.pavel.ironcore.network.ModMessages;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -22,10 +23,22 @@ public class StoryEvents {
         if (event.phase == TickEvent.Phase.END && !event.player.level().isClientSide) {
             ServerPlayer player = (ServerPlayer) event.player;
             player.getCapability(SuitCapabilityProvider.SUIT_CAPABILITY).ifPresent(suit -> {
-                if (!suit.hasEmbeddedReactor() && !suit.isFirstNightTriggered()) {
-                    long time = player.level().getDayTime() % 24000;
-                    if (time > 13000 && time < 14000) { 
-                        triggerAmbush(player, suit);
+                if (!suit.hasEmbeddedReactor()) {
+                    boolean hasPalladium = false;
+                    for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
+                        net.minecraft.world.item.ItemStack stack = player.getInventory().getItem(i);
+                        if (!stack.isEmpty()) {
+                            if (stack.getItem() == com.pavel.ironcore.item.ModItems.RAW_PALLADIUM.get() || 
+                                stack.getItem() == com.pavel.ironcore.block.ModBlocks.PALLADIUM_ORE.get().asItem()) {
+                                hasPalladium = true;
+                                break;
+                            }
+                        }
+                    }
+                    
+                    if (hasPalladium && player.tickCount % 100 == 0) {
+                        player.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.CONFUSION, 200, 0, false, false, true));
+                        player.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.POISON, 100, 0, false, false, true));
                     }
                 }
             });
@@ -33,87 +46,80 @@ public class StoryEvents {
     }
 
     @SubscribeEvent
-    public static void onPlayerSleep(PlayerSleepInBedEvent event) {
-        if (!event.getEntity().level().isClientSide) {
-            ServerPlayer player = (ServerPlayer) event.getEntity();
-            player.getCapability(SuitCapabilityProvider.SUIT_CAPABILITY).ifPresent(suit -> {
-                if (!suit.hasEmbeddedReactor() && !suit.isFirstNightTriggered()) {
-                    triggerAmbush(player, suit);
-                }
-            });
+    public static void onRightClickItem(net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickItem event) {
+        if (!event.getLevel().isClientSide() && event.getEntity() instanceof ServerPlayer player) {
+            net.minecraft.world.item.ItemStack stack = event.getItemStack();
+            if (stack.getItem() == com.pavel.ironcore.item.ModItems.PALLADIUM_REACTOR.get()) {
+                player.getCapability(SuitCapabilityProvider.SUIT_CAPABILITY).ifPresent(suit -> {
+                    if (!suit.hasEmbeddedReactor() && suit.getCinematicStage() == 0) {
+                        stack.shrink(1); // Поглощаем реактор
+                        triggerSurgeryShock(player, suit);
+                        event.setCancellationResult(net.minecraft.world.InteractionResult.SUCCESS);
+                        event.setCanceled(true);
+                    }
+                });
+            }
         }
     }
 
-    private static void triggerAmbush(ServerPlayer player, com.pavel.ironcore.capability.SuitCapability suit) {
+    private static void triggerSurgeryShock(ServerPlayer player, com.pavel.ironcore.capability.SuitCapability suit) {
         suit.setFirstNightTriggered(true);
         suit.setCinematicStage(1);
-        player.sendSystemMessage(Component.literal("§c[СИСТЕМА]: Зафиксированы множественные биологические угрозы!"));
         
-        ServerLevel level = player.serverLevel();
-        for (int i = 0; i < 6; i++) {
-            Zombie zombie = EntityType.ZOMBIE.create(level);
-            if (zombie != null) {
-                double angle = i * (2 * Math.PI / 6);
-                double x = player.getX() + Math.cos(angle) * 7;
-                double z = player.getZ() + Math.sin(angle) * 7;
-                zombie.moveTo(x, player.getY(), z);
-                zombie.finalizeSpawn(level, level.getCurrentDifficultyAt(zombie.blockPosition()), MobSpawnType.EVENT, null, null);
-                level.addFreshEntity(zombie);
-            }
-        }
+        player.sendSystemMessage(Component.literal("§c[СИСТЕМА]: ВНИМАНИЕ! Выполняется инвазивное вмешательство. Фиксируется болевой шок."));
+        
+        // Снижаем HP до минимума и убираем голод
+        player.setHealth(1.01f);
+        player.getFoodData().setFoodLevel(0);
+        
+        // Накладываем эффекты шока
+        player.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.BLINDNESS, 200, 0, false, false));
+        player.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.MOVEMENT_SLOWDOWN, 200, 255, false, false));
+
+        // Отправляем кликабельное сообщение в чат
+        Component message = Component.literal("§7[СИСТЕМА]: Начат процесс интеграции реактора. ")
+                .append(Component.literal("§b§l[ИНТЕГРИРОВАТЬ]")
+                .withStyle(style -> style.withClickEvent(new net.minecraft.network.chat.ClickEvent(net.minecraft.network.chat.ClickEvent.Action.RUN_COMMAND, "/ironcore_accept"))));
+        player.sendSystemMessage(message);
+
+        suit.setCinematicStage(2);
+        ModMessages.sendSyncPacket(player);
     }
 
     @SubscribeEvent
-    public static void onPlayerHurt(LivingHurtEvent event) {
-        if (event.getEntity() instanceof ServerPlayer player) {
+    public static void onPlayerWakeUp(net.minecraftforge.event.entity.player.PlayerWakeUpEvent event) {
+        if (!event.getEntity().level().isClientSide) {
+            ServerPlayer player = (ServerPlayer) event.getEntity();
+
             player.getCapability(SuitCapabilityProvider.SUIT_CAPABILITY).ifPresent(suit -> {
-                if (suit.getCinematicStage() == 1 && (player.getHealth() - event.getAmount()) <= 1.0f) {
-                    event.setAmount(player.getHealth() - 1.01f); 
-                    startCinematic(player, suit);
+                if (suit.getCinematicStage() == 3) {
+                    suit.setEmbeddedReactor(true);
+                    suit.setCinematicStage(0); // Завершено
+                    
+                    // Даем начальный заряд
+                    suit.setMaxEnergy(50000);
+                    suit.setEnergy(50000);
+                    
+                    player.removeEffect(net.minecraft.world.effect.MobEffects.DAMAGE_BOOST);
+                    player.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.DAMAGE_BOOST, -1, 0, false, false, true));
+                    
+                    ModMessages.sendSyncPacket(player); 
+                    
+                    player.sendSystemMessage(Component.literal("§b[СИСТЕМА]: Реактор успешно интегрирован. Костюмы теперь могут получать энергию напрямую."));
                 }
             });
         }
-    }
-
-    private static void startCinematic(ServerPlayer player, com.pavel.ironcore.capability.SuitCapability suit) {
-        suit.setCinematicStage(2);
-        
-        ServerLevel level = player.serverLevel();
-        level.getEntities().getAll().forEach(entity -> {
-            if (entity instanceof Zombie zombie && zombie.distanceTo(player) < 20) {
-                zombie.setNoAi(true);
-            }
-        });
-        
-        // Очищаем эффекты и даем временную неуязвимость
-        player.removeAllEffects();
-        
-        // Надеваем невидимую броню для анимации
-        player.setItemSlot(net.minecraft.world.entity.EquipmentSlot.CHEST, com.pavel.ironcore.item.ModItems.CINEMATIC_CHESTPLATE.get().getDefaultInstance());
-        
-        player.sendSystemMessage(Component.literal("§e[СИСТЕМА]: Критическое состояние. Обнаружен поврежденный источник энергии..."));
     }
 
     @Mod.EventBusSubscriber(modid = IronCore.MODID, value = net.minecraftforge.api.distmarker.Dist.CLIENT)
     public static class ClientStoryEvents {
         @SubscribeEvent
-        public static void onClientTick(TickEvent.PlayerTickEvent event) {
-            if (event.phase == TickEvent.Phase.END && event.player.level().isClientSide) {
-                event.player.getCapability(SuitCapabilityProvider.SUIT_CAPABILITY).ifPresent(suit -> {
-                    if (suit.getCinematicStage() == 2 && net.minecraft.client.Minecraft.getInstance().screen == null) {
-                        net.minecraft.client.Minecraft.getInstance().setScreen(new com.pavel.ironcore.screen.CinematicChoiceScreen());
-                    }
-                });
-            }
-        }
-
-        @SubscribeEvent
         public static void onOpenGui(net.minecraftforge.client.event.ScreenEvent.Opening event) {
             net.minecraft.client.player.LocalPlayer player = net.minecraft.client.Minecraft.getInstance().player;
             if (player != null) {
                 player.getCapability(SuitCapabilityProvider.SUIT_CAPABILITY).ifPresent(suit -> {
-                    if (suit.getCinematicStage() == 2) {
-                        event.setCanceled(true); // Блокируем инвентарь во время синематика
+                    if (suit.getCinematicStage() == 2 && !(event.getScreen() instanceof net.minecraft.client.gui.screens.ChatScreen)) {
+                        event.setCanceled(true); // Блокируем всё кроме чата
                     }
                 });
             }
