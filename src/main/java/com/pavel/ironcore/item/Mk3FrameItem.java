@@ -74,9 +74,16 @@ public class Mk3FrameItem extends BaseSuitItem {
         player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 40, 0, false, false, true));
         player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 40, 0, false, false, true));
         
-        boolean systemsFunctional = player.isCreative() || (suit.getIcingLevel() < 100.0f && suit.getHeat() < 100.0f && suit.getEnergy() >= 4 && !player.isInWater());
+        boolean systemsFunctional = player.isCreative() || (suit.getIcingLevel() < 100.0f && suit.getHeat() < 100.0f && suit.getEnergy() >= 4 && !player.isInWater() && suit.getWaterExitCooldown() <= 0);
         boolean prevMayfly = player.getAbilities().mayfly;
         player.getAbilities().mayfly = systemsFunctional;
+
+        // Track water exit cooldown
+        if (player.isInWater()) {
+            suit.setWaterExitCooldown(20);
+        } else if (suit.getWaterExitCooldown() > 0) {
+            suit.setWaterExitCooldown(suit.getWaterExitCooldown() - 1);
+        }
         
         if (player.getAbilities().flying) {
             if (!systemsFunctional) {
