@@ -9,8 +9,11 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.monster.Zombie;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerSleepInBedEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -86,6 +89,19 @@ public class StoryEvents {
 
         suit.setCinematicStage(2);
         ModMessages.sendSyncPacket(player);
+    }
+
+    @SubscribeEvent
+    public static void onUseItem(LivingEntityUseItemEvent.Start event) {
+        if (event.getEntity() instanceof Player player && !player.level().isClientSide) {
+            if (event.getItem().getFoodProperties(player) != null) {
+                player.getCapability(SuitCapabilityProvider.SUIT_CAPABILITY).ifPresent(suit -> {
+                    if (!suit.getSuitTier().equals("none") && !suit.isMaskOpen()) {
+                        event.setCanceled(true);
+                    }
+                });
+            }
+        }
     }
 
     @SubscribeEvent
