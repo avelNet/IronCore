@@ -87,7 +87,7 @@ public class KeyBindings {
             
             if (isSprintDown) {
                 long currentTime = System.currentTimeMillis();
-                if (currentTime - lastSprintTime < 300) {
+                if (currentTime - lastSprintTime < 300 && !mc.player.isInWater()) {
                     ModMessages.sendToServer(new PacketBoostLaunch());
                 }
                 lastSprintTime = currentTime;
