@@ -44,11 +44,9 @@ public class Mk2FrameItem extends BaseSuitItem {
                 player.setDeltaMovement(FlightPhysics.computeBoostVelocity(player.getDeltaMovement(), look, FlightConfig.MK2, false));
                 player.hasImpulse = true;
             } else if (suit.getEnergy() >= 4) {
-                Vec3 newVelocity = FlightPhysics.computeHoverVelocity(player.getDeltaMovement(), FlightConfig.MK2);
+                Vec3 newVelocity = FlightPhysics.computeHoverVelocity(player.getDeltaMovement(), FlightConfig.MK2, player.isShiftKeyDown());
                 if (newVelocity != player.getDeltaMovement()) {
-                    // Vanilla multiplies our Y by 0.6 right after this tick - pre-divide so the
-                    // velocity that actually sticks matches what FlightConfig intended.
-                    player.setDeltaMovement(FlightPhysics.compensateFlyingYDamping(newVelocity));
+                    player.setDeltaMovement(newVelocity);
                     player.hasImpulse = true;
                 }
             }

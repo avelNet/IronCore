@@ -29,7 +29,7 @@ public final class FlightPhysics {
         );
     }
 
-    public static Vec3 computeHoverVelocity(Vec3 current, FlightConfig config) {
+    public static Vec3 computeHoverVelocity(Vec3 current, FlightConfig config, boolean descending) {
         double horizontalSpeed = Math.sqrt(current.x * current.x + current.z * current.z);
         double x = current.x;
         double z = current.z;
@@ -38,11 +38,23 @@ public final class FlightPhysics {
             z *= config.hoverDamping();
         }
 
-        // Vanilla creative-fly descend (sneak) is a flat, slow speed regardless of tier.
-        // Once the player commits to descending, accelerate like a powered dive instead.
-        double y = current.y < -0.02
-                ? Math.max(current.y - config.diveAccel(), -config.diveTerminalSpeed())
-                : current.y;
+        double y;
+        if (descending) {
+            // Vanilla creative-fly descend (sneak) is a flat, slow speed regardless of tier.
+            // While the player is actively holding the descend key, accelerate like a powered
+            // dive instead - and pre-divide by the same factor vanilla's Player#travel()
+            // multiplies our Y by every tick while flying, so this actually reaches
+            // diveTerminalSpeed instead of stalling at ~1.5x diveAccel.
+            double dived = Math.max(current.y - config.diveAccel(), -config.diveTerminalSpeed());
+            y = dived / VANILLA_FLYING_Y_DAMPING;
+        } else {
+            // Not actively descending - leave Y alone. Vanilla's own per-tick damping settles
+            // any leftover vertical momentum (from a released boost, a released dive, etc.) back
+            // toward level flight on its own; compensating it here would freeze that momentum in
+            // place instead of letting it decay, which is what made the player drift up/down on
+            // their own after letting go of a key.
+            y = current.y;
+        }
 
         return new Vec3(x, y, z);
     }
@@ -69,8 +81,4 @@ public final class FlightPhysics {
      * {@code 1.5 * diveAccel} instead of {@code diveTerminalSpeed}.
      */
     public static final double VANILLA_FLYING_Y_DAMPING = 0.6;
-
-    public static Vec3 compensateFlyingYDamping(Vec3 desired) {
-        return new Vec3(desired.x, desired.y / VANILLA_FLYING_Y_DAMPING, desired.z);
-    }
 }
