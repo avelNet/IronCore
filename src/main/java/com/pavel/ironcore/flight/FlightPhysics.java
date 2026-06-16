@@ -18,19 +18,20 @@ public final class FlightPhysics {
         double acceleration = config.boostAccelBase() + Math.pow(speedRatio, 2.0) * accelCurve;
 
         Vec3 target = look.scale(maxSpeed);
-        boolean descending = target.y <= 0;
-        double targetY = descending
-                ? target.y * config.verticalDownMultiplier()
-                : target.y * config.verticalUpMultiplier() + config.verticalUpOffset();
 
-        double newY = current.y + (targetY - current.y) * acceleration;
-        if (descending) {
-            // Same vanilla 0.6x-per-tick Y damping as the hover dive - boosting downward was
-            // never separately compensated for it, so looking down while boosting converged to
-            // a steady state far weaker than verticalDownMultiplier intended. The ascending
-            // branch is left alone since verticalUpMultiplier/Offset were already hand-tuned
-            // against the uncompensated damping.
-            newY /= VANILLA_FLYING_Y_DAMPING;
+        double newY;
+        if (target.y > 0) {
+            double targetY = target.y * config.verticalUpMultiplier() + config.verticalUpOffset();
+            newY = current.y + (targetY - current.y) * acceleration;
+        } else {
+            // Powered dive while boosting and looking down. A flat accel-per-tick ramp clamped to
+            // boostDiveTerminalSpeed (same shape as the hover/sneak dive) instead of converging
+            // toward a look-angle-scaled target and then dividing the whole thing by the vanilla
+            // Y damping - that combo could overshoot and oscillate whenever the look angle
+            // flickered across the horizon while flying mostly level, instead of ramping up
+            // gradually.
+            double dived = Math.max(current.y - config.boostDiveAccel(), -config.boostDiveTerminalSpeed());
+            newY = dived / VANILLA_FLYING_Y_DAMPING;
         }
 
         return new Vec3(
