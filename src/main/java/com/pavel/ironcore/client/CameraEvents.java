@@ -13,6 +13,11 @@ import net.minecraftforge.fml.common.Mod;
 public class CameraEvents {
     private static float currentRoll = 0.0f;
     private static float currentFovModifier = 1.0f;
+    private static int launchKickTicks = 0;
+
+    public static void triggerLaunchKick() {
+        launchKickTicks = 8;
+    }
 
     @SubscribeEvent
     public static void onCameraSetup(ViewportEvent.ComputeCameraAngles event) {
@@ -66,7 +71,11 @@ public class CameraEvents {
                 if (suit.isTurbo() && suit.isFlying() && mc.player.getAbilities().flying) {
                     targetFov = 1.20f; // +20% FOV
                 }
-                
+                if (launchKickTicks > 0) {
+                    targetFov += 0.15f * (launchKickTicks / 8.0f);
+                    launchKickTicks--;
+                }
+
                 // Smooth interpolation
                 currentFovModifier += (targetFov - currentFovModifier) * 0.05f;
                 

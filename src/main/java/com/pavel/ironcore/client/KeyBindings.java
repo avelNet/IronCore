@@ -89,6 +89,7 @@ public class KeyBindings {
                 long currentTime = System.currentTimeMillis();
                 if (currentTime - lastSprintTime < 300 && !mc.player.isInWater()) {
                     ModMessages.sendToServer(new PacketBoostLaunch());
+                    com.pavel.ironcore.client.CameraEvents.triggerLaunchKick();
                 }
                 lastSprintTime = currentTime;
             }

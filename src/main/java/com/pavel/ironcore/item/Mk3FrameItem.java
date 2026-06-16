@@ -1,6 +1,8 @@
 package com.pavel.ironcore.item;
 
 import com.pavel.ironcore.capability.SuitCapability;
+import com.pavel.ironcore.flight.FlightConfig;
+import com.pavel.ironcore.flight.FlightPhysics;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -27,40 +29,26 @@ public class Mk3FrameItem extends BaseSuitItem {
     @Override
     protected void applyClientPhysics(Player player, SuitCapability suit, ItemStack stack, Level level) {
         if (player.getAbilities().flying) {
-            boolean isBoosting = net.minecraft.client.Minecraft.getInstance().options.keySprint.isDown();
+            boolean isBoosting = net.minecraft.client.Minecraft.getInstance().options.keySprint.isDown() && !suit.isMaskOpen();
             boolean enginesOverheated = suit.getHeat() >= 100.0f;
 
             if (player.isInWater() && !player.isCreative()) {
                 player.getAbilities().flying = false;
                 player.onUpdateAbilities();
             } else if (enginesOverheated) {
-                Vec3 current = player.getDeltaMovement();
-                player.setDeltaMovement(current.x * 0.9, current.y - 0.1, current.z * 0.9);
+                player.setDeltaMovement(FlightPhysics.computeOverheatVelocity(player.getDeltaMovement()));
                 player.hasImpulse = true;
             } else if (suit.getEnergy() <= 1000 && suit.getEnergy() >= 4) {
-                Vec3 current = player.getDeltaMovement();
-                player.setDeltaMovement(current.x * 0.9, current.y - 0.1, current.z * 0.9);
+                player.setDeltaMovement(FlightPhysics.computeOverheatVelocity(player.getDeltaMovement()));
                 player.hasImpulse = true;
             } else if (isBoosting && suit.getEnergy() > 1000) {
                 Vec3 look = player.getLookAngle();
-                Vec3 current = player.getDeltaMovement();
-                double maxSpeed = suit.isTurbo() ? 1.25 : 1.0; 
-                double currentSpeed = current.length();
-                double speedRatio = Math.min(currentSpeed / maxSpeed, 1.0);
-                double acceleration = 0.15 + Math.pow(speedRatio, 2.0) * (suit.isTurbo() ? 0.7 : 0.6); 
-                Vec3 target = look.scale(maxSpeed);
-                double targetY = target.y > 0 ? target.y * 1.2 + 0.1 : target.y * 1.4;
-                player.setDeltaMovement(new Vec3(
-                    current.x + (target.x - current.x) * acceleration,
-                    current.y + (targetY - current.y) * acceleration,
-                    current.z + (target.z - current.z) * acceleration
-                ));
+                player.setDeltaMovement(FlightPhysics.computeBoostVelocity(player.getDeltaMovement(), look, FlightConfig.MK3, suit.isTurbo()));
                 player.hasImpulse = true;
             } else if (suit.getEnergy() >= 4) {
-                Vec3 current = player.getDeltaMovement();
-                double hoverMaxSpeed = 0.3; 
-                if (current.length() > hoverMaxSpeed) {
-                    player.setDeltaMovement(current.scale(0.85)); 
+                Vec3 newVelocity = FlightPhysics.computeHoverVelocity(player.getDeltaMovement(), FlightConfig.MK3);
+                if (newVelocity != player.getDeltaMovement()) {
+                    player.setDeltaMovement(newVelocity);
                     player.hasImpulse = true;
                 }
             }
@@ -84,6 +72,7 @@ public class Mk3FrameItem extends BaseSuitItem {
         } else if (suit.getWaterExitCooldown() > 0) {
             suit.setWaterExitCooldown(suit.getWaterExitCooldown() - 1);
         }
+        if (suit.getLaunchCooldown() > 0) suit.setLaunchCooldown(suit.getLaunchCooldown() - 1);
         
         if (player.getAbilities().flying) {
             if (!systemsFunctional) {
@@ -94,7 +83,7 @@ public class Mk3FrameItem extends BaseSuitItem {
                 suit.setEnergy(suit.getEnergy() - energyDrain);
                 stack.getOrCreateTag().putInt("SuitEnergy", suit.getEnergy());
 
-                boolean isBoosting = suit.isBoostKeyHeld();
+                boolean isBoosting = suit.isBoostKeyHeld() && !suit.isMaskOpen();
                 if (isBoosting && suit.getEnergy() > 1000) {
                     suit.setFlightTimer(suit.getFlightTimer() + 1);
                     suit.setHeat(suit.getHeat() + 0.04f);
