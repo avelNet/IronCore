@@ -52,6 +52,12 @@ public class Mk3FrameItem extends BaseSuitItem {
                     player.hasImpulse = true;
                 }
             }
+
+            Vec3 landed = FlightPhysics.applyAutoLandOverride(player.getDeltaMovement(), suit.isAutoLandEnabled(), player.onGround());
+            if (landed != player.getDeltaMovement()) {
+                player.setDeltaMovement(landed);
+                player.hasImpulse = true;
+            }
         }
     }
 
@@ -129,7 +135,7 @@ public class Mk3FrameItem extends BaseSuitItem {
         float coolingRate = player.isInWater() ? 0.8f : (level.getBiome(player.blockPosition()).value().getBaseTemperature() < 0.2f ? 0.4f : 0.2f);
         if (level.dimension() == Level.NETHER) suit.setHeat(suit.getHeat() + 0.03f);
         if (player.isOnFire() || player.isInLava()) suit.setHeat(suit.getHeat() + 0.5f);
-        if (!suit.isBoostKeyHeld() || !player.getAbilities().flying) suit.setHeat(suit.getHeat() - coolingRate);
+        if (!suit.isBoostKeyHeld() || !player.getAbilities().flying || suit.isMaskOpen()) suit.setHeat(suit.getHeat() - coolingRate);
 
         player.setTicksFrozen(0);
         return true; 

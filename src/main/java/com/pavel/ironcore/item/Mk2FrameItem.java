@@ -50,6 +50,12 @@ public class Mk2FrameItem extends BaseSuitItem {
                     player.hasImpulse = true;
                 }
             }
+
+            Vec3 landed = FlightPhysics.applyAutoLandOverride(player.getDeltaMovement(), suit.isAutoLandEnabled(), player.onGround());
+            if (landed != player.getDeltaMovement()) {
+                player.setDeltaMovement(landed);
+                player.hasImpulse = true;
+            }
         }
     }
 

@@ -72,6 +72,8 @@ public class IronCore {
         public static void onKeyRegister(net.minecraftforge.client.event.RegisterKeyMappingsEvent event) {
             event.register(KeyBindings.flamethrowerKey);
             event.register(KeyBindings.autoBoostKey);
+            event.register(KeyBindings.toggleMaskKey);
+            event.register(KeyBindings.toggleAutoLandKey);
         }
     }
 

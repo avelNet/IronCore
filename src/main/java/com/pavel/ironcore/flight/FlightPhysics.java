@@ -30,8 +30,26 @@ public final class FlightPhysics {
     }
 
     public static Vec3 computeHoverVelocity(Vec3 current, FlightConfig config) {
-        if (current.length() > config.hoverMaxSpeed()) {
-            return current.scale(config.hoverDamping());
+        double horizontalSpeed = Math.sqrt(current.x * current.x + current.z * current.z);
+        double x = current.x;
+        double z = current.z;
+        if (horizontalSpeed > config.hoverMaxSpeed()) {
+            x *= config.hoverDamping();
+            z *= config.hoverDamping();
+        }
+
+        // Vanilla creative-fly descend (sneak) is a flat, slow speed regardless of tier.
+        // Once the player commits to descending, accelerate like a powered dive instead.
+        double y = current.y < -0.02
+                ? Math.max(current.y - config.diveAccel(), -config.diveTerminalSpeed())
+                : current.y;
+
+        return new Vec3(x, y, z);
+    }
+
+    public static Vec3 applyAutoLandOverride(Vec3 current, boolean autoLandEnabled, boolean onGround) {
+        if (!autoLandEnabled && onGround && current.y < 0.2) {
+            return new Vec3(current.x, 0.2, current.z);
         }
         return current;
     }

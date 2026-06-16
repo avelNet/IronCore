@@ -26,6 +26,7 @@ public class SuitCapability implements INBTSerializable<CompoundTag> {
     private boolean isMaskOpen = false;
     private int waterExitCooldown = 0;
     private int launchCooldown = 0;
+    private boolean autoLandEnabled = true;
 
     public int getEnergy() { return energy; }
     public void setEnergy(int energy) { this.energy = Math.max(0, Math.min(energy, maxEnergy)); }
@@ -90,6 +91,9 @@ public class SuitCapability implements INBTSerializable<CompoundTag> {
     public int getLaunchCooldown() { return launchCooldown; }
     public void setLaunchCooldown(int cooldown) { this.launchCooldown = cooldown; }
 
+    public boolean isAutoLandEnabled() { return autoLandEnabled; }
+    public void setAutoLandEnabled(boolean enabled) { this.autoLandEnabled = enabled; }
+
     public void saveNBTData(CompoundTag nbt) {
         nbt.putInt("energy", energy);
         nbt.putInt("maxEnergy", maxEnergy);
@@ -107,6 +111,7 @@ public class SuitCapability implements INBTSerializable<CompoundTag> {
         nbt.putBoolean("firstNightTriggered", isFirstNightTriggered);
         nbt.putInt("cinematicStage", cinematicStage);
         nbt.putBoolean("maskOpen", isMaskOpen);
+        nbt.putBoolean("autoLand", autoLandEnabled);
     }
 
     public void loadNBTData(CompoundTag nbt) {
@@ -135,6 +140,9 @@ public class SuitCapability implements INBTSerializable<CompoundTag> {
         }
         if (nbt.contains("maskOpen")) {
             isMaskOpen = nbt.getBoolean("maskOpen");
+        }
+        if (nbt.contains("autoLand")) {
+            autoLandEnabled = nbt.getBoolean("autoLand");
         }
     }
 

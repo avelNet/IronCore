@@ -16,14 +16,17 @@ public record FlightConfig(
         double verticalDownMultiplier,
         double hoverMaxSpeed,
         double hoverDamping,
-        double launchSpeedMultiplier
+        double launchSpeedMultiplier,
+        double diveAccel,
+        double diveTerminalSpeed
 ) {
     public static final FlightConfig MK2 = new FlightConfig(
             0.85, 0.15, 0.0,
             0.85, 0.0,
-            1.0, 0.0, 1.0,
+            1.5, 0.25, 1.0,
             0.278, 0.85,
-            1.3
+            1.3,
+            0.12, 1.6
     );
 
     public static final FlightConfig MK3 = new FlightConfig(
@@ -31,6 +34,7 @@ public record FlightConfig(
             1.25, 0.7,
             1.2, 0.1, 1.4,
             0.3, 0.85,
-            1.45
+            1.45,
+            0.15, 2.2
     );
 }

@@ -104,6 +104,22 @@ public class SuitHUD {
         if (suit.isFlying()) {
             String flightMode = suit.isTurbo() ? "§b§lTURBO" : (suit.isBoostKeyHeld() ? "§eBOOST" : "§aHOVER");
             guiGraphics.drawString(mc.font, "MODE: " + flightMode, rx, ry + 25, 0xFFFFFF);
+
+            if (suit.getSuitTier().equals("mk3")) {
+                String turboStatus;
+                if (suit.isTurbo()) {
+                    turboStatus = "§b§lACTIVE";
+                } else if (!suit.isAutoBoostEnabled()) {
+                    turboStatus = "§7OFF";
+                } else if (suit.isBoostKeyHeld()) {
+                    turboStatus = "§e" + Math.min(100, suit.getFlightTimer()) + "%";
+                } else {
+                    turboStatus = "§aREADY";
+                }
+                guiGraphics.drawString(mc.font, "TURBO: " + turboStatus, rx, ry + 37, 0xFFFFFF);
+            }
+
+            guiGraphics.drawString(mc.font, "AUTO-LAND: " + (suit.isAutoLandEnabled() ? "§aON" : "§cOFF"), rx, ry + 49, 0xFFFFFF);
         }
 
         // Warning widgets
