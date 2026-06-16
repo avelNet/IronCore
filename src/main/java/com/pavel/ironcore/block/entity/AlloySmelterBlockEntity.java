@@ -1,30 +1,17 @@
 package com.pavel.ironcore.block.entity;
 
-import com.pavel.ironcore.block.ModBlocks;
 import com.pavel.ironcore.item.ModItems;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.Containers;
-import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.inventory.ContainerData;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.EnergyStorage;
 import net.minecraftforge.energy.IEnergyStorage;
-import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-public class AlloySmelterBlockEntity extends BlockEntity {
+public class AlloySmelterBlockEntity extends AbstractEnergyMachineBlockEntity {
     private final ItemStackHandler itemHandler = new ItemStackHandler(3) {
         @Override
         protected void onContentsChanged(int slot) {
@@ -32,34 +19,12 @@ public class AlloySmelterBlockEntity extends BlockEntity {
         }
     };
 
-    private final CustomEnergyStorage energyStorage = new CustomEnergyStorage(100000, 1000);
-
-    private class CustomEnergyStorage extends EnergyStorage {
-        public CustomEnergyStorage(int capacity, int maxReceive) {
-            super(capacity, maxReceive, capacity);
-        }
-        @Override
-        public int receiveEnergy(int maxReceive, boolean simulate) {
-            setChanged();
-            return super.receiveEnergy(maxReceive, simulate);
-        }
-        @Override
-        public int extractEnergy(int maxExtract, boolean simulate) {
-            setChanged();
-            return super.extractEnergy(maxExtract, simulate);
-        }
-        public void setEnergyDirect(int amount) {
-            this.energy = Math.max(0, Math.min(amount, capacity));
-        }
-    }
-    
-    private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
-    private LazyOptional<IEnergyStorage> lazyEnergyHandler = LazyOptional.empty();
+    private final NotifyingEnergyStorage energyStorage = new NotifyingEnergyStorage(100000, 1000, 100000, this::setChanged);
 
     public final ContainerData data;
     private int progress = 0;
-    private int maxProgress = 400; 
-    
+    private int maxProgress = 400;
+
     private static final int ENERGY_REQ = 100; // 100 FE за тик (Всего 40,000 FE)
 
     public AlloySmelterBlockEntity(BlockPos pos, BlockState state) {
@@ -92,46 +57,25 @@ public class AlloySmelterBlockEntity extends BlockEntity {
     }
 
     @Override
-    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if(cap == ForgeCapabilities.ITEM_HANDLER) return lazyItemHandler.cast();
-        if(cap == ForgeCapabilities.ENERGY) return lazyEnergyHandler.cast();
-        return super.getCapability(cap, side);
+    protected ItemStackHandler getItemHandler() {
+        return itemHandler;
     }
 
     @Override
-    public void onLoad() {
-        super.onLoad();
-        lazyItemHandler = LazyOptional.of(() -> itemHandler);
-        lazyEnergyHandler = LazyOptional.of(() -> energyStorage);
-    }
-
-    @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        lazyItemHandler.invalidate();
-        lazyEnergyHandler.invalidate();
-    }
-
-    public void drops() {
-        SimpleContainer inventory = new SimpleContainer(itemHandler.getSlots());
-        for (int i = 0; i < itemHandler.getSlots(); i++) {
-            inventory.setItem(i, itemHandler.getStackInSlot(i));
-        }
-        Containers.dropContents(this.level, this.worldPosition, inventory);
+    protected IEnergyStorage getEnergyStorage() {
+        return energyStorage;
     }
 
     @Override
     protected void saveAdditional(CompoundTag tag) {
-        tag.put("inventory", itemHandler.serializeNBT());
+        super.saveAdditional(tag);
         tag.putInt("alloy_smelter.progress", progress);
         tag.putInt("alloy_smelter.energy", energyStorage.getEnergyStored());
-        super.saveAdditional(tag);
     }
 
     @Override
     public void load(CompoundTag tag) {
         super.load(tag);
-        itemHandler.deserializeNBT(tag.getCompound("inventory"));
         progress = tag.getInt("alloy_smelter.progress");
         energyStorage.setEnergyDirect(tag.getInt("alloy_smelter.energy"));
     }
@@ -167,7 +111,7 @@ public class AlloySmelterBlockEntity extends BlockEntity {
 
         if (hasGold && hasTitanium) {
             ItemStack resultSlot = entity.itemHandler.getStackInSlot(2);
-            return resultSlot.isEmpty() || 
+            return resultSlot.isEmpty() ||
                    (resultSlot.getItem() == ModItems.GOLD_TITANIUM_ALLOY.get() && resultSlot.getCount() < resultSlot.getMaxStackSize());
         }
         return false;
@@ -177,14 +121,14 @@ public class AlloySmelterBlockEntity extends BlockEntity {
         entity.itemHandler.extractItem(0, 1, false);
         entity.itemHandler.extractItem(1, 1, false);
 
-        ItemStack resultStack = new ItemStack(ModItems.GOLD_TITANIUM_ALLOY.get(), 1); 
-        
+        ItemStack resultStack = new ItemStack(ModItems.GOLD_TITANIUM_ALLOY.get(), 1);
+
         if (entity.itemHandler.getStackInSlot(2).isEmpty()) {
             entity.itemHandler.setStackInSlot(2, resultStack);
         } else {
             entity.itemHandler.getStackInSlot(2).grow(resultStack.getCount());
         }
-        
+
         entity.resetProgress();
     }
 }
