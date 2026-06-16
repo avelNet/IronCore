@@ -25,6 +25,7 @@ public class SuitCapability implements INBTSerializable<CompoundTag> {
     private int cinematicStage = 0; // 0-none, 1-ambush, 2-critical, 3-completed
     private boolean isMaskOpen = false;
     private int waterExitCooldown = 0;
+    private boolean jarvisUnlocked = false;
 
     public int getEnergy() { return energy; }
     public void setEnergy(int energy) { this.energy = Math.max(0, Math.min(energy, maxEnergy)); }
@@ -86,6 +87,9 @@ public class SuitCapability implements INBTSerializable<CompoundTag> {
     public int getWaterExitCooldown() { return waterExitCooldown; }
     public void setWaterExitCooldown(int cooldown) { this.waterExitCooldown = cooldown; }
 
+    public boolean isJarvisUnlocked() { return jarvisUnlocked; }
+    public void setJarvisUnlocked(boolean unlocked) { this.jarvisUnlocked = unlocked; }
+
     public void saveNBTData(CompoundTag nbt) {
         nbt.putInt("energy", energy);
         nbt.putInt("maxEnergy", maxEnergy);
@@ -103,6 +107,7 @@ public class SuitCapability implements INBTSerializable<CompoundTag> {
         nbt.putBoolean("firstNightTriggered", isFirstNightTriggered);
         nbt.putInt("cinematicStage", cinematicStage);
         nbt.putBoolean("maskOpen", isMaskOpen);
+        nbt.putBoolean("jarvisUnlocked", jarvisUnlocked);
     }
 
     public void loadNBTData(CompoundTag nbt) {
@@ -131,6 +136,9 @@ public class SuitCapability implements INBTSerializable<CompoundTag> {
         }
         if (nbt.contains("maskOpen")) {
             isMaskOpen = nbt.getBoolean("maskOpen");
+        }
+        if (nbt.contains("jarvisUnlocked")) {
+            jarvisUnlocked = nbt.getBoolean("jarvisUnlocked");
         }
     }
 

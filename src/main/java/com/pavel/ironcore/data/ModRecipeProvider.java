@@ -84,6 +84,17 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .unlockedBy("has_redstone", has(Items.REDSTONE))
                 .save(pWriter);
 
+        // Ядро Stark Network (Arc Reactor Core)
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.ARC_REACTOR_CORE.get())
+                .pattern("TGT")
+                .pattern("GDG")
+                .pattern("TGT")
+                .define('T', ModItems.TITANIUM_INGOT.get())
+                .define('G', ModItems.GOLD_TITANIUM_ALLOY.get())
+                .define('D', Items.DIAMOND_BLOCK)
+                .unlockedBy("has_gold_titanium_alloy", has(ModItems.GOLD_TITANIUM_ALLOY.get()))
+                .save(pWriter);
+
         // Угольный реактор
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.COAL_REACTOR.get())
                 .pattern("ITI")

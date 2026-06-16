@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "T": {
+      "item": "ironcore:titanium_ingot"
+    },
+    "G": {
+      "item": "ironcore:gold_titanium_alloy"
+    },
+    "D": {
+      "item": "minecraft:diamond_block"
+    }
+  },
+  "pattern": [
+    "TGT",
+    "GDG",
+    "TGT"
+  ],
+  "result": {
+    "item": "ironcore:arc_reactor_core"
+  },
+  "show_notification": true
+}

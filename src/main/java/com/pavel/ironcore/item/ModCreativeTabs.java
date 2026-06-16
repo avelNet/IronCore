@@ -47,6 +47,7 @@ public class ModCreativeTabs {
                         output.accept(ModBlocks.ASSEMBLY_TABLE.get());
                         output.accept(ModBlocks.CHARGING_STATION.get());
                         output.accept(ModBlocks.SUIT_STATION.get());
+                        output.accept(ModBlocks.ARC_REACTOR_CORE.get());
                         output.accept(ModItems.TITANIUM_INGOT.get());
                         output.accept(ModBlocks.TITANIUM_ORE.get());
                         output.accept(ModBlocks.DEEPSLATE_TITANIUM_ORE.get());
