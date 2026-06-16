@@ -18,25 +18,13 @@ public final class FlightPhysics {
         double acceleration = config.boostAccelBase() + Math.pow(speedRatio, 2.0) * accelCurve;
 
         Vec3 target = look.scale(maxSpeed);
-
-        double newY;
-        if (target.y > 0) {
-            double targetY = target.y * config.verticalUpMultiplier() + config.verticalUpOffset();
-            newY = current.y + (targetY - current.y) * acceleration;
-        } else {
-            // Powered dive while boosting and looking down. A flat accel-per-tick ramp clamped to
-            // boostDiveTerminalSpeed (same shape as the hover/sneak dive) instead of converging
-            // toward a look-angle-scaled target and then dividing the whole thing by the vanilla
-            // Y damping - that combo could overshoot and oscillate whenever the look angle
-            // flickered across the horizon while flying mostly level, instead of ramping up
-            // gradually.
-            double dived = Math.max(current.y - config.boostDiveAccel(), -config.boostDiveTerminalSpeed());
-            newY = dived / VANILLA_FLYING_Y_DAMPING;
-        }
+        double targetY = target.y > 0
+                ? target.y * config.verticalUpMultiplier() + config.verticalUpOffset()
+                : target.y * config.verticalDownMultiplier();
 
         return new Vec3(
                 current.x + (target.x - current.x) * acceleration,
-                newY,
+                current.y + (targetY - current.y) * acceleration,
                 current.z + (target.z - current.z) * acceleration
         );
     }
