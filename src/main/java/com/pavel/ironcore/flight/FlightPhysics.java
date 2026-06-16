@@ -18,13 +18,24 @@ public final class FlightPhysics {
         double acceleration = config.boostAccelBase() + Math.pow(speedRatio, 2.0) * accelCurve;
 
         Vec3 target = look.scale(maxSpeed);
-        double targetY = target.y > 0
-                ? target.y * config.verticalUpMultiplier() + config.verticalUpOffset()
-                : target.y * config.verticalDownMultiplier();
+        boolean descending = target.y <= 0;
+        double targetY = descending
+                ? target.y * config.verticalDownMultiplier()
+                : target.y * config.verticalUpMultiplier() + config.verticalUpOffset();
+
+        double newY = current.y + (targetY - current.y) * acceleration;
+        if (descending) {
+            // Same vanilla 0.6x-per-tick Y damping as the hover dive - boosting downward was
+            // never separately compensated for it, so looking down while boosting converged to
+            // a steady state far weaker than verticalDownMultiplier intended. The ascending
+            // branch is left alone since verticalUpMultiplier/Offset were already hand-tuned
+            // against the uncompensated damping.
+            newY /= VANILLA_FLYING_Y_DAMPING;
+        }
 
         return new Vec3(
                 current.x + (target.x - current.x) * acceleration,
-                current.y + (targetY - current.y) * acceleration,
+                newY,
                 current.z + (target.z - current.z) * acceleration
         );
     }
