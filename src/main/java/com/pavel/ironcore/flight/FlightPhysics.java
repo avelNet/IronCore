@@ -1,5 +1,8 @@
 package com.pavel.ironcore.flight;
 
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
 /**
@@ -47,11 +50,56 @@ public final class FlightPhysics {
         return new Vec3(x, y, z);
     }
 
-    public static Vec3 applyAutoLandOverride(Vec3 current, boolean autoLandEnabled, boolean onGround) {
-        if (!autoLandEnabled && onGround && current.y < 0.2) {
+    /** Minimum clearance (blocks) the boosting terrain-follow branch tries to maintain above the ground. */
+    public static final double TERRAIN_FOLLOW_CLEARANCE = 1.0;
+
+    /**
+     * When auto-land is disabled, ground contact should never just silently cancel flight.
+     * <p>
+     * While boosting (sprint-flying horizontally) the player is allowed to skim low over terrain -
+     * we don't snap them to a fixed height - but if {@code groundClearance} dips under
+     * {@link #TERRAIN_FOLLOW_CLEARANCE} they get lifted proportionally to stay roughly a meter up,
+     * so flying low never ends in clipping a hill. Released-boost hovering keeps the original,
+     * much gentler "just don't fall through the floor" nudge.
+     */
+    public static Vec3 applyAutoLandOverride(Vec3 current, boolean autoLandEnabled, boolean onGround,
+                                              boolean boosting, double groundClearance) {
+        if (autoLandEnabled) {
+            return current;
+        }
+
+        if (boosting) {
+            double deficit = TERRAIN_FOLLOW_CLEARANCE - groundClearance;
+            if (deficit > 0) {
+                double liftSpeed = Math.min(0.5, deficit * 0.6 + 0.1);
+                return new Vec3(current.x, Math.max(current.y, liftSpeed), current.z);
+            }
+            return current;
+        }
+
+        if (onGround && current.y < 0.2) {
             return new Vec3(current.x, 0.2, current.z);
         }
         return current;
+    }
+
+    /**
+     * Scans straight down from the player's feet for the nearest collidable block, used to drive
+     * the boosting terrain-follow branch of {@link #applyAutoLandOverride}. Capped at
+     * {@code maxBlocks} for cost; returns {@code maxBlocks + 1} when nothing solid is found that
+     * close (treated as "plenty of clearance").
+     */
+    public static double findGroundClearance(Player player, Level level, int maxBlocks) {
+        BlockPos feet = player.blockPosition();
+        BlockPos.MutableBlockPos cursor = new BlockPos.MutableBlockPos(feet.getX(), feet.getY(), feet.getZ());
+        int startY = (int) Math.floor(player.getY());
+        for (int i = 0; i <= maxBlocks; i++) {
+            cursor.setY(startY - i);
+            if (!level.getBlockState(cursor).getCollisionShape(level, cursor).isEmpty()) {
+                return player.getY() - (cursor.getY() + 1);
+            }
+        }
+        return maxBlocks + 1;
     }
 
     public static Vec3 computeOverheatVelocity(Vec3 current) {
