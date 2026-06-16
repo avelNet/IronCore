@@ -118,8 +118,6 @@ public class SuitHUD {
                 }
                 guiGraphics.drawString(mc.font, "TURBO: " + turboStatus, rx, ry + 37, 0xFFFFFF);
             }
-
-            guiGraphics.drawString(mc.font, "AUTO-LAND: " + (suit.isAutoLandEnabled() ? "§aON" : "§cOFF"), rx, ry + 49, 0xFFFFFF);
         }
 
         // Warning widgets

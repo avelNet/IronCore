@@ -33,7 +33,6 @@
   "key.ironcore.toggle_flight": "Toggle Flight",
   "key.ironcore.toggle_auto_boost": "Toggle Auto-Boost",
   "key.ironcore.toggle_mask": "Toggle Helmet Mask",
-  "key.ironcore.toggle_auto_land": "Toggle Auto-Land",
   "tooltip.ironcore.reactor_type": "Type: %s",
   "tooltip.ironcore.capacity": "Capacity: %s FE"
 }

@@ -73,12 +73,6 @@ public class ModMessages {
                 .encoder(PacketSyncMaskState::toBytes)
                 .consumerMainThread(PacketSyncMaskState::handle)
                 .add();
-
-        net.messageBuilder(PacketSyncAutoLand.class, id(), NetworkDirection.PLAY_TO_SERVER)
-                .decoder(PacketSyncAutoLand::new)
-                .encoder(PacketSyncAutoLand::toBytes)
-                .consumerMainThread(PacketSyncAutoLand::handle)
-                .add();
     }
 
     public static <MSG> void sendToServer(MSG message) {
@@ -114,7 +108,6 @@ public class ModMessages {
                     suit.hasEmbeddedReactor(),
                     suit.isMaskOpen(),
                     suit.wasFlyingHorizontally(),
-                    suit.isAutoLandEnabled(),
                     suit.getFlightTimer(),
                     player.getId()
             ), player);

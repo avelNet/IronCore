@@ -4,7 +4,6 @@ import com.mojang.blaze3d.platform.InputConstants;
 import com.pavel.ironcore.network.ModMessages;
 import com.pavel.ironcore.network.PacketFlamethrower;
 import com.pavel.ironcore.network.PacketSyncAutoBoost;
-import com.pavel.ironcore.network.PacketSyncAutoLand;
 import com.pavel.ironcore.network.PacketSyncBoostState;
 import com.pavel.ironcore.network.PacketBoostLaunch;
 import com.pavel.ironcore.network.PacketRepulsorFire;
@@ -22,7 +21,6 @@ public class KeyBindings {
     public static final String KEY_FLAMETHROWER = "key.ironcore.fire_weapon";
     public static final String KEY_AUTO_BOOST = "key.ironcore.toggle_auto_boost";
     public static final String KEY_TOGGLE_MASK = "key.ironcore.toggle_mask";
-    public static final String KEY_TOGGLE_AUTO_LAND = "key.ironcore.toggle_auto_land";
 
     public static final KeyMapping flamethrowerKey = new KeyMapping(KEY_FLAMETHROWER, 
             KeyConflictContext.IN_GAME, InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_Z, KEY_CATEGORY_IRONCORE);
@@ -32,9 +30,6 @@ public class KeyBindings {
 
     public static final KeyMapping toggleMaskKey = new KeyMapping(KEY_TOGGLE_MASK,
             KeyConflictContext.IN_GAME, InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_V, KEY_CATEGORY_IRONCORE);
-
-    public static final KeyMapping toggleAutoLandKey = new KeyMapping(KEY_TOGGLE_AUTO_LAND,
-            KeyConflictContext.IN_GAME, InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_N, KEY_CATEGORY_IRONCORE);
 
     public static void init() {
         MinecraftForge.EVENT_BUS.register(new KeyBindings());
@@ -82,12 +77,6 @@ public class KeyBindings {
                 // Client-side instant feedback
                 suit.setMaskOpen(newState);
                 mc.player.displayClientMessage(net.minecraft.network.chat.Component.literal(newState ? "§eHelmet: OPENED" : "§aHelmet: CLOSED"), true);
-            });
-        }
-
-        while (toggleAutoLandKey.consumeClick()) {
-            mc.player.getCapability(com.pavel.ironcore.capability.SuitCapabilityProvider.SUIT_CAPABILITY).ifPresent(suit -> {
-                ModMessages.sendToServer(new PacketSyncAutoLand(!suit.isAutoLandEnabled()));
             });
         }
 

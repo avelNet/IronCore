@@ -47,13 +47,6 @@ public final class FlightPhysics {
         return new Vec3(x, y, z);
     }
 
-    public static Vec3 applyAutoLandOverride(Vec3 current, boolean autoLandEnabled, boolean onGround) {
-        if (!autoLandEnabled && onGround && current.y < 0.2) {
-            return new Vec3(current.x, 0.2, current.z);
-        }
-        return current;
-    }
-
     public static Vec3 computeOverheatVelocity(Vec3 current) {
         return new Vec3(current.x * 0.9, current.y - 0.1, current.z * 0.9);
     }
@@ -64,5 +57,20 @@ public final class FlightPhysics {
             boost = new Vec3(boost.x, 0.7, boost.z);
         }
         return boost;
+    }
+
+    /**
+     * Vanilla's {@code Player#travel} runs right after our client tick hook and, whenever
+     * {@code abilities.flying} is true, unconditionally multiplies whatever Y velocity we just
+     * set by this factor before the position is integrated (confirmed via decompiling
+     * {@code Player.class} - it's not something this mod controls). Every Y handed to
+     * {@code setDeltaMovement} while flying must be pre-divided by it, otherwise every vertical
+     * number in {@link FlightConfig} (dive speed in particular) ends up converging to roughly
+     * {@code 1.5 * diveAccel} instead of {@code diveTerminalSpeed}.
+     */
+    public static final double VANILLA_FLYING_Y_DAMPING = 0.6;
+
+    public static Vec3 compensateFlyingYDamping(Vec3 desired) {
+        return new Vec3(desired.x, desired.y / VANILLA_FLYING_Y_DAMPING, desired.z);
     }
 }

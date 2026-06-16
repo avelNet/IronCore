@@ -28,20 +28,7 @@ public class Mk2FrameItem extends BaseSuitItem {
 
     @Override
     protected void applyClientPhysics(Player player, SuitCapability suit, ItemStack stack, Level level) {
-        boolean flying = player.getAbilities().flying;
-
-        // Vanilla force-disables abilities.flying the instant a non-creative player touches the
-        // ground (LocalPlayer#aiStep, runs after our inventoryTick). If auto-land is off and the
-        // suit was actually flying, restore it so we hover instead of dropping out of flight.
-        if (!flying && suit.isFlying() && !suit.isAutoLandEnabled() && player.onGround()
-                && !(player.isInWater() && !player.isCreative())) {
-            player.getAbilities().flying = true;
-            player.onUpdateAbilities();
-            flying = true;
-        }
-        suit.setFlying(flying);
-
-        if (flying) {
+        if (player.getAbilities().flying) {
             boolean isBoosting = net.minecraft.client.Minecraft.getInstance().options.keySprint.isDown() && !suit.isMaskOpen();
             boolean enginesFrozen = suit.getIcingLevel() >= 100.0f;
             boolean enginesOverheated = suit.getHeat() >= 100.0f;
@@ -59,15 +46,11 @@ public class Mk2FrameItem extends BaseSuitItem {
             } else if (suit.getEnergy() >= 4) {
                 Vec3 newVelocity = FlightPhysics.computeHoverVelocity(player.getDeltaMovement(), FlightConfig.MK2);
                 if (newVelocity != player.getDeltaMovement()) {
-                    player.setDeltaMovement(newVelocity);
+                    // Vanilla multiplies our Y by 0.6 right after this tick - pre-divide so the
+                    // velocity that actually sticks matches what FlightConfig intended.
+                    player.setDeltaMovement(FlightPhysics.compensateFlyingYDamping(newVelocity));
                     player.hasImpulse = true;
                 }
-            }
-
-            Vec3 landed = FlightPhysics.applyAutoLandOverride(player.getDeltaMovement(), suit.isAutoLandEnabled(), player.onGround());
-            if (landed != player.getDeltaMovement()) {
-                player.setDeltaMovement(landed);
-                player.hasImpulse = true;
             }
         }
     }

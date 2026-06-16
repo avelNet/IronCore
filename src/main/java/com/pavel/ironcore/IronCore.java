@@ -73,7 +73,6 @@ public class IronCore {
             event.register(KeyBindings.flamethrowerKey);
             event.register(KeyBindings.autoBoostKey);
             event.register(KeyBindings.toggleMaskKey);
-            event.register(KeyBindings.toggleAutoLandKey);
         }
     }
 

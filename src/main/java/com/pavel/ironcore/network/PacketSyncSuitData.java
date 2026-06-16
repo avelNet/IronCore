@@ -21,11 +21,10 @@ public class PacketSyncSuitData {
     private final boolean hasEmbeddedReactor;
     private final boolean isMaskOpen;
     private final boolean wasFlyingHorizontally;
-    private final boolean autoLandEnabled;
     private final int flightTimer;
     private final int entityId;
 
-    public PacketSyncSuitData(int energy, int maxEnergy, String tier, int durability, float poisoning, String reactor, float icingLevel, float heatLevel, boolean isFlying, boolean autoBoostEnabled, boolean isTurbo, boolean hasEmbeddedReactor, boolean isMaskOpen, boolean wasFlyingHorizontally, boolean autoLandEnabled, int flightTimer, int entityId) {
+    public PacketSyncSuitData(int energy, int maxEnergy, String tier, int durability, float poisoning, String reactor, float icingLevel, float heatLevel, boolean isFlying, boolean autoBoostEnabled, boolean isTurbo, boolean hasEmbeddedReactor, boolean isMaskOpen, boolean wasFlyingHorizontally, int flightTimer, int entityId) {
         this.energy = energy;
         this.maxEnergy = maxEnergy;
         this.tier = tier;
@@ -40,7 +39,6 @@ public class PacketSyncSuitData {
         this.hasEmbeddedReactor = hasEmbeddedReactor;
         this.isMaskOpen = isMaskOpen;
         this.wasFlyingHorizontally = wasFlyingHorizontally;
-        this.autoLandEnabled = autoLandEnabled;
         this.flightTimer = flightTimer;
         this.entityId = entityId;
     }
@@ -60,7 +58,6 @@ public class PacketSyncSuitData {
         this.hasEmbeddedReactor = buffer.readBoolean();
         this.isMaskOpen = buffer.readBoolean();
         this.wasFlyingHorizontally = buffer.readBoolean();
-        this.autoLandEnabled = buffer.readBoolean();
         this.flightTimer = buffer.readInt();
         this.entityId = buffer.readInt();
     }
@@ -80,7 +77,6 @@ public class PacketSyncSuitData {
         buffer.writeBoolean(hasEmbeddedReactor);
         buffer.writeBoolean(isMaskOpen);
         buffer.writeBoolean(wasFlyingHorizontally);
-        buffer.writeBoolean(autoLandEnabled);
         buffer.writeInt(flightTimer);
         buffer.writeInt(entityId);
     }
@@ -107,7 +103,6 @@ public class PacketSyncSuitData {
                         suit.setEmbeddedReactor(hasEmbeddedReactor);
                         suit.setMaskOpen(isMaskOpen);
                         suit.setWasFlyingHorizontally(wasFlyingHorizontally);
-                        suit.setAutoLandEnabled(autoLandEnabled);
                         suit.setFlightTimer(flightTimer);
                     });
                 }
