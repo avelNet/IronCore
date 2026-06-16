@@ -66,10 +66,7 @@ public class Mk3FrameItem extends BaseSuitItem {
                 changed = true;
             }
 
-            double groundClearance = (!suit.isAutoLandEnabled() && isBoosting)
-                    ? FlightPhysics.findGroundClearance(player, level, 16)
-                    : 0.0;
-            Vec3 landed = FlightPhysics.applyAutoLandOverride(desired, suit.isAutoLandEnabled(), player.onGround(), isBoosting, groundClearance);
+            Vec3 landed = FlightPhysics.applyAutoLandOverride(desired, suit.isAutoLandEnabled(), player.onGround());
             if (landed != desired) {
                 desired = landed;
                 changed = true;
