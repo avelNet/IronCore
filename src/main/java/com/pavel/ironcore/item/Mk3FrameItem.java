@@ -45,37 +45,30 @@ public class Mk3FrameItem extends BaseSuitItem {
             boolean isBoosting = net.minecraft.client.Minecraft.getInstance().options.keySprint.isDown() && !suit.isMaskOpen();
             boolean enginesOverheated = suit.getHeat() >= 100.0f;
 
-            Vec3 desired = player.getDeltaMovement();
-            boolean changed = false;
-
             if (player.isInWater() && !player.isCreative()) {
                 player.getAbilities().flying = false;
                 player.onUpdateAbilities();
             } else if (enginesOverheated) {
-                desired = FlightPhysics.computeOverheatVelocity(desired);
-                changed = true;
+                player.setDeltaMovement(FlightPhysics.computeOverheatVelocity(player.getDeltaMovement()));
+                player.hasImpulse = true;
             } else if (suit.getEnergy() <= 1000 && suit.getEnergy() >= 4) {
-                desired = FlightPhysics.computeOverheatVelocity(desired);
-                changed = true;
+                player.setDeltaMovement(FlightPhysics.computeOverheatVelocity(player.getDeltaMovement()));
+                player.hasImpulse = true;
             } else if (isBoosting && suit.getEnergy() > 1000) {
                 Vec3 look = player.getLookAngle();
-                desired = FlightPhysics.computeBoostVelocity(desired, look, FlightConfig.MK3, suit.isTurbo());
-                changed = true;
+                player.setDeltaMovement(FlightPhysics.computeBoostVelocity(player.getDeltaMovement(), look, FlightConfig.MK3, suit.isTurbo()));
+                player.hasImpulse = true;
             } else if (suit.getEnergy() >= 4) {
-                desired = FlightPhysics.computeHoverVelocity(desired, FlightConfig.MK3);
-                changed = true;
+                Vec3 newVelocity = FlightPhysics.computeHoverVelocity(player.getDeltaMovement(), FlightConfig.MK3);
+                if (newVelocity != player.getDeltaMovement()) {
+                    player.setDeltaMovement(newVelocity);
+                    player.hasImpulse = true;
+                }
             }
 
-            Vec3 landed = FlightPhysics.applyAutoLandOverride(desired, suit.isAutoLandEnabled(), player.onGround());
-            if (landed != desired) {
-                desired = landed;
-                changed = true;
-            }
-
-            // Vanilla multiplies our Y by VANILLA_FLYING_Y_DAMPING right after this tick - pre-divide
-            // so the velocity that actually sticks matches what FlightConfig/FlightPhysics intended.
-            if (changed) {
-                player.setDeltaMovement(FlightPhysics.compensateFlyingYDamping(desired));
+            Vec3 landed = FlightPhysics.applyAutoLandOverride(player.getDeltaMovement(), suit.isAutoLandEnabled(), player.onGround());
+            if (landed != player.getDeltaMovement()) {
+                player.setDeltaMovement(landed);
                 player.hasImpulse = true;
             }
         }

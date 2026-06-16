@@ -65,18 +65,4 @@ public final class FlightPhysics {
         }
         return boost;
     }
-
-    /**
-     * Vanilla's {@code Player#travel} runs right after our client tick hook and, whenever
-     * {@code abilities.flying} is true, unconditionally multiplies whatever Y velocity we just
-     * set by this factor before the position is integrated. It's not something this mod
-     * controls, so every Y handed to {@code setDeltaMovement} while flying must be pre-divided
-     * by it - otherwise every vertical number in {@link FlightConfig} (dive speed, the
-     * auto-land hover nudge, etc.) ends up roughly 40% weaker than intended each tick.
-     */
-    public static final double VANILLA_FLYING_Y_DAMPING = 0.6;
-
-    public static Vec3 compensateFlyingYDamping(Vec3 desired) {
-        return new Vec3(desired.x, desired.y / VANILLA_FLYING_Y_DAMPING, desired.z);
-    }
 }
