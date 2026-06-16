@@ -2,26 +2,17 @@ package com.pavel.ironcore.block.entity;
 
 import com.pavel.ironcore.item.ReactorItem;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.Containers;
-import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.EnergyStorage;
 import net.minecraftforge.energy.IEnergyStorage;
-import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-public class ChargingStationBlockEntity extends BlockEntity {
+public class ChargingStationBlockEntity extends AbstractEnergyMachineBlockEntity {
     public final ContainerData data;
     private final ItemStackHandler itemHandler = new ItemStackHandler(1) {
         @Override
@@ -35,16 +26,11 @@ public class ChargingStationBlockEntity extends BlockEntity {
         }
     };
 
-    private final CustomEnergyStorage energyStorage = new CustomEnergyStorage(1000000, 10000);
+    private final ChargingEnergyStorage energyStorage = new ChargingEnergyStorage(1000000, 10000);
 
-    private class CustomEnergyStorage extends EnergyStorage {
-        public CustomEnergyStorage(int capacity, int maxReceive) {
-            super(capacity, maxReceive, 0);
-        }
-        @Override
-        public int receiveEnergy(int maxReceive, boolean simulate) {
-            setChanged();
-            return super.receiveEnergy(maxReceive, simulate);
+    private class ChargingEnergyStorage extends NotifyingEnergyStorage {
+        public ChargingEnergyStorage(int capacity, int maxReceive) {
+            super(capacity, maxReceive, 0, ChargingStationBlockEntity.this::setChanged);
         }
         public int extractInternal(int maxExtract, boolean simulate) {
             int energyExtracted = Math.min(energy, maxExtract);
@@ -54,13 +40,7 @@ public class ChargingStationBlockEntity extends BlockEntity {
             }
             return energyExtracted;
         }
-        public void setEnergyDirect(int amount) {
-            this.energy = Math.max(0, Math.min(amount, capacity));
-        }
     }
-
-    private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
-    private LazyOptional<IEnergyStorage> lazyEnergyHandler = LazyOptional.empty();
 
     public ChargingStationBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.CHARGING_STATION_BE.get(), pos, state);
@@ -87,45 +67,24 @@ public class ChargingStationBlockEntity extends BlockEntity {
     }
 
     @Override
-    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if(cap == ForgeCapabilities.ITEM_HANDLER) return lazyItemHandler.cast();
-        if(cap == ForgeCapabilities.ENERGY) return lazyEnergyHandler.cast();
-        return super.getCapability(cap, side);
+    protected ItemStackHandler getItemHandler() {
+        return itemHandler;
     }
 
     @Override
-    public void onLoad() {
-        super.onLoad();
-        lazyItemHandler = LazyOptional.of(() -> itemHandler);
-        lazyEnergyHandler = LazyOptional.of(() -> energyStorage);
-    }
-
-    @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        lazyItemHandler.invalidate();
-        lazyEnergyHandler.invalidate();
-    }
-
-    public void drops() {
-        SimpleContainer inventory = new SimpleContainer(itemHandler.getSlots());
-        for (int i = 0; i < itemHandler.getSlots(); i++) {
-            inventory.setItem(i, itemHandler.getStackInSlot(i));
-        }
-        Containers.dropContents(this.level, this.worldPosition, inventory);
+    protected IEnergyStorage getEnergyStorage() {
+        return energyStorage;
     }
 
     @Override
     protected void saveAdditional(CompoundTag tag) {
-        tag.put("inventory", itemHandler.serializeNBT());
-        tag.putInt("energy", energyStorage.getEnergyStored());
         super.saveAdditional(tag);
+        tag.putInt("energy", energyStorage.getEnergyStored());
     }
 
     @Override
     public void load(CompoundTag tag) {
         super.load(tag);
-        itemHandler.deserializeNBT(tag.getCompound("inventory"));
         energyStorage.setEnergyDirect(tag.getInt("energy"));
     }
 

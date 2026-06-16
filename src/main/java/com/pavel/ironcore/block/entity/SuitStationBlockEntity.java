@@ -4,22 +4,15 @@ import com.pavel.ironcore.item.ModItems;
 import com.pavel.ironcore.item.ReactorItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.Containers;
-import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-public class SuitStationBlockEntity extends BlockEntity {
+public class SuitStationBlockEntity extends AbstractMachineBlockEntity {
     private final ItemStackHandler itemHandler = new ItemStackHandler(3) { // 0: Chestplate, 1: Reactor IN, 2: Reactor OUT
         @Override
         protected void onContentsChanged(int slot) {
@@ -35,30 +28,27 @@ public class SuitStationBlockEntity extends BlockEntity {
         }
     };
 
-    private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
-
     public SuitStationBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.SUIT_STATION_BE.get(), pos, state);
     }
 
     @Override
-    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable net.minecraft.core.Direction side) {
-        if(cap == ForgeCapabilities.ITEM_HANDLER) {
-            return lazyItemHandler.cast();
+    protected ItemStackHandler getItemHandler() {
+        return itemHandler;
+    }
+
+    @Override
+    protected void loadInventory(CompoundTag tag) {
+        // Временно читаем во временный хендлер
+        ItemStackHandler tempHandler = new ItemStackHandler(3);
+        tempHandler.deserializeNBT(tag.getCompound("inventory"));
+
+        // Защита от вылетов при обновлении старых блоков (2 слота -> 3 слота)
+        // Копируем предметы вручную, чтобы не потерять их при изменении размера массива
+        itemHandler.setSize(3);
+        for (int i = 0; i < Math.min(tempHandler.getSlots(), 3); i++) {
+            itemHandler.setStackInSlot(i, tempHandler.getStackInSlot(i));
         }
-        return super.getCapability(cap, side);
-    }
-
-    @Override
-    public void onLoad() {
-        super.onLoad();
-        lazyItemHandler = LazyOptional.of(() -> itemHandler);
-    }
-
-    @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        lazyItemHandler.invalidate();
     }
 
     public static void tick(Level level, BlockPos pos, BlockState state, SuitStationBlockEntity entity) {
@@ -75,7 +65,7 @@ public class SuitStationBlockEntity extends BlockEntity {
             if ((installedType.isEmpty() || installedType.equals("none")) && !reactorIn.isEmpty() && reactorIn.getItem() instanceof ReactorItem) {
                 String reactorType = reactorIn.getItem() == ModItems.PALLADIUM_REACTOR.get() ? "palladium" : "coal";
                 chestTag.putString("InstalledReactor", reactorType);
-                
+
                 reactorIn.getCapability(ForgeCapabilities.ENERGY).ifPresent(energy -> {
                     chestTag.putInt("SuitEnergy", energy.getEnergyStored());
                     chestTag.putInt("SuitMaxEnergy", energy.getMaxEnergyStored());
@@ -107,9 +97,9 @@ public class SuitStationBlockEntity extends BlockEntity {
                 if (reactorItemToSpawn != null) {
                     ItemStack extractedReactor = new ItemStack(reactorItemToSpawn);
                     extractedReactor.getOrCreateTag().putInt("Energy", storedEnergy);
-                    
+
                     itemHandler.setStackInSlot(2, extractedReactor);
-                    
+
                     chestTag.putString("InstalledReactor", "none");
                     chestTag.putInt("SuitEnergy", 0);
                     chestTag.putInt("SuitMaxEnergy", 0);
@@ -117,35 +107,5 @@ public class SuitStationBlockEntity extends BlockEntity {
                 }
             }
         }
-    }
-
-    @Override
-    protected void saveAdditional(CompoundTag tag) {
-        tag.put("inventory", itemHandler.serializeNBT());
-        super.saveAdditional(tag);
-    }
-
-    @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
-        
-        // Временно читаем во временный хендлер
-        ItemStackHandler tempHandler = new ItemStackHandler(3);
-        tempHandler.deserializeNBT(tag.getCompound("inventory"));
-        
-        // Защита от вылетов при обновлении старых блоков (2 слота -> 3 слота)
-        // Копируем предметы вручную, чтобы не потерять их при изменении размера массива
-        itemHandler.setSize(3);
-        for (int i = 0; i < Math.min(tempHandler.getSlots(), 3); i++) {
-            itemHandler.setStackInSlot(i, tempHandler.getStackInSlot(i));
-        }
-    }
-
-    public void drops() {
-        SimpleContainer inventory = new SimpleContainer(itemHandler.getSlots());
-        for (int i = 0; i < itemHandler.getSlots(); i++) {
-            inventory.setItem(i, itemHandler.getStackInSlot(i));
-        }
-        Containers.dropContents(this.level, this.worldPosition, inventory);
     }
 }
