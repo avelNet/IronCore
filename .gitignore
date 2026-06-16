@@ -22,3 +22,8 @@ bin/
 
 # Development Assets
 screens/
+
+# Temporary files / scratch scripts
+*.py
+*.zip
+temp_*
