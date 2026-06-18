@@ -26,6 +26,7 @@ public class ModBlockStateProvider extends BlockStateProvider {
         simpleBlockWithItem(ModBlocks.ASSEMBLY_TABLE.get(), cubeAll(ModBlocks.ASSEMBLY_TABLE.get()));
         simpleBlockWithItem(ModBlocks.CHARGING_STATION.get(), cubeAll(ModBlocks.CHARGING_STATION.get()));
         simpleBlockWithItem(ModBlocks.SUIT_STATION.get(), cubeAll(ModBlocks.SUIT_STATION.get()));
+        simpleBlockWithItem(ModBlocks.ARC_REACTOR_CORE.get(), cubeAll(ModBlocks.ARC_REACTOR_CORE.get()));
     }
 
     private void blockWithItem(RegistryObject<Block> blockRegistryObject) {

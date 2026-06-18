@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "ironcore:arc_reactor_core"
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "ironcore:blocks/arc_reactor_core"
+}

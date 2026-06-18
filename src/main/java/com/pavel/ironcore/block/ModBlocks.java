@@ -39,8 +39,11 @@ public class ModBlocks {
     public static final RegistryObject<Block> CHARGING_STATION = registerBlock("charging_station", 
             () -> new ChargingStationBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).noOcclusion()));
 
-    public static final RegistryObject<Block> SUIT_STATION = registerBlock("suit_station", 
+    public static final RegistryObject<Block> SUIT_STATION = registerBlock("suit_station",
             () -> new SuitStationBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).noOcclusion()));
+
+    public static final RegistryObject<Block> ARC_REACTOR_CORE = registerBlock("arc_reactor_core",
+            () -> new ArcReactorCoreBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).lightLevel(state -> 15).noOcclusion()));
 
     private static <T extends Block> RegistryObject<T> registerBlock(String name, Supplier<T> block) {
         RegistryObject<T> toReturn = BLOCKS.register(name, block);

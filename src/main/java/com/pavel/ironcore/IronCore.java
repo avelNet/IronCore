@@ -124,17 +124,55 @@ public class IronCore {
                     // Проверка инвентаря на наличие токсичных отходов
                     boolean hasDepletedCore = event.player.getInventory().contains(new net.minecraft.world.item.ItemStack(ModItems.DEPLETED_PALLADIUM_CORE.get()));
 
-                    // Глобальная логика отравления палладием
-                    if (suit.hasEmbeddedReactor() || suit.getActiveReactorType().equals("palladium") || hasDepletedCore) {
-                        float poisonRate = 0.01f;
-                        if (suit.hasEmbeddedReactor() && suit.getEnergy() < suit.getMaxEnergy() * 0.1f) {
-                            poisonRate = 0.03f; // Яд растет быстрее, если стержень почти пуст
+                    // ── Логика отравления палладием ───────────────────────────────────────────
+                    // Ставки подобраны так чтобы угроза нарастала часами, а не минутами.
+                    // Ориентир: активный boost-полёт с embedded реактором → ~4.6 ч до 100%.
+                    //           первые часы вообще без костюма → отравление практически нулевое.
+                    //
+                    // Всё в единицах/тик (1 тик = 1/20 сек, 1200 тиков = 1 мин):
+                    //   embedded boost   0.0003  →  0.36%/мин  →  ~4.6 ч
+                    //   embedded hover   0.0001  →  0.12%/мин  →  ~14 ч
+                    //   embedded ground  0.00005 →  0.06%/мин  →  ~28 ч
+                    //   palladium boost  0.0002  →  0.24%/мин  →  ~7 ч
+                    //   palladium hover  0.00007 →  0.084%/мин →  ~20 ч
+                    //   palladium ground 0.00002 →  0.024%/мин →  ~70 ч
+                    //   нет костюма, есть имплант: 0.000002   →  ~1400 ч (незаметно)
+                    //   отработанный стержень    +0.001       →  +72%/ч (сильный штраф)
+                    //   естественный спад без костюма: −0.00003/тик (~0.04%/мин)
+
+                    boolean activelyFlying = event.player.getAbilities().flying && !event.player.onGround();
+                    boolean activelBoosting = suit.isBoostKeyHeld() && activelyFlying;
+
+                    float poisonRate = 0.0f;
+
+                    if (suit.hasEmbeddedReactor()) {
+                        if (suit.getSuitTier().equals("none")) {
+                            // Имплант есть, но костюм снят — реактор дормантный, почти ноль
+                            poisonRate = 0.000002f;
+                        } else if (activelBoosting) {
+                            poisonRate = 0.0003f;
+                        } else if (activelyFlying) {
+                            poisonRate = 0.0001f;
+                        } else {
+                            poisonRate = 0.00005f;
                         }
-                        if (hasDepletedCore) {
-                            poisonRate += 0.05f; // Штраф за ношение отходов
+                    } else if (suit.getActiveReactorType().equals("palladium")) {
+                        if (activelBoosting) {
+                            poisonRate = 0.0002f;
+                        } else if (activelyFlying) {
+                            poisonRate = 0.00007f;
+                        } else {
+                            poisonRate = 0.00002f;
                         }
-                        suit.setPalladiumPoisoning(suit.getPalladiumPoisoning() + poisonRate);
-                        
+                    }
+
+                    if (hasDepletedCore) {
+                        poisonRate += 0.001f; // Сильный штраф за ношение отработанного стержня
+                    }
+
+                    if (poisonRate > 0) {
+                        suit.setPalladiumPoisoning(Math.min(100.0f, suit.getPalladiumPoisoning() + poisonRate));
+
                         if (event.player.tickCount % 20 == 0) {
                             ModMessages.sendSyncPacket(serverPlayer);
                         }
@@ -153,9 +191,9 @@ public class IronCore {
                             }
                         }
                     } else if (suit.getPalladiumPoisoning() > 0) {
-                        suit.setPalladiumPoisoning(suit.getPalladiumPoisoning() - 0.005f);
-                        // Если костюм снят, но токсичность есть - синхронизируем HUD, чтобы шкала пропадала плавно
-                        if (suit.getSuitTier().equals("none") && event.player.tickCount % 20 == 0) {
+                        // Естественный спад — очень медленный, нужен хлорофилловый сок для лечения
+                        suit.setPalladiumPoisoning(Math.max(0.0f, suit.getPalladiumPoisoning() - 0.00003f));
+                        if (event.player.tickCount % 20 == 0) {
                             ModMessages.sendSyncPacket(serverPlayer);
                         }
                     }
