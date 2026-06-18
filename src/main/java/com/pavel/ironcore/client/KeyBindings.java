@@ -68,6 +68,8 @@ public class KeyBindings {
 
         while (toggleMaskKey.consumeClick()) {
             mc.player.getCapability(com.pavel.ironcore.capability.SuitCapabilityProvider.SUIT_CAPABILITY).ifPresent(suit -> {
+                // No suit equipped — ignore key entirely
+                if (suit.getSuitTier().equals("none")) return;
                 if (suit.getSuitTier().equals("mk1")) {
                     mc.player.displayClientMessage(net.minecraft.network.chat.Component.literal("§cHelmet is fixed on this model."), true);
                     return;
