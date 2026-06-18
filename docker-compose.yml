@@ -1,0 +1,18 @@
+version: "3.9"
+
+services:
+  builder:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      # Gradle кэш — пересборки с нуля не скачивают Forge повторно
+      - gradle-cache:/root/.gradle
+      # Артефакт появляется на хосте после сборки
+      - ./build:/build/build
+    environment:
+      - GRADLE_OPTS=-Xmx3G -XX:+UseG1GC
+
+volumes:
+  gradle-cache:
+    driver: local
