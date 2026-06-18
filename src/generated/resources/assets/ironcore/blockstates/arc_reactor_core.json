@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "ironcore:block/arc_reactor_core"
+    }
+  }
+}

@@ -28,7 +28,13 @@ public class PacketSyncMaskState {
             if (player != null) {
                 player.getCapability(SuitCapabilityProvider.SUIT_CAPABILITY).ifPresent(suit -> {
                     suit.setMaskOpen(isOpen);
-                    ModMessages.sendSyncPacket(player); // КРИТИЧЕСКИ ВАЖНО: Синхронизируем обратно на клиент!
+                    // Opening the mask stops boost immediately — don't wait for the next physics tick
+                    // or the flightTimer might hit 100 and fire turbo in the gap.
+                    if (isOpen) {
+                        suit.setFlightTimer(0);
+                        suit.setTurbo(false);
+                    }
+                    ModMessages.sendSyncPacket(player);
                 });
             }
         });

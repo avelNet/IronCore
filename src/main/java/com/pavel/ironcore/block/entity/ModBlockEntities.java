@@ -36,6 +36,11 @@ public class ModBlockEntities {
                     BlockEntityType.Builder.of(SuitStationBlockEntity::new,
                             com.pavel.ironcore.block.ModBlocks.SUIT_STATION.get()).build(null));
 
+    public static final RegistryObject<BlockEntityType<ArcReactorCoreBlockEntity>> ARC_REACTOR_CORE_BE =
+            BLOCK_ENTITIES.register("arc_reactor_core", () ->
+                    BlockEntityType.Builder.of(ArcReactorCoreBlockEntity::new,
+                            com.pavel.ironcore.block.ModBlocks.ARC_REACTOR_CORE.get()).build(null));
+
     public static void register(IEventBus eventBus) {
         BLOCK_ENTITIES.register(eventBus);
     }
