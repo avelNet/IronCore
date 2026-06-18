@@ -98,11 +98,12 @@ public class SuitHUD {
         int ry = height / 2 - 40;
 
         double speed = mc.player.getDeltaMovement().length() * 20.0 * 3.6;
+        if (speed < 1.0) speed = 0.0; // Убираем шум остаточного движения на земле
         guiGraphics.drawString(mc.font, "SPD: " + String.format("%.1f", speed), rx, ry, 0x00FF00);
         guiGraphics.drawString(mc.font, "ALT: " + (int)mc.player.getY(), rx, ry + 10, 0x00FF00);
 
         if (suit.isFlying()) {
-            String flightMode = suit.isTurbo() ? "§b§lTURBO" : (suit.isBoostKeyHeld() ? "§eBOOST" : "§aHOVER");
+            String flightMode = suit.isTurbo() ? "§b§lTURBO" : (suit.isBoostKeyHeld() ? "§eBOOST" : "§aCRUISE");
             guiGraphics.drawString(mc.font, "MODE: " + flightMode, rx, ry + 25, 0xFFFFFF);
         }
 

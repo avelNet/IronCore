@@ -137,7 +137,9 @@ public abstract class BaseSuitItem extends ArmorItem implements GeoItem {
                 if (suit.hasEmbeddedReactor()) {
                     suit.setActiveReactorType("palladium");
                     suit.setMaxEnergy(50000);
-                    if (suit.getEnergy() < suit.getMaxEnergy()) {
+                    // Fill to max only on first equip (energy == 0).
+                    // During normal use energy drains and is recharged by Arc Reactor Core.
+                    if (suit.getEnergy() == 0) {
                         suit.setEnergy(suit.getMaxEnergy());
                         changed = true;
                     }

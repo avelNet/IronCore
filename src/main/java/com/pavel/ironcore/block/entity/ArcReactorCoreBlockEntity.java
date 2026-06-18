@@ -67,28 +67,32 @@ public class ArcReactorCoreBlockEntity extends AbstractEnergyMachineBlockEntity 
                     suit.setJarvisUnlocked(true);
                 }
 
-                // Embedded reactor = infinite energy from BaseSuitItem tick — nothing to charge.
-                // Target players with a physical reactor (coal or palladium) installed in the chestplate.
-                boolean hasPhysicalReactor = !suit.hasEmbeddedReactor()
-                        && !suit.getActiveReactorType().equals("none");
                 // In Creative mode skip FE cost so the block is testable without a generator
                 boolean blockCanCharge = player.isCreative() || entity.energyStorage.getEnergyStored() > 0;
 
-                if (hasPhysicalReactor && blockCanCharge) {
-                    // BaseSuitItem reads SuitEnergy from the chestplate NBT every tick and writes it
-                    // back to suit.energy, so we must patch the item NBT directly — touching only
-                    // suit.setEnergy() here would be overwritten before the client ever sees it.
-                    ItemStack chest = player.getItemBySlot(EquipmentSlot.CHEST);
-                    if (!chest.isEmpty() && chest.hasTag()) {
-                        int current = chest.getOrCreateTag().getInt("SuitEnergy");
-                        int max     = chest.getOrCreateTag().getInt("SuitMaxEnergy");
-                        if (max > 0 && current < max) {
-                            int toGive = Math.min(RECHARGE_PER_INTERVAL, max - current);
-                            chest.getOrCreateTag().putInt("SuitEnergy", current + toGive);
-                            if (!player.isCreative()) {
-                                entity.energyStorage.extractEnergy(toGive, false);
+                if (blockCanCharge && suit.getEnergy() < suit.getMaxEnergy()) {
+                    if (suit.hasEmbeddedReactor()) {
+                        // Embedded reactor: energy lives purely in SuitCapability —
+                        // BaseSuitItem no longer overwrites it to max each tick,
+                        // so suit.setEnergy() sticks until next flight drain.
+                        int toGive = Math.min(RECHARGE_PER_INTERVAL, suit.getMaxEnergy() - suit.getEnergy());
+                        suit.setEnergy(suit.getEnergy() + toGive);
+                        if (!player.isCreative()) entity.energyStorage.extractEnergy(toGive, false);
+                        ModMessages.sendSyncPacket(player);
+                    } else if (!suit.getActiveReactorType().equals("none")) {
+                        // Physical reactor: energy is stored as SuitEnergy in chestplate NBT.
+                        // BaseSuitItem reads that NBT every tick and overwrites suit.energy,
+                        // so we must patch the item directly.
+                        ItemStack chest = player.getItemBySlot(EquipmentSlot.CHEST);
+                        if (!chest.isEmpty() && chest.hasTag()) {
+                            int current = chest.getOrCreateTag().getInt("SuitEnergy");
+                            int max     = chest.getOrCreateTag().getInt("SuitMaxEnergy");
+                            if (max > 0 && current < max) {
+                                int toGive = Math.min(RECHARGE_PER_INTERVAL, max - current);
+                                chest.getOrCreateTag().putInt("SuitEnergy", current + toGive);
+                                if (!player.isCreative()) entity.energyStorage.extractEnergy(toGive, false);
+                                ModMessages.sendSyncPacket(player);
                             }
-                            ModMessages.sendSyncPacket(player);
                         }
                     }
                 }
