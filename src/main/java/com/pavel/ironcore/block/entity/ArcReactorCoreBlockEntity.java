@@ -7,7 +7,9 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
@@ -60,17 +62,36 @@ public class ArcReactorCoreBlockEntity extends AbstractEnergyMachineBlockEntity 
                 p -> p.distanceToSqr(pos.getCenter()) <= RANGE * RANGE);
         for (ServerPlayer player : players) {
             player.getCapability(SuitCapabilityProvider.SUIT_CAPABILITY).ifPresent(suit -> {
+                // Unlock JARVIS on first contact regardless of reactor type
                 if (!suit.isJarvisUnlocked()) {
                     suit.setJarvisUnlocked(true);
                 }
-                if (suit.hasEmbeddedReactor() && entity.energyStorage.getEnergyStored() > 0 && suit.getEnergy() < suit.getMaxEnergy()) {
-                    int toGive = Math.min(RECHARGE_PER_INTERVAL, Math.min(entity.energyStorage.getEnergyStored(), suit.getMaxEnergy() - suit.getEnergy()));
-                    if (toGive > 0) {
-                        suit.setEnergy(suit.getEnergy() + toGive);
-                        entity.energyStorage.extractEnergy(toGive, false);
+
+                // Embedded reactor = infinite energy from BaseSuitItem tick — nothing to charge.
+                // Target players with a physical reactor (coal or palladium) installed in the chestplate.
+                boolean hasPhysicalReactor = !suit.hasEmbeddedReactor()
+                        && !suit.getActiveReactorType().equals("none");
+                // In Creative mode skip FE cost so the block is testable without a generator
+                boolean blockCanCharge = player.isCreative() || entity.energyStorage.getEnergyStored() > 0;
+
+                if (hasPhysicalReactor && blockCanCharge) {
+                    // BaseSuitItem reads SuitEnergy from the chestplate NBT every tick and writes it
+                    // back to suit.energy, so we must patch the item NBT directly — touching only
+                    // suit.setEnergy() here would be overwritten before the client ever sees it.
+                    ItemStack chest = player.getItemBySlot(EquipmentSlot.CHEST);
+                    if (!chest.isEmpty() && chest.hasTag()) {
+                        int current = chest.getOrCreateTag().getInt("SuitEnergy");
+                        int max     = chest.getOrCreateTag().getInt("SuitMaxEnergy");
+                        if (max > 0 && current < max) {
+                            int toGive = Math.min(RECHARGE_PER_INTERVAL, max - current);
+                            chest.getOrCreateTag().putInt("SuitEnergy", current + toGive);
+                            if (!player.isCreative()) {
+                                entity.energyStorage.extractEnergy(toGive, false);
+                            }
+                            ModMessages.sendSyncPacket(player);
+                        }
                     }
                 }
-                ModMessages.sendSyncPacket(player);
             });
         }
 
