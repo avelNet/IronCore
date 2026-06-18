@@ -25,6 +25,7 @@ public class SuitCapability implements INBTSerializable<CompoundTag> {
     private int cinematicStage = 0; // 0-none, 1-ambush, 2-critical, 3-completed
     private boolean isMaskOpen = false;
     private int waterExitCooldown = 0;
+    private int launchCooldown = 0;
 
     public int getEnergy() { return energy; }
     public void setEnergy(int energy) { this.energy = Math.max(0, Math.min(energy, maxEnergy)); }
@@ -85,6 +86,9 @@ public class SuitCapability implements INBTSerializable<CompoundTag> {
 
     public int getWaterExitCooldown() { return waterExitCooldown; }
     public void setWaterExitCooldown(int cooldown) { this.waterExitCooldown = cooldown; }
+
+    public int getLaunchCooldown() { return launchCooldown; }
+    public void setLaunchCooldown(int cooldown) { this.launchCooldown = cooldown; }
 
     public void saveNBTData(CompoundTag nbt) {
         nbt.putInt("energy", energy);

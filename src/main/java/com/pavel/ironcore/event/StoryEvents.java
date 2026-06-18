@@ -25,26 +25,32 @@ public class StoryEvents {
     public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
         if (event.phase == TickEvent.Phase.END && !event.player.level().isClientSide) {
             ServerPlayer player = (ServerPlayer) event.player;
-            player.getCapability(SuitCapabilityProvider.SUIT_CAPABILITY).ifPresent(suit -> {
-                if (!suit.hasEmbeddedReactor()) {
+
+            // Only worth scanning the whole inventory right before we'd actually use the result -
+            // this used to run the full container scan (plus a capability lookup) every single
+            // tick for every player, instead of just once every 100 ticks.
+            if (player.tickCount % 100 == 0) {
+                player.getCapability(SuitCapabilityProvider.SUIT_CAPABILITY).ifPresent(suit -> {
+                    if (suit.hasEmbeddedReactor()) return;
+
                     boolean hasPalladium = false;
                     for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
                         net.minecraft.world.item.ItemStack stack = player.getInventory().getItem(i);
                         if (!stack.isEmpty()) {
-                            if (stack.getItem() == com.pavel.ironcore.item.ModItems.RAW_PALLADIUM.get() || 
+                            if (stack.getItem() == com.pavel.ironcore.item.ModItems.RAW_PALLADIUM.get() ||
                                 stack.getItem() == com.pavel.ironcore.block.ModBlocks.PALLADIUM_ORE.get().asItem()) {
                                 hasPalladium = true;
                                 break;
                             }
                         }
                     }
-                    
-                    if (hasPalladium && player.tickCount % 100 == 0) {
+
+                    if (hasPalladium) {
                         player.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.CONFUSION, 200, 0, false, false, true));
                         player.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.POISON, 100, 0, false, false, true));
                     }
-                }
-            });
+                });
+            }
         }
     }
 

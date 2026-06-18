@@ -90,7 +90,9 @@ public class AlloySmelterBlockEntity extends AbstractEnergyMachineBlockEntity {
             if (pEntity.progress >= pEntity.maxProgress) {
                 craftItem(pEntity);
             }
-        } else {
+        } else if (pEntity.progress != 0) {
+            // Only dirty the chunk when there was actually progress to reset, instead of
+            // unconditionally marking it changed (and forcing a re-save) every idle tick.
             pEntity.resetProgress();
             setChanged(level, pos, state);
         }

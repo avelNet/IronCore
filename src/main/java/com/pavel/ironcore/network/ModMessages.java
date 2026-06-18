@@ -108,6 +108,7 @@ public class ModMessages {
                     suit.hasEmbeddedReactor(),
                     suit.isMaskOpen(),
                     suit.wasFlyingHorizontally(),
+                    suit.getFlightTimer(),
                     player.getId()
             ), player);
         });

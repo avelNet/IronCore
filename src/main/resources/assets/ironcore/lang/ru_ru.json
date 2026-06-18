@@ -31,6 +31,8 @@
   "key.category.ironcore": "IronCore",
   "key.ironcore.fire_weapon": "Выстрел из костюма",
   "key.ironcore.toggle_flight": "Переключить полёт",
+  "key.ironcore.toggle_auto_boost": "Переключить авто-турбо",
+  "key.ironcore.toggle_mask": "Открыть/закрыть маску",
   "tooltip.ironcore.reactor_type": "Тип: %s",
   "tooltip.ironcore.capacity": "Ёмкость: %s FE"
 }

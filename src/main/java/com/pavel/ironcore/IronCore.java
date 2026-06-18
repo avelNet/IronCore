@@ -72,6 +72,7 @@ public class IronCore {
         public static void onKeyRegister(net.minecraftforge.client.event.RegisterKeyMappingsEvent event) {
             event.register(KeyBindings.flamethrowerKey);
             event.register(KeyBindings.autoBoostKey);
+            event.register(KeyBindings.toggleMaskKey);
         }
     }
 
@@ -121,7 +122,7 @@ public class IronCore {
                     ServerPlayer serverPlayer = (ServerPlayer) event.player;
 
                     // Проверка инвентаря на наличие токсичных отходов
-                    boolean hasDepletedCore = event.player.getInventory().contains(new net.minecraft.world.item.ItemStack(ModItems.DEPLETED_PALLADIUM_CORE.get()).getItem().getDefaultInstance());
+                    boolean hasDepletedCore = event.player.getInventory().contains(new net.minecraft.world.item.ItemStack(ModItems.DEPLETED_PALLADIUM_CORE.get()));
 
                     // Глобальная логика отравления палладием
                     if (suit.hasEmbeddedReactor() || suit.getActiveReactorType().equals("palladium") || hasDepletedCore) {

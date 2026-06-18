@@ -31,6 +31,8 @@
   "key.category.ironcore": "IronCore",
   "key.ironcore.fire_weapon": "Fire Suit Weapon",
   "key.ironcore.toggle_flight": "Toggle Flight",
+  "key.ironcore.toggle_auto_boost": "Toggle Auto-Boost",
+  "key.ironcore.toggle_mask": "Toggle Helmet Mask",
   "tooltip.ironcore.reactor_type": "Type: %s",
   "tooltip.ironcore.capacity": "Capacity: %s FE"
 }

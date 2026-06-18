@@ -27,3 +27,6 @@ screens/
 *.py
 *.zip
 temp_*
+
+# Env — содержит локальные пути, не коммитить (образец: .env.example)
+.env

@@ -9,8 +9,9 @@ buildscript {
 }
 
 apply plugin: 'net.minecraftforge.gradle'
+apply plugin: 'checkstyle'
 
-version = '1.0'
+version = '1.1'
 group = 'com.pavel.ironcore'
 archivesBaseName = 'ironcore'
 
@@ -83,3 +84,14 @@ jar {
 }
 
 jar.finalizedBy('reobfJar')
+
+// ── Checkstyle (статический анализ Java) ─────────────────────────────────────
+checkstyle {
+    toolVersion = '10.12.0'
+    configFile   = file('config/checkstyle/checkstyle.xml')
+    // ignoreFailures: сборка не падает при нарушениях — только выводит отчёт.
+    // Для КТ №3 (code freeze) нарушений быть не должно.
+    ignoreFailures = true
+    showViolations = true
+}
+

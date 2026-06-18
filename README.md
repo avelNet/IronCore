@@ -51,12 +51,107 @@
 
 ---
 
+## 🏗 Архитектура
+
+```
+src/main/java/com/pavel/ironcore/
+├── flight/
+│   ├── FlightConfig.java      — иммутабельные константы по тирам (MK2/MK3)
+│   └── FlightPhysics.java     — чистые функции физики (без состояния)
+├── item/
+│   ├── BaseSuitItem.java      — общий тиковый цикл (inventoryTick)
+│   ├── Mk2FrameItem.java      — тир-специфичная логика (нагрев, иней)
+│   └── Mk3FrameItem.java      — + турбо-режим, репульсоры
+├── capability/
+│   └── SuitCapability.java    — все игрок-привязанные состояния (NBT)
+├── network/
+│   └── ModMessages.java       — Simple Channel, пакеты клиент↔сервер
+├── block/entity/
+│   ├── AbstractMachineBlockEntity.java        — базовый класс машин
+│   ├── AbstractEnergyMachineBlockEntity.java  — + FE-энергия
+│   └── NotifyingEnergyStorage.java            — дорогой setChanged только при изменении
+└── client/
+    ├── SuitHUD.java            — HUD-оверлей (энергия, тепло, иней, токсичность)
+    └── KeyBindings.java        — регистрация клавиш
+```
+
+Разделение клиент/сервер: клиент авторитативен по физике скорости (`setDeltaMovement`), сервер — по энергии, урону, эффектам и партиклам. Синхронизация — `PacketSyncSuitData`.
+
+---
+
+## 🔧 Сборка и разработка
+
+### Требования
+*   **Java 17** (Eclipse Temurin или OpenJDK)
+*   **Git** — необходим ForgeGradle для работы с маппингами
+
+### Клонирование и сборка
+```bash
+git clone https://github.com/avelNet/IronCore.git
+cd IronCore
+
+# Первая сборка скачивает Minecraft + Forge (~600 MB), займёт несколько минут
+./gradlew build
+```
+Готовый `.jar` появится в `build/libs/ironcore-1.0.jar`.
+
+### Деплой в Minecraft
+```bash
+cp build/libs/ironcore-1.0.jar ~/.minecraft/mods/
+# или укажите свой путь в .env (скопируйте .env.example → .env)
+```
+
+### Запуск клиента разработчика
+```bash
+./gradlew runClient
+```
+
+---
+
+## ⚙️ Конфигурация окружения
+
+Скопируйте `.env.example` в `.env` и заполните под свою машину:
+
+```
+MC_VERSION=1.20.1
+FORGE_VERSION=47.2.0
+GECKOLIB_VERSION=4.4.9
+MOD_VERSION=1.0
+MC_MODS_PATH=~/.minecraft/mods
+```
+
+Файл `.env` **не коммитится** в репозиторий (добавлен в `.gitignore`).
+
+---
+
+## 🐳 Docker (воспроизводимая сборка)
+
+```bash
+# Собрать мод в изолированном контейнере (без локальной Java/Gradle)
+docker compose up --build
+
+# Артефакт появится в ./build/libs/ на хосте
+```
+
+---
+
+## 🔍 Статический анализ кода
+
+```bash
+./gradlew checkstyleMain
+```
+Отчёт: `build/reports/checkstyle/main.html`  
+Конфигурация: `config/checkstyle/checkstyle.xml`
+
+---
+
 ## 👨‍💻 Для разработчиков
 
 Мод построен на современной архитектуре Forge 1.20.1:
 *   Данные хранятся в `SuitCapability`.
 *   Физика полета синхронизирована между сервером и клиентом.
 *   Весь контент (модели, рецепты, лут) генерируется через **Datagen**.
+*   Коммиты следуют конвенции [Conventional Commits](https://www.conventionalcommits.org/): `feat:`, `fix:`, `docs:`, `refactor:`, `chore:`
 
 ---
 
