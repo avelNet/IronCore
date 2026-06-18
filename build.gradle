@@ -95,6 +95,3 @@ checkstyle {
     showViolations = true
 }
 
-// Checkstyle не запускается автоматически при ./gradlew build —
-// вызывайте явно: ./gradlew checkstyleMain
-tasks.build.dependsOn.remove(tasks.check)
