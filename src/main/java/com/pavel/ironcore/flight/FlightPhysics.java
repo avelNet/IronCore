@@ -22,9 +22,12 @@ public final class FlightPhysics {
                 ? target.y * config.verticalUpMultiplier() + config.verticalUpOffset()
                 : target.y * config.verticalDownMultiplier();
 
+        // Y must be pre-divided by VANILLA_FLYING_Y_DAMPING so that after vanilla's
+        // Player#travel multiplies it back by 0.6, the effective Y velocity matches targetY.
+        // Without this, boost's Y converges to only ~18% of targetY at steady state.
         return new Vec3(
                 current.x + (target.x - current.x) * acceleration,
-                current.y + (targetY - current.y) * acceleration,
+                (current.y + (targetY - current.y) * acceleration) / VANILLA_FLYING_Y_DAMPING,
                 current.z + (target.z - current.z) * acceleration
         );
     }

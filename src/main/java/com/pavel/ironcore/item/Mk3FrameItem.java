@@ -29,7 +29,8 @@ public class Mk3FrameItem extends BaseSuitItem {
     @Override
     protected void applyClientPhysics(Player player, SuitCapability suit, ItemStack stack, Level level) {
         if (player.getAbilities().flying) {
-            boolean isBoosting = net.minecraft.client.Minecraft.getInstance().options.keySprint.isDown() && !suit.isMaskOpen();
+            if (suit.isMaskOpen()) return; // mask open = levitation only; vanilla creative fly handles movement
+            boolean isBoosting = net.minecraft.client.Minecraft.getInstance().options.keySprint.isDown();
             boolean enginesOverheated = suit.getHeat() >= 100.0f;
 
             if (player.isInWater() && !player.isCreative()) {
