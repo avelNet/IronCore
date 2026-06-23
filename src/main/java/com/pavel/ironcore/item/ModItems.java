@@ -42,9 +42,6 @@ public class ModItems {
     public static final RegistryObject<Item> MK3_BOOTS = ITEMS.register("mk3_boots",
             () -> new Mk3FrameItem(ModArmorMaterials.MK3, ArmorItem.Type.BOOTS, new Item.Properties()));
 
-    public static final RegistryObject<Item> COAL_REACTOR = ITEMS.register("coal_reactor",
-            () -> new ReactorItem(new Item.Properties().stacksTo(1), 5000, "coal"));
-
     public static final RegistryObject<Item> PALLADIUM_REACTOR = ITEMS.register("palladium_reactor",
             () -> new ReactorItem(new Item.Properties().stacksTo(1), 50000, "palladium"));
 

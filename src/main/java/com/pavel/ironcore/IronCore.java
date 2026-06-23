@@ -15,6 +15,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -247,6 +248,24 @@ public class IronCore {
                     event.addCapability(new ResourceLocation(MODID, "suit_properties"), new SuitCapabilityProvider());
                 }
             }
+        }
+
+        @SubscribeEvent
+        public static void onPlayerClone(PlayerEvent.Clone event) {
+            event.getOriginal().reviveCaps();
+            event.getOriginal().getCapability(SuitCapabilityProvider.SUIT_CAPABILITY).ifPresent(oldSuit -> {
+                event.getEntity().getCapability(SuitCapabilityProvider.SUIT_CAPABILITY).ifPresent(newSuit -> {
+                    // Copy only "body-permanent" data — implant, poisoning, story flags, preferences.
+                    // Suit tier, energy, heat etc. reset naturally (armor drops on death).
+                    newSuit.setEmbeddedReactor(oldSuit.hasEmbeddedReactor());
+                    newSuit.setPalladiumPoisoning(oldSuit.getPalladiumPoisoning());
+                    newSuit.setJarvisUnlocked(oldSuit.isJarvisUnlocked());
+                    newSuit.setAutoBoostEnabled(oldSuit.isAutoBoostEnabled());
+                    newSuit.setFirstNightTriggered(oldSuit.isFirstNightTriggered());
+                    newSuit.setCinematicStage(oldSuit.getCinematicStage());
+                });
+            });
+            event.getOriginal().invalidateCaps();
         }
     }
 
