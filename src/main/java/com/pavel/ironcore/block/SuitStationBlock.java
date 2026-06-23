@@ -72,7 +72,6 @@ public class SuitStationBlock extends BaseEntityBlock {
     @Nullable
     @Override
     public <T extends BlockEntity> net.minecraft.world.level.block.entity.BlockEntityTicker<T> getTicker(Level level, BlockState state, net.minecraft.world.level.block.entity.BlockEntityType<T> type) {
-        return level.isClientSide() ? null : createTickerHelper(type, com.pavel.ironcore.block.entity.ModBlockEntities.SUIT_STATION_BE.get(), 
-                com.pavel.ironcore.block.entity.SuitStationBlockEntity::tick);
+        return null;
     }
 }

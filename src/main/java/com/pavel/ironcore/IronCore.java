@@ -133,9 +133,6 @@ public class IronCore {
                     //   embedded boost   0.0003  →  0.36%/мин  →  ~4.6 ч
                     //   embedded hover   0.0001  →  0.12%/мин  →  ~14 ч
                     //   embedded ground  0.00005 →  0.06%/мин  →  ~28 ч
-                    //   palladium boost  0.0002  →  0.24%/мин  →  ~7 ч
-                    //   palladium hover  0.00007 →  0.084%/мин →  ~20 ч
-                    //   palladium ground 0.00002 →  0.024%/мин →  ~70 ч
                     //   нет костюма, есть имплант: 0.000002   →  ~1400 ч (незаметно)
                     //   отработанный стержень    +0.001       →  +72%/ч (сильный штраф)
                     //   естественный спад без костюма: −0.00003/тик (~0.04%/мин)
@@ -155,14 +152,6 @@ public class IronCore {
                             poisonRate = 0.0001f;
                         } else {
                             poisonRate = 0.00005f;
-                        }
-                    } else if (suit.getActiveReactorType().equals("palladium")) {
-                        if (activelBoosting) {
-                            poisonRate = 0.0002f;
-                        } else if (activelyFlying) {
-                            poisonRate = 0.00007f;
-                        } else {
-                            poisonRate = 0.00002f;
                         }
                     }
 

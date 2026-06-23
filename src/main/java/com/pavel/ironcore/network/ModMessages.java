@@ -50,12 +50,6 @@ public class ModMessages {
                 .consumerMainThread(PacketBoostLaunch::handle)
                 .add();
 
-        net.messageBuilder(PacketExtractReactor.class, id(), NetworkDirection.PLAY_TO_SERVER)
-                .decoder(PacketExtractReactor::new)
-                .encoder(PacketExtractReactor::toBytes)
-                .consumerMainThread(PacketExtractReactor::handle)
-                .add();
-
         net.messageBuilder(PacketRepulsorFire.class, id(), NetworkDirection.PLAY_TO_SERVER)
                 .decoder(PacketRepulsorFire::new)
                 .encoder(PacketRepulsorFire::toBytes)

@@ -116,12 +116,7 @@ public abstract class BaseSuitItem extends ArmorItem implements GeoItem {
             boolean isFull = isFullSuitEquipped(player);
 
             if (isFull) {
-                CompoundTag chestTag = stack.getOrCreateTag();
-                String installedReactor = chestTag.getString("InstalledReactor");
-                int suitEnergy = chestTag.getInt("SuitEnergy");
-                int suitMaxEnergy = chestTag.getInt("SuitMaxEnergy");
-
-                if ((installedReactor.isEmpty() || installedReactor.equals("none")) && !suit.hasEmbeddedReactor()) {
+                if (!suit.hasEmbeddedReactor()) {
                     if (!suit.getSuitTier().equals("none")) {
                         handleNoReactor(player, suit);
                         sync(player, suit);
@@ -134,23 +129,13 @@ public abstract class BaseSuitItem extends ArmorItem implements GeoItem {
                     changed = true;
                 }
 
-                if (suit.hasEmbeddedReactor()) {
-                    suit.setActiveReactorType("palladium");
-                    suit.setMaxEnergy(50000);
-                    // Fill to max only on first equip (energy == 0).
-                    // During normal use energy drains and is recharged by Arc Reactor Core.
-                    if (suit.getEnergy() == 0) {
-                        suit.setEnergy(suit.getMaxEnergy());
-                        changed = true;
-                    }
-                } else {
-                    if (installedReactor.contains("palladium")) suit.setActiveReactorType("palladium");
-                    else if (installedReactor.contains("coal")) suit.setActiveReactorType("coal");
-                    
-                    suit.setMaxEnergy(suitMaxEnergy);
-                    if (suit.getEnergy() != suitEnergy) {
-                       suit.setEnergy(suitEnergy); 
-                    }
+                suit.setActiveReactorType("palladium");
+                suit.setMaxEnergy(50000);
+                // Fill to max only on first equip (energy == 0).
+                // During normal use energy drains and is recharged by Arc Reactor Core.
+                if (suit.getEnergy() == 0) {
+                    suit.setEnergy(suit.getMaxEnergy());
+                    changed = true;
                 }
 
                 changed |= applyServerLogic(player, suit, stack, level);
