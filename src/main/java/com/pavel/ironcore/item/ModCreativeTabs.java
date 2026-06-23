@@ -37,7 +37,6 @@ public class ModCreativeTabs {
                         output.accept(ModItems.MK3_BOOTS.get());
                         
                         // Энергетика
-                        output.accept(ModItems.COAL_REACTOR.get());
                         output.accept(ModItems.PALLADIUM_REACTOR.get());
                         output.accept(ModItems.CHLOROPHYLL_JUICE.get());
 

@@ -26,7 +26,7 @@ public class ModItemModelProvider extends ItemModelProvider {
         simpleItem(ModItems.CHLOROPHYLL_JUICE);
         
         // Items with custom textures that don't need complex models right now
-        simpleItem(ModItems.COAL_REACTOR);
+
         simpleItem(ModItems.MK1_HELMET);
         simpleItem(ModItems.MK1_CHESTPLATE);
         simpleItem(ModItems.MK1_LEGGINGS);

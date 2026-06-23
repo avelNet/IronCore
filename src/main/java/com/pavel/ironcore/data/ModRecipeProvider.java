@@ -95,17 +95,6 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .unlockedBy("has_gold_titanium_alloy", has(ModItems.GOLD_TITANIUM_ALLOY.get()))
                 .save(pWriter);
 
-        // Угольный реактор
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.COAL_REACTOR.get())
-                .pattern("ITI")
-                .pattern("TCT")
-                .pattern("ITI")
-                .define('I', Items.IRON_INGOT)
-                .define('T', ModItems.TITANIUM_INGOT.get())
-                .define('C', Items.COAL_BLOCK)
-                .unlockedBy("has_titanium", has(ModItems.TITANIUM_INGOT.get()))
-                .save(pWriter);
-
         // Палладиевый реактор
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.PALLADIUM_REACTOR.get())
                 .pattern("TGT")

@@ -15,6 +15,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -133,9 +134,6 @@ public class IronCore {
                     //   embedded boost   0.0003  →  0.36%/мин  →  ~4.6 ч
                     //   embedded hover   0.0001  →  0.12%/мин  →  ~14 ч
                     //   embedded ground  0.00005 →  0.06%/мин  →  ~28 ч
-                    //   palladium boost  0.0002  →  0.24%/мин  →  ~7 ч
-                    //   palladium hover  0.00007 →  0.084%/мин →  ~20 ч
-                    //   palladium ground 0.00002 →  0.024%/мин →  ~70 ч
                     //   нет костюма, есть имплант: 0.000002   →  ~1400 ч (незаметно)
                     //   отработанный стержень    +0.001       →  +72%/ч (сильный штраф)
                     //   естественный спад без костюма: −0.00003/тик (~0.04%/мин)
@@ -155,14 +153,6 @@ public class IronCore {
                             poisonRate = 0.0001f;
                         } else {
                             poisonRate = 0.00005f;
-                        }
-                    } else if (suit.getActiveReactorType().equals("palladium")) {
-                        if (activelBoosting) {
-                            poisonRate = 0.0002f;
-                        } else if (activelyFlying) {
-                            poisonRate = 0.00007f;
-                        } else {
-                            poisonRate = 0.00002f;
                         }
                     }
 
@@ -258,6 +248,24 @@ public class IronCore {
                     event.addCapability(new ResourceLocation(MODID, "suit_properties"), new SuitCapabilityProvider());
                 }
             }
+        }
+
+        @SubscribeEvent
+        public static void onPlayerClone(PlayerEvent.Clone event) {
+            event.getOriginal().reviveCaps();
+            event.getOriginal().getCapability(SuitCapabilityProvider.SUIT_CAPABILITY).ifPresent(oldSuit -> {
+                event.getEntity().getCapability(SuitCapabilityProvider.SUIT_CAPABILITY).ifPresent(newSuit -> {
+                    // Copy only "body-permanent" data — implant, poisoning, story flags, preferences.
+                    // Suit tier, energy, heat etc. reset naturally (armor drops on death).
+                    newSuit.setEmbeddedReactor(oldSuit.hasEmbeddedReactor());
+                    newSuit.setPalladiumPoisoning(oldSuit.getPalladiumPoisoning());
+                    newSuit.setJarvisUnlocked(oldSuit.isJarvisUnlocked());
+                    newSuit.setAutoBoostEnabled(oldSuit.isAutoBoostEnabled());
+                    newSuit.setFirstNightTriggered(oldSuit.isFirstNightTriggered());
+                    newSuit.setCinematicStage(oldSuit.getCinematicStage());
+                });
+            });
+            event.getOriginal().invalidateCaps();
         }
     }
 

@@ -7,9 +7,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.monster.Monster;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
@@ -70,31 +68,11 @@ public class ArcReactorCoreBlockEntity extends AbstractEnergyMachineBlockEntity 
                 // In Creative mode skip FE cost so the block is testable without a generator
                 boolean blockCanCharge = player.isCreative() || entity.energyStorage.getEnergyStored() > 0;
 
-                if (blockCanCharge && suit.getEnergy() < suit.getMaxEnergy()) {
-                    if (suit.hasEmbeddedReactor()) {
-                        // Embedded reactor: energy lives purely in SuitCapability —
-                        // BaseSuitItem no longer overwrites it to max each tick,
-                        // so suit.setEnergy() sticks until next flight drain.
-                        int toGive = Math.min(RECHARGE_PER_INTERVAL, suit.getMaxEnergy() - suit.getEnergy());
-                        suit.setEnergy(suit.getEnergy() + toGive);
-                        if (!player.isCreative()) entity.energyStorage.extractEnergy(toGive, false);
-                        ModMessages.sendSyncPacket(player);
-                    } else if (!suit.getActiveReactorType().equals("none")) {
-                        // Physical reactor: energy is stored as SuitEnergy in chestplate NBT.
-                        // BaseSuitItem reads that NBT every tick and overwrites suit.energy,
-                        // so we must patch the item directly.
-                        ItemStack chest = player.getItemBySlot(EquipmentSlot.CHEST);
-                        if (!chest.isEmpty() && chest.hasTag()) {
-                            int current = chest.getOrCreateTag().getInt("SuitEnergy");
-                            int max     = chest.getOrCreateTag().getInt("SuitMaxEnergy");
-                            if (max > 0 && current < max) {
-                                int toGive = Math.min(RECHARGE_PER_INTERVAL, max - current);
-                                chest.getOrCreateTag().putInt("SuitEnergy", current + toGive);
-                                if (!player.isCreative()) entity.energyStorage.extractEnergy(toGive, false);
-                                ModMessages.sendSyncPacket(player);
-                            }
-                        }
-                    }
+                if (blockCanCharge && suit.hasEmbeddedReactor() && suit.getEnergy() < suit.getMaxEnergy()) {
+                    int toGive = Math.min(RECHARGE_PER_INTERVAL, suit.getMaxEnergy() - suit.getEnergy());
+                    suit.setEnergy(suit.getEnergy() + toGive);
+                    if (!player.isCreative()) entity.energyStorage.extractEnergy(toGive, false);
+                    ModMessages.sendSyncPacket(player);
                 }
             });
         }

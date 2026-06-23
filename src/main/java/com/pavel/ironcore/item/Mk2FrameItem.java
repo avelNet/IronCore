@@ -29,7 +29,11 @@ public class Mk2FrameItem extends BaseSuitItem {
     @Override
     protected void applyClientPhysics(Player player, SuitCapability suit, ItemStack stack, Level level) {
         if (player.getAbilities().flying) {
-            boolean isBoosting = net.minecraft.client.Minecraft.getInstance().options.keySprint.isDown() && !suit.isMaskOpen();
+            if (suit.isMaskOpen()) {
+                if (player.isSprinting()) player.setSprinting(false);
+                return; // mask open = levitation only; vanilla creative fly handles movement
+            }
+            boolean isBoosting = net.minecraft.client.Minecraft.getInstance().options.keySprint.isDown();
             boolean enginesFrozen = suit.getIcingLevel() >= 100.0f;
             boolean enginesOverheated = suit.getHeat() >= 100.0f;
 
