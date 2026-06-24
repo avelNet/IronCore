@@ -10,9 +10,7 @@ public class PacketSyncSuitData {
     private final int energy;
     private final int maxEnergy;
     private final String tier;
-    private final int durability;
     private final float poisoning;
-    private final String reactor;
     private final float icingLevel;
     private final float heatLevel;
     private final boolean isFlying;
@@ -24,13 +22,11 @@ public class PacketSyncSuitData {
     private final int flightTimer;
     private final int entityId;
 
-    public PacketSyncSuitData(int energy, int maxEnergy, String tier, int durability, float poisoning, String reactor, float icingLevel, float heatLevel, boolean isFlying, boolean autoBoostEnabled, boolean isTurbo, boolean hasEmbeddedReactor, boolean isMaskOpen, boolean wasFlyingHorizontally, int flightTimer, int entityId) {
+    public PacketSyncSuitData(int energy, int maxEnergy, String tier, float poisoning, float icingLevel, float heatLevel, boolean isFlying, boolean autoBoostEnabled, boolean isTurbo, boolean hasEmbeddedReactor, boolean isMaskOpen, boolean wasFlyingHorizontally, int flightTimer, int entityId) {
         this.energy = energy;
         this.maxEnergy = maxEnergy;
         this.tier = tier;
-        this.durability = durability;
         this.poisoning = poisoning;
-        this.reactor = reactor;
         this.icingLevel = icingLevel;
         this.heatLevel = heatLevel;
         this.isFlying = isFlying;
@@ -47,9 +43,7 @@ public class PacketSyncSuitData {
         this.energy = buffer.readInt();
         this.maxEnergy = buffer.readInt();
         this.tier = buffer.readUtf();
-        this.durability = buffer.readInt();
         this.poisoning = buffer.readFloat();
-        this.reactor = buffer.readUtf();
         this.icingLevel = buffer.readFloat();
         this.heatLevel = buffer.readFloat();
         this.isFlying = buffer.readBoolean();
@@ -66,9 +60,7 @@ public class PacketSyncSuitData {
         buffer.writeInt(energy);
         buffer.writeInt(maxEnergy);
         buffer.writeUtf(tier);
-        buffer.writeInt(durability);
         buffer.writeFloat(poisoning);
-        buffer.writeUtf(reactor);
         buffer.writeFloat(icingLevel);
         buffer.writeFloat(heatLevel);
         buffer.writeBoolean(isFlying);
@@ -92,9 +84,7 @@ public class PacketSyncSuitData {
                         suit.setMaxEnergy(maxEnergy);
                         suit.setEnergy(energy);
                         suit.setSuitTier(tier);
-                        suit.setFrameDurability(durability);
                         suit.setPalladiumPoisoning(poisoning);
-                        suit.setActiveReactorType(reactor);
                         suit.setIcingLevel(icingLevel);
                         suit.setHeat(heatLevel);
                         suit.setFlying(isFlying);

@@ -127,7 +127,6 @@ public abstract class BaseSuitItem extends ArmorItem implements GeoItem {
                 }
 
                 boolean firstInit = suit.getMaxEnergy() == 0;
-                suit.setActiveReactorType("palladium");
                 suit.setMaxEnergy(50000);
                 if (firstInit) {
                     suit.setEnergy(suit.getMaxEnergy());
@@ -150,7 +149,6 @@ public abstract class BaseSuitItem extends ArmorItem implements GeoItem {
 
     protected void handleNoReactor(ServerPlayer player, com.pavel.ironcore.capability.SuitCapability suit) {
         suit.setSuitTier("none");
-        suit.setActiveReactorType("none");
         suit.setEnergy(0);
         suit.setMaxEnergy(0);
         suit.setFlying(false);

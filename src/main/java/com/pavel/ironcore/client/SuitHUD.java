@@ -90,9 +90,6 @@ public class SuitHUD {
         guiGraphics.fill(lx, ly + 12, lx + (int)(100 * energyPercent), ly + 14, 0xFF00AAFF); // Foreground
         guiGraphics.drawString(mc.font, "PWR: " + (int)(energyPercent * 100) + "%", lx, ly + 16, energyBarColor);
 
-        // Armor Integrity
-        guiGraphics.drawString(mc.font, "ARM: " + suit.getFrameDurability() + "%", lx, ly + 30, (suit.getFrameDurability() < 30) ? red : orange);
-
         // --- RIGHT SIDE: FLIGHT DATA ---
         int rx = width - 100;
         int ry = height / 2 - 40;

@@ -193,7 +193,6 @@ public class IronCore {
                         
                         if (!hasMk1 && !hasMk2 && !hasMk3) {
                             suit.setSuitTier("none");
-                            suit.setActiveReactorType("none");
                             suit.setEnergy(0);
                             suit.setMaxEnergy(0);
                             suit.setFlying(false);
