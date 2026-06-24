@@ -1,6 +1,5 @@
 package com.pavel.ironcore.item;
 
-import com.pavel.ironcore.capability.SuitCapabilityProvider;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;

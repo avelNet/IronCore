@@ -46,7 +46,7 @@ public class PacketRepulsorFire {
 
                     // Entity raycast
                     AABB searchBox = player.getBoundingBox().expandTowards(lookVector.scale(reachDistance)).inflate(1.0D);
-                    EntityHitResult entityHit = ProjectileUtil.getEntityHitResult(player, eyePosition, endPosition, searchBox, (entity) -> !entity.isSpectator() && entity.isPickable(), reachDistance * reachDistance);
+                    EntityHitResult entityHit = ProjectileUtil.getEntityHitResult(player, eyePosition, endPosition, searchBox, entity -> !entity.isSpectator() && entity.isPickable(), reachDistance * reachDistance);
 
                     if (entityHit != null && entityHit.getEntity() instanceof LivingEntity target) {
                         endPosition = entityHit.getLocation();

@@ -22,13 +22,13 @@ public class KeyBindings {
     public static final String KEY_AUTO_BOOST = "key.ironcore.toggle_auto_boost";
     public static final String KEY_TOGGLE_MASK = "key.ironcore.toggle_mask";
 
-    public static final KeyMapping flamethrowerKey = new KeyMapping(KEY_FLAMETHROWER, 
+    public static final KeyMapping FLAMETHROWER_KEY = new KeyMapping(KEY_FLAMETHROWER, 
             KeyConflictContext.IN_GAME, InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_Z, KEY_CATEGORY_IRONCORE);
 
-    public static final KeyMapping autoBoostKey = new KeyMapping(KEY_AUTO_BOOST,
+    public static final KeyMapping AUTO_BOOST_KEY = new KeyMapping(KEY_AUTO_BOOST,
             KeyConflictContext.IN_GAME, InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_R, KEY_CATEGORY_IRONCORE);
 
-    public static final KeyMapping toggleMaskKey = new KeyMapping(KEY_TOGGLE_MASK,
+    public static final KeyMapping TOGGLE_MASK_KEY = new KeyMapping(KEY_TOGGLE_MASK,
             KeyConflictContext.IN_GAME, InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_V, KEY_CATEGORY_IRONCORE);
 
     public static void init() {
@@ -46,7 +46,7 @@ public class KeyBindings {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null) return;
 
-        while (flamethrowerKey.consumeClick()) {
+        while (FLAMETHROWER_KEY.consumeClick()) {
             long currentTime = System.currentTimeMillis();
             if (currentTime - lastFireTime > 250) { 
                 boolean isMk3 = mc.player.getItemBySlot(EquipmentSlot.CHEST).getItem() == com.pavel.ironcore.item.ModItems.MK3_CHESTPLATE.get();
@@ -60,13 +60,13 @@ public class KeyBindings {
             }
         }
 
-        while (autoBoostKey.consumeClick()) {
+        while (AUTO_BOOST_KEY.consumeClick()) {
             mc.player.getCapability(com.pavel.ironcore.capability.SuitCapabilityProvider.SUIT_CAPABILITY).ifPresent(suit -> {
                 ModMessages.sendToServer(new PacketSyncAutoBoost(!suit.isAutoBoostEnabled()));
             });
         }
 
-        while (toggleMaskKey.consumeClick()) {
+        while (TOGGLE_MASK_KEY.consumeClick()) {
             mc.player.getCapability(com.pavel.ironcore.capability.SuitCapabilityProvider.SUIT_CAPABILITY).ifPresent(suit -> {
                 if (suit.getSuitTier().equals("mk1")) {
                     mc.player.displayClientMessage(net.minecraft.network.chat.Component.literal("§cHelmet is fixed on this model."), true);

@@ -2,7 +2,6 @@ package com.pavel.ironcore.item;
 
 import com.pavel.ironcore.IronCore;
 import net.minecraft.world.item.ArmorItem;
-import net.minecraft.world.item.ArmorMaterials;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;

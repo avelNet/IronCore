@@ -29,12 +29,12 @@ public class FlightRotationHandler {
         boolean wasRenderedWithTilt = false;
     }
 
-    private static final WeakHashMap<Player, PlayerRotationData> playerRotationMap = new WeakHashMap<>();
+    private static final WeakHashMap<Player, PlayerRotationData> PLAYER_ROTATION_MAP = new WeakHashMap<>();
 
     @SubscribeEvent
     public static void onRenderPlayerPre(RenderPlayerEvent.Pre event) {
         Player player = event.getEntity();
-        PlayerRotationData data = playerRotationMap.computeIfAbsent(player, k -> new PlayerRotationData());
+        PlayerRotationData data = PLAYER_ROTATION_MAP.computeIfAbsent(player, k -> new PlayerRotationData());
         data.wasRenderedWithTilt = false;
         data.modifiedXRot = false;
 
@@ -111,7 +111,7 @@ public class FlightRotationHandler {
 
     @SubscribeEvent
     public static void onRenderPlayerPost(RenderPlayerEvent.Post event) {
-        PlayerRotationData data = playerRotationMap.get(event.getEntity());
+        PlayerRotationData data = PLAYER_ROTATION_MAP.get(event.getEntity());
         if (data == null) return;
 
         if (data.modifiedXRot) {

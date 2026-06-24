@@ -46,7 +46,7 @@ public class AssemblyTableBlock extends BaseEntityBlock {
         if (!level.isClientSide()) {
             BlockEntity entity = level.getBlockEntity(pos);
             if(entity instanceof AssemblyTableBlockEntity) {
-                NetworkHooks.openScreen(((ServerPlayer)player), new MenuProvider() {
+                NetworkHooks.openScreen((ServerPlayer)player, new MenuProvider() {
                     @Override
                     public Component getDisplayName() {
                         return Component.translatable("block.ironcore.assembly_table");

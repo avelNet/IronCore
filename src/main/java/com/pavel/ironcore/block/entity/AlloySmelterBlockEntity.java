@@ -114,7 +114,7 @@ public class AlloySmelterBlockEntity extends AbstractEnergyMachineBlockEntity {
         if (hasGold && hasTitanium) {
             ItemStack resultSlot = entity.itemHandler.getStackInSlot(2);
             return resultSlot.isEmpty() ||
-                   (resultSlot.getItem() == ModItems.GOLD_TITANIUM_ALLOY.get() && resultSlot.getCount() < resultSlot.getMaxStackSize());
+                   resultSlot.getItem() == ModItems.GOLD_TITANIUM_ALLOY.get() && resultSlot.getCount() < resultSlot.getMaxStackSize();
         }
         return false;
     }

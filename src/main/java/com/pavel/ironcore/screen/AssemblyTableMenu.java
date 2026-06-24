@@ -6,7 +6,6 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ContainerLevelAccess;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
@@ -23,7 +22,7 @@ public class AssemblyTableMenu extends AbstractMachineMenu {
     public AssemblyTableMenu(int pContainerId, Inventory inv, BlockEntity entity) {
         super(ModMenuTypes.ASSEMBLY_TABLE_MENU.get(), pContainerId);
         checkContainerSize(inv, 10);
-        blockEntity = ((AssemblyTableBlockEntity) entity);
+        blockEntity = (AssemblyTableBlockEntity) entity;
         this.level = inv.player.level();
 
         addPlayerInventory(inv);

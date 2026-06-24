@@ -48,7 +48,7 @@ public class CoalGeneratorBlock extends BaseEntityBlock {
         if (!level.isClientSide()) {
             BlockEntity entity = level.getBlockEntity(pos);
             if(entity instanceof CoalGeneratorBlockEntity) {
-                NetworkHooks.openScreen(((ServerPlayer)player), new MenuProvider() {
+                NetworkHooks.openScreen((ServerPlayer)player, new MenuProvider() {
                     @Override
                     public Component getDisplayName() {
                         return Component.translatable("block.ironcore.coal_generator");

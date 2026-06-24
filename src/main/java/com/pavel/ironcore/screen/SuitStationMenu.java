@@ -22,7 +22,7 @@ public class SuitStationMenu extends AbstractMachineMenu {
     public SuitStationMenu(int pContainerId, Inventory inv, BlockEntity entity) {
         super(ModMenuTypes.SUIT_STATION_MENU.get(), pContainerId);
         checkContainerSize(inv, 1);
-        blockEntity = ((SuitStationBlockEntity) entity);
+        blockEntity = (SuitStationBlockEntity) entity;
         this.level = inv.player.level();
 
         addPlayerInventory(inv);

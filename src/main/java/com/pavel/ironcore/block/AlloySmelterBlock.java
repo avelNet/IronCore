@@ -48,7 +48,7 @@ public class AlloySmelterBlock extends BaseEntityBlock {
         if (!level.isClientSide()) {
             BlockEntity entity = level.getBlockEntity(pos);
             if(entity instanceof AlloySmelterBlockEntity) {
-                NetworkHooks.openScreen(((ServerPlayer)player), new MenuProvider() {
+                NetworkHooks.openScreen((ServerPlayer)player, new MenuProvider() {
                     @Override
                     public Component getDisplayName() {
                         return Component.translatable("block.ironcore.alloy_smelter");

@@ -48,7 +48,7 @@ public class ChargingStationBlock extends BaseEntityBlock {
         if (!level.isClientSide()) {
             BlockEntity entity = level.getBlockEntity(pos);
             if(entity instanceof ChargingStationBlockEntity) {
-                NetworkHooks.openScreen(((ServerPlayer)player), new MenuProvider() {
+                NetworkHooks.openScreen((ServerPlayer)player, new MenuProvider() {
                     @Override
                     public Component getDisplayName() {
                         return Component.translatable("block.ironcore.charging_station");

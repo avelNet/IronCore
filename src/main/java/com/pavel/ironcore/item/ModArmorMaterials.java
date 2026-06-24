@@ -14,21 +14,21 @@ import java.util.EnumMap;
 import java.util.function.Supplier;
 
 public enum ModArmorMaterials implements ArmorMaterial {
-    MK1("mk1", 35, Util.make(new EnumMap<>(ArmorItem.Type.class), (p_266652_) -> {
+    MK1("mk1", 35, Util.make(new EnumMap<>(ArmorItem.Type.class), p_266652_ -> {
         p_266652_.put(ArmorItem.Type.BOOTS, 2);
         p_266652_.put(ArmorItem.Type.LEGGINGS, 5);
         p_266652_.put(ArmorItem.Type.CHESTPLATE, 6);
         p_266652_.put(ArmorItem.Type.HELMET, 2);
     }), 12, SoundEvents.ARMOR_EQUIP_IRON, 2.0F, 0.0F, () -> Ingredient.of(ModItems.TITANIUM_INGOT.get())),
     
-    MK2("mk2", 60, Util.make(new EnumMap<>(ArmorItem.Type.class), (p_266652_) -> {
+    MK2("mk2", 60, Util.make(new EnumMap<>(ArmorItem.Type.class), p_266652_ -> {
         p_266652_.put(ArmorItem.Type.BOOTS, 3);
         p_266652_.put(ArmorItem.Type.LEGGINGS, 6);
         p_266652_.put(ArmorItem.Type.CHESTPLATE, 6);
         p_266652_.put(ArmorItem.Type.HELMET, 3);
     }), 15, SoundEvents.ARMOR_EQUIP_IRON, 3.0F, 0.1F, () -> Ingredient.of(ModItems.TITANIUM_INGOT.get())),
     
-    MK3("mk3", 100, Util.make(new EnumMap<>(ArmorItem.Type.class), (p_266652_) -> {
+    MK3("mk3", 100, Util.make(new EnumMap<>(ArmorItem.Type.class), p_266652_ -> {
         p_266652_.put(ArmorItem.Type.BOOTS, 5);
         p_266652_.put(ArmorItem.Type.LEGGINGS, 8);
         p_266652_.put(ArmorItem.Type.CHESTPLATE, 10);
@@ -36,7 +36,7 @@ public enum ModArmorMaterials implements ArmorMaterial {
     }), 20, SoundEvents.ARMOR_EQUIP_GOLD, 4.0F, 0.2F, () -> Ingredient.of(ModItems.GOLD_TITANIUM_ALLOY.get()));
 
     public static final StringRepresentable.EnumCodec<ArmorMaterials> CODEC = StringRepresentable.fromEnum(ArmorMaterials::values);
-    private static final EnumMap<ArmorItem.Type, Integer> HEALTH_FUNCTION_FOR_TYPE = Util.make(new EnumMap<>(ArmorItem.Type.class), (p_266653_) -> {
+    private static final EnumMap<ArmorItem.Type, Integer> HEALTH_FUNCTION_FOR_TYPE = Util.make(new EnumMap<>(ArmorItem.Type.class), p_266653_ -> {
         p_266653_.put(ArmorItem.Type.BOOTS, 13);
         p_266653_.put(ArmorItem.Type.LEGGINGS, 15);
         p_266653_.put(ArmorItem.Type.CHESTPLATE, 16);

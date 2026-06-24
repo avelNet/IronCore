@@ -3,7 +3,6 @@ package com.pavel.ironcore;
 import com.pavel.ironcore.capability.SuitCapability;
 import com.pavel.ironcore.capability.SuitCapabilityProvider;
 import com.pavel.ironcore.client.KeyBindings;
-import com.pavel.ironcore.client.SuitHUD;
 import com.pavel.ironcore.item.ModCreativeTabs;
 import com.pavel.ironcore.item.ModItems;
 import com.pavel.ironcore.network.ModMessages;
@@ -71,9 +70,9 @@ public class IronCore {
     public static class ClientModEvents {
         @SubscribeEvent
         public static void onKeyRegister(net.minecraftforge.client.event.RegisterKeyMappingsEvent event) {
-            event.register(KeyBindings.flamethrowerKey);
-            event.register(KeyBindings.autoBoostKey);
-            event.register(KeyBindings.toggleMaskKey);
+            event.register(KeyBindings.FLAMETHROWER_KEY);
+            event.register(KeyBindings.AUTO_BOOST_KEY);
+            event.register(KeyBindings.TOGGLE_MASK_KEY);
         }
     }
 
