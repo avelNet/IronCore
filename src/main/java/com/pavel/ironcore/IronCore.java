@@ -3,7 +3,6 @@ package com.pavel.ironcore;
 import com.pavel.ironcore.capability.SuitCapability;
 import com.pavel.ironcore.capability.SuitCapabilityProvider;
 import com.pavel.ironcore.client.KeyBindings;
-import com.pavel.ironcore.client.SuitHUD;
 import com.pavel.ironcore.item.ModCreativeTabs;
 import com.pavel.ironcore.item.ModItems;
 import com.pavel.ironcore.network.ModMessages;
@@ -27,8 +26,6 @@ import com.pavel.ironcore.block.ModBlocks;
 import com.pavel.ironcore.block.entity.ModBlockEntities;
 
 import com.pavel.ironcore.screen.AlloySmelterScreen;
-import com.pavel.ironcore.screen.AssemblyTableScreen;
-import com.pavel.ironcore.screen.ChargingStationScreen;
 import com.pavel.ironcore.screen.CoalGeneratorScreen;
 import com.pavel.ironcore.screen.SuitStationScreen;
 import com.pavel.ironcore.screen.ModMenuTypes;
@@ -61,8 +58,6 @@ public class IronCore {
         event.enqueueWork(() -> {
             MenuScreens.register(ModMenuTypes.ALLOY_SMELTER_MENU.get(), AlloySmelterScreen::new);
             MenuScreens.register(ModMenuTypes.COAL_GENERATOR_MENU.get(), CoalGeneratorScreen::new);
-            MenuScreens.register(ModMenuTypes.ASSEMBLY_TABLE_MENU.get(), AssemblyTableScreen::new);
-            MenuScreens.register(ModMenuTypes.CHARGING_STATION_MENU.get(), ChargingStationScreen::new);
             MenuScreens.register(ModMenuTypes.SUIT_STATION_MENU.get(), SuitStationScreen::new);
         });
     }
@@ -71,9 +66,9 @@ public class IronCore {
     public static class ClientModEvents {
         @SubscribeEvent
         public static void onKeyRegister(net.minecraftforge.client.event.RegisterKeyMappingsEvent event) {
-            event.register(KeyBindings.flamethrowerKey);
-            event.register(KeyBindings.autoBoostKey);
-            event.register(KeyBindings.toggleMaskKey);
+            event.register(KeyBindings.FLAMETHROWER_KEY);
+            event.register(KeyBindings.AUTO_BOOST_KEY);
+            event.register(KeyBindings.TOGGLE_MASK_KEY);
         }
     }
 
@@ -196,7 +191,6 @@ public class IronCore {
                         
                         if (!hasMk1 && !hasMk2 && !hasMk3) {
                             suit.setSuitTier("none");
-                            suit.setActiveReactorType("none");
                             suit.setEnergy(0);
                             suit.setMaxEnergy(0);
                             suit.setFlying(false);

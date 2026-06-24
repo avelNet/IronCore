@@ -4,9 +4,7 @@ import com.pavel.ironcore.IronCore;
 import com.pavel.ironcore.capability.SuitCapabilityProvider;
 import com.pavel.ironcore.client.renderer.SuitRenderer;
 import com.pavel.ironcore.network.ModMessages;
-import com.pavel.ironcore.network.PacketSyncSuitData;
 import net.minecraft.client.model.HumanoidModel;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -19,7 +17,6 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoItem;
-import software.bernie.geckolib.constant.DefaultAnimations;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
@@ -27,6 +24,13 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 import java.util.function.Consumer;
 
 public abstract class BaseSuitItem extends ArmorItem implements GeoItem {
+    /**
+     * Минимальная энергия для горизонтального (буст) полёта — 10% от полного
+     * заряда (50000 FE). Ниже этого порога буст отключается: на низкой энергии
+     * двигатели не тянут горизонталь, остаётся только медленный спуск/завис.
+     */
+    public static final int BOOST_MIN_ENERGY = 5000;
+
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     public BaseSuitItem(ArmorMaterial material, ArmorItem.Type type, Properties properties) {
@@ -130,7 +134,6 @@ public abstract class BaseSuitItem extends ArmorItem implements GeoItem {
                 }
 
                 boolean firstInit = suit.getMaxEnergy() == 0;
-                suit.setActiveReactorType("palladium");
                 suit.setMaxEnergy(50000);
                 if (firstInit) {
                     suit.setEnergy(suit.getMaxEnergy());
@@ -153,7 +156,6 @@ public abstract class BaseSuitItem extends ArmorItem implements GeoItem {
 
     protected void handleNoReactor(ServerPlayer player, com.pavel.ironcore.capability.SuitCapability suit) {
         suit.setSuitTier("none");
-        suit.setActiveReactorType("none");
         suit.setEnergy(0);
         suit.setMaxEnergy(0);
         suit.setFlying(false);

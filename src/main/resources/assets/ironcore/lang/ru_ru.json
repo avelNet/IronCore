@@ -12,18 +12,17 @@
   "item.ironcore.mk3_leggings": "Поножи Mk3",
   "item.ironcore.mk3_boots": "Ботинки Mk3",
   "item.ironcore.palladium_reactor": "Палладиевый реактор",
+  "item.ironcore.palladium_core": "Палладиевый стержень",
+  "item.ironcore.depleted_palladium_core": "Отработанный палладиевый стержень",
   "item.ironcore.chlorophyll_juice": "Хлорофилловый сок",
   "item.ironcore.raw_titanium": "Сырой титан",
   "item.ironcore.titanium_ingot": "Титановый слиток",
   "item.ironcore.raw_palladium": "Сырой палладий",
   "item.ironcore.palladium_ingot": "Палладиевый слиток",
   "item.ironcore.gold_titanium_alloy": "Золото-титановый сплав",
-  "item.ironcore.coal_reactor": "Угольный реактор",
   "block.ironcore.alloy_smelter": "Сплав-печь",
   "block.ironcore.coal_generator": "Угольный генератор",
   "block.ironcore.suit_station": "Сборочный стенд",
-  "block.ironcore.charging_station": "Зарядная станция",
-  "block.ironcore.assembly_table": "Сборочный верстак",
   "block.ironcore.titanium_ore": "Титановая руда",
   "block.ironcore.deepslate_titanium_ore": "Глубинная титановая руда",
   "block.ironcore.palladium_ore": "Палладиевая руда",
@@ -34,6 +33,5 @@
   "key.ironcore.toggle_flight": "Переключить полёт",
   "key.ironcore.toggle_auto_boost": "Переключить авто-турбо",
   "key.ironcore.toggle_mask": "Открыть/закрыть маску",
-  "tooltip.ironcore.reactor_type": "Тип: %s",
-  "tooltip.ironcore.capacity": "Ёмкость: %s FE"
+  "tooltip.ironcore.reactor_type": "Тип: %s"
 }

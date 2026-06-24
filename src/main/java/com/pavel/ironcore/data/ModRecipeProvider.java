@@ -50,18 +50,6 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .unlockedBy("has_blast_furnace", has(Items.BLAST_FURNACE))
                 .save(pWriter);
 
-        // Сборочный стол
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.ASSEMBLY_TABLE.get())
-                .pattern("IBI")
-                .pattern("SWS")
-                .pattern("SSS")
-                .define('I', Items.IRON_BLOCK)
-                .define('B', Items.IRON_BARS)
-                .define('S', Items.SMOOTH_STONE)
-                .define('W', Items.CRAFTING_TABLE)
-                .unlockedBy("has_crafting_table", has(Items.CRAFTING_TABLE))
-                .save(pWriter);
-
                 // Сборочный стенд (Suit Station)
                 ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.SUIT_STATION.get())
                 .pattern(" I ")
@@ -71,17 +59,6 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .define('H', Items.HOPPER)
                 .define('S', Items.SMOOTH_STONE)
                 .unlockedBy("has_iron_block", has(Items.IRON_BLOCK))
-                .save(pWriter);
-
-                // Зарядная станция (Charging Station)
-                ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.CHARGING_STATION.get())
-                .pattern("CRC")
-                .pattern("RIR")
-                .pattern("CRC")
-                .define('I', Items.IRON_BLOCK)
-                .define('R', Items.REDSTONE)
-                .define('C', Items.COPPER_INGOT)
-                .unlockedBy("has_redstone", has(Items.REDSTONE))
                 .save(pWriter);
 
         // Ядро Stark Network (Arc Reactor Core)
@@ -103,6 +80,17 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .define('T', ModItems.TITANIUM_INGOT.get())
                 .define('G', ModItems.GOLD_TITANIUM_ALLOY.get())
                 .define('P', ModItems.PALLADIUM_INGOT.get())
+                .unlockedBy("has_palladium_ingot", has(ModItems.PALLADIUM_INGOT.get()))
+                .save(pWriter);
+
+        // Палладиевый стержень (Palladium Core) — расходник дозаправки импланта
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.PALLADIUM_CORE.get())
+                .pattern(" I ")
+                .pattern("IPI")
+                .pattern(" R ")
+                .define('I', Items.IRON_INGOT)
+                .define('P', ModItems.PALLADIUM_INGOT.get())
+                .define('R', Items.REDSTONE)
                 .unlockedBy("has_palladium_ingot", has(ModItems.PALLADIUM_INGOT.get()))
                 .save(pWriter);
 

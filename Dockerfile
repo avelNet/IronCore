@@ -7,6 +7,12 @@
 #
 # Артефакт появится в ./build/libs/ironcore-*.jar на хост-машине
 # благодаря bind-mount из docker-compose.yml.
+#
+# Кэш зависимостей (Forge + GeckoLib, ~600 MB) хранится в именованном volume
+# gradle-cache, смонтированном в /root/.gradle (см. docker-compose.yml). Поэтому
+# прогрев кэша на этапе build не делается: volume монтируется только в runtime
+# и перекрыл бы любой прогретый при сборке образа кэш. Первый `up` скачивает
+# зависимости в volume, последующие запуски берут их оттуда.
 # ─────────────────────────────────────────────────────────────────────────────
 
 FROM eclipse-temurin:17-jdk-jammy
@@ -21,18 +27,17 @@ RUN apt-get update \
 
 WORKDIR /build
 
-# Сначала копируем только Gradle-файлы — Docker кэширует этот слой
-# и не перекачивает зависимости при изменениях только в src/
-COPY gradle/           gradle/
-COPY gradlew           gradlew.bat  ./
-COPY build.gradle      settings.gradle  gradle.properties  ./
+# Сначала Gradle-обвязка, build-скрипты и конфиги — отдельный слой,
+# не инвалидируется при изменениях только в src/.
+# config/ обязателен: там лежит config/checkstyle/checkstyle.xml,
+# который требует задача checkstyleMain (часть :build).
+COPY gradle/      gradle/
+COPY config/      config/
+COPY gradlew gradlew.bat build.gradle settings.gradle gradle.properties ./
+RUN chmod +x gradlew
 
-RUN chmod +x gradlew \
-    # Прогреваем кэш зависимостей (Forge + GeckoLib, ~600 MB при первом запуске)
-    && ./gradlew dependencies --no-daemon --quiet || true
-
-# Копируем исходный код после прогрева кэша зависимостей
+# Исходный код — отдельным слоем
 COPY src/ src/
 
-# По умолчанию — полная сборка
+# Полная сборка; зависимости кэшируются в смонтированном gradle-cache volume
 CMD ["./gradlew", "build", "--no-daemon"]

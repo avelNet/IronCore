@@ -8,7 +8,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ArmorMaterial;
@@ -42,10 +41,10 @@ public class Mk3FrameItem extends BaseSuitItem {
             } else if (enginesOverheated) {
                 player.setDeltaMovement(FlightPhysics.computeOverheatVelocity(player.getDeltaMovement()));
                 player.hasImpulse = true;
-            } else if (suit.getEnergy() <= 1000 && suit.getEnergy() >= 4) {
+            } else if (suit.getEnergy() <= BOOST_MIN_ENERGY && suit.getEnergy() >= 4) {
                 player.setDeltaMovement(FlightPhysics.computeOverheatVelocity(player.getDeltaMovement()));
                 player.hasImpulse = true;
-            } else if (isBoosting && suit.getEnergy() > 1000) {
+            } else if (isBoosting && suit.getEnergy() > BOOST_MIN_ENERGY) {
                 Vec3 look = player.getLookAngle();
                 player.setDeltaMovement(FlightPhysics.computeBoostVelocity(player.getDeltaMovement(), look, FlightConfig.MK3, suit.isTurbo()));
                 player.hasImpulse = true;
@@ -66,7 +65,7 @@ public class Mk3FrameItem extends BaseSuitItem {
         player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 40, 0, false, false, true));
         player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 40, 0, false, false, true));
         
-        boolean systemsFunctional = player.isCreative() || (suit.getIcingLevel() < 100.0f && suit.getHeat() < 100.0f && suit.getEnergy() >= 4 && !player.isInWater() && suit.getWaterExitCooldown() <= 0);
+        boolean systemsFunctional = player.isCreative() || suit.getIcingLevel() < 100.0f && suit.getHeat() < 100.0f && suit.getEnergy() >= 4 && !player.isInWater() && suit.getWaterExitCooldown() <= 0;
         boolean prevMayfly = player.getAbilities().mayfly;
         player.getAbilities().mayfly = systemsFunctional;
 
@@ -85,10 +84,9 @@ public class Mk3FrameItem extends BaseSuitItem {
             } else {
                 int energyDrain = suit.isTurbo() ? 80 : 4;
                 suit.setEnergy(suit.getEnergy() - energyDrain);
-                stack.getOrCreateTag().putInt("SuitEnergy", suit.getEnergy());
 
                 boolean isBoosting = suit.isBoostKeyHeld() && !suit.isMaskOpen();
-                if (isBoosting && suit.getEnergy() > 1000) {
+                if (isBoosting && suit.getEnergy() > BOOST_MIN_ENERGY) {
                     suit.setFlightTimer(suit.getFlightTimer() + 1);
                     suit.setHeat(suit.getHeat() + 0.04f);
                     if (suit.isAutoBoostEnabled() && suit.getFlightTimer() >= 100) {
@@ -96,6 +94,12 @@ public class Mk3FrameItem extends BaseSuitItem {
                             suit.setTurbo(true);
                             changed = true;
                         }
+                    } else if (!suit.isAutoBoostEnabled() && suit.isTurbo()) {
+                        // Авто-турбо выключили на R прямо во время турбо —
+                        // гасим сразу, не дожидаясь конца полёта
+                        suit.setTurbo(false);
+                        suit.setFlightTimer(0);
+                        changed = true;
                     }
                 } else {
                     if (suit.getFlightTimer() > 0 || suit.isTurbo()) {

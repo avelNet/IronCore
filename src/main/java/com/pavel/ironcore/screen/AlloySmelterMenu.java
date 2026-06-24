@@ -1,14 +1,12 @@
 package com.pavel.ironcore.screen;
 
 import net.minecraft.world.level.Level;
-import com.pavel.ironcore.IronCore;
 import com.pavel.ironcore.block.ModBlocks;
 import com.pavel.ironcore.block.entity.AlloySmelterBlockEntity;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ContainerLevelAccess;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.items.SlotItemHandler;
@@ -28,7 +26,7 @@ public class AlloySmelterMenu extends AbstractMachineMenu {
     public AlloySmelterMenu(int pContainerId, Inventory inv, BlockEntity entity, ContainerData data) {
         super(ModMenuTypes.ALLOY_SMELTER_MENU.get(), pContainerId);
         checkContainerSize(inv, 3);
-        blockEntity = ((AlloySmelterBlockEntity) entity);
+        blockEntity = (AlloySmelterBlockEntity) entity;
         this.level = inv.player.level();
         this.data = data;
 

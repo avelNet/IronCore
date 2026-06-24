@@ -2,23 +2,23 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "C": {
-      "item": "minecraft:copper_ingot"
-    },
     "I": {
-      "item": "minecraft:iron_block"
+      "item": "minecraft:iron_ingot"
+    },
+    "P": {
+      "item": "ironcore:palladium_ingot"
     },
     "R": {
       "item": "minecraft:redstone"
     }
   },
   "pattern": [
-    "CRC",
-    "RIR",
-    "CRC"
+    " I ",
+    "IPI",
+    " R "
   ],
   "result": {
-    "item": "ironcore:charging_station"
+    "item": "ironcore:palladium_core"
   },
   "show_notification": true
 }

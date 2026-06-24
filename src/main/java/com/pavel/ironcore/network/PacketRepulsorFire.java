@@ -46,7 +46,7 @@ public class PacketRepulsorFire {
 
                     // Entity raycast
                     AABB searchBox = player.getBoundingBox().expandTowards(lookVector.scale(reachDistance)).inflate(1.0D);
-                    EntityHitResult entityHit = ProjectileUtil.getEntityHitResult(player, eyePosition, endPosition, searchBox, (entity) -> !entity.isSpectator() && entity.isPickable(), reachDistance * reachDistance);
+                    EntityHitResult entityHit = ProjectileUtil.getEntityHitResult(player, eyePosition, endPosition, searchBox, entity -> !entity.isSpectator() && entity.isPickable(), reachDistance * reachDistance);
 
                     if (entityHit != null && entityHit.getEntity() instanceof LivingEntity target) {
                         endPosition = entityHit.getLocation();
@@ -70,13 +70,8 @@ public class PacketRepulsorFire {
                         serverLevel.sendParticles(ParticleTypes.END_ROD, particlePos.x, particlePos.y, particlePos.z, 1, 0.0, 0.0, 0.0, 0.0);
                     }
 
-                    // Consuming energy (stored in capability, synced later, or directly to chestplate)
+                    // Энергия хранится в capability и синхронизируется пакетом
                     suit.setEnergy(suit.getEnergy() - 150);
-                    
-                    net.minecraft.world.item.ItemStack chestplate = player.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.CHEST);
-                    if(chestplate.getItem() instanceof net.minecraft.world.item.ArmorItem) {
-                         chestplate.getOrCreateTag().putInt("SuitEnergy", suit.getEnergy()); 
-                    }
                 }
             });
         });

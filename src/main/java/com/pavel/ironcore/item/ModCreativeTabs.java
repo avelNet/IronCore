@@ -38,13 +38,13 @@ public class ModCreativeTabs {
                         
                         // Энергетика
                         output.accept(ModItems.PALLADIUM_REACTOR.get());
+                        output.accept(ModItems.PALLADIUM_CORE.get());
+                        output.accept(ModItems.DEPLETED_PALLADIUM_CORE.get());
                         output.accept(ModItems.CHLOROPHYLL_JUICE.get());
 
                         // Индустрия
                         output.accept(ModBlocks.ALLOY_SMELTER.get());
                         output.accept(ModBlocks.COAL_GENERATOR.get());
-                        output.accept(ModBlocks.ASSEMBLY_TABLE.get());
-                        output.accept(ModBlocks.CHARGING_STATION.get());
                         output.accept(ModBlocks.SUIT_STATION.get());
                         output.accept(ModBlocks.ARC_REACTOR_CORE.get());
                         output.accept(ModItems.TITANIUM_INGOT.get());

@@ -23,8 +23,6 @@ public class ModBlockStateProvider extends BlockStateProvider {
                 modLoc("block/alloy_smelter_bottom"), 
                 modLoc("block/alloy_smelter_top")));
         simpleBlockWithItem(ModBlocks.COAL_GENERATOR.get(), cubeAll(ModBlocks.COAL_GENERATOR.get()));
-        simpleBlockWithItem(ModBlocks.ASSEMBLY_TABLE.get(), cubeAll(ModBlocks.ASSEMBLY_TABLE.get()));
-        simpleBlockWithItem(ModBlocks.CHARGING_STATION.get(), cubeAll(ModBlocks.CHARGING_STATION.get()));
         simpleBlockWithItem(ModBlocks.SUIT_STATION.get(), cubeAll(ModBlocks.SUIT_STATION.get()));
         simpleBlockWithItem(ModBlocks.ARC_REACTOR_CORE.get(), cubeAll(ModBlocks.ARC_REACTOR_CORE.get()));
     }

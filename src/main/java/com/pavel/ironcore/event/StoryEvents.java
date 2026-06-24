@@ -4,17 +4,10 @@ import com.pavel.ironcore.IronCore;
 import com.pavel.ironcore.capability.SuitCapabilityProvider;
 import com.pavel.ironcore.network.ModMessages;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.MobSpawnType;
-import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.event.entity.player.PlayerSleepInBedEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -66,7 +59,7 @@ public class StoryEvents {
                         event.setCancellationResult(net.minecraft.world.InteractionResult.SUCCESS);
                         event.setCanceled(true);
                     } else if (suit.hasEmbeddedReactor()) {
-                        player.displayClientMessage(Component.literal("§cРеактор уже интегрирован. Используйте Suit Station для замены."), true);
+                        player.displayClientMessage(Component.literal("§cРеактор уже интегрирован в тело."), true);
                     }
                 });
             }
