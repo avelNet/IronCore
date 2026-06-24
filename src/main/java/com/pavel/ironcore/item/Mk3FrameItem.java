@@ -84,7 +84,6 @@ public class Mk3FrameItem extends BaseSuitItem {
             } else {
                 int energyDrain = suit.isTurbo() ? 80 : 4;
                 suit.setEnergy(suit.getEnergy() - energyDrain);
-                stack.getOrCreateTag().putInt("SuitEnergy", suit.getEnergy());
 
                 boolean isBoosting = suit.isBoostKeyHeld() && !suit.isMaskOpen();
                 if (isBoosting && suit.getEnergy() > 1000) {

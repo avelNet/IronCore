@@ -22,17 +22,10 @@ public class PalladiumCoreItem extends Item {
         if (!level.isClientSide()) {
             player.getCapability(SuitCapabilityProvider.SUIT_CAPABILITY).ifPresent(suit -> {
                 if (suit.hasEmbeddedReactor()) {
-                    int chargeAmount = 50000; 
+                    int chargeAmount = 50000;
                     suit.setMaxEnergy(chargeAmount);
                     suit.setEnergy(chargeAmount);
-                    
-                    // Записываем энергию в тег нагрудника, чтобы BaseSuitItem не перезатёр
-                    net.minecraft.world.item.ItemStack chestplate = player.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.CHEST);
-                    if (!chestplate.isEmpty()) {
-                        chestplate.getOrCreateTag().putInt("SuitEnergy", chargeAmount);
-                        chestplate.getOrCreateTag().putInt("SuitMaxEnergy", chargeAmount);
-                    }
-                    
+
                     if (!player.getAbilities().instabuild) {
                         stack.shrink(1);
                         ItemStack depleted = new ItemStack(ModItems.DEPLETED_PALLADIUM_CORE.get());
