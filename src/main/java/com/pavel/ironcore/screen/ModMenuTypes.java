@@ -20,9 +20,6 @@ public class ModMenuTypes {
     public static final RegistryObject<MenuType<CoalGeneratorMenu>> COAL_GENERATOR_MENU =
             registerMenuType("coal_generator_menu", CoalGeneratorMenu::new);
 
-    public static final RegistryObject<MenuType<AssemblyTableMenu>> ASSEMBLY_TABLE_MENU =
-            registerMenuType("assembly_table_menu", AssemblyTableMenu::new);
-
     public static final RegistryObject<MenuType<SuitStationMenu>> SUIT_STATION_MENU =
             registerMenuType("suit_station_menu", SuitStationMenu::new);
 

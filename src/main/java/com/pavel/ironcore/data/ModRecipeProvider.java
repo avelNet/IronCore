@@ -50,18 +50,6 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .unlockedBy("has_blast_furnace", has(Items.BLAST_FURNACE))
                 .save(pWriter);
 
-        // Сборочный стол
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.ASSEMBLY_TABLE.get())
-                .pattern("IBI")
-                .pattern("SWS")
-                .pattern("SSS")
-                .define('I', Items.IRON_BLOCK)
-                .define('B', Items.IRON_BARS)
-                .define('S', Items.SMOOTH_STONE)
-                .define('W', Items.CRAFTING_TABLE)
-                .unlockedBy("has_crafting_table", has(Items.CRAFTING_TABLE))
-                .save(pWriter);
-
                 // Сборочный стенд (Suit Station)
                 ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.SUIT_STATION.get())
                 .pattern(" I ")

@@ -24,7 +24,6 @@ public class ModBlockLootTables extends BlockLootSubProvider {
                 block -> createOreDrop(ModBlocks.PALLADIUM_ORE.get(), ModItems.RAW_PALLADIUM.get()));
         this.dropSelf(ModBlocks.ALLOY_SMELTER.get());
         this.dropSelf(ModBlocks.COAL_GENERATOR.get());
-        this.dropSelf(ModBlocks.ASSEMBLY_TABLE.get());
         this.dropSelf(ModBlocks.SUIT_STATION.get());
         this.dropSelf(ModBlocks.ARC_REACTOR_CORE.get());
     }
