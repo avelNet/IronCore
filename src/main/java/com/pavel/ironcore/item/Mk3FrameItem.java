@@ -94,6 +94,12 @@ public class Mk3FrameItem extends BaseSuitItem {
                             suit.setTurbo(true);
                             changed = true;
                         }
+                    } else if (!suit.isAutoBoostEnabled() && suit.isTurbo()) {
+                        // Авто-турбо выключили на R прямо во время турбо —
+                        // гасим сразу, не дожидаясь конца полёта
+                        suit.setTurbo(false);
+                        suit.setFlightTimer(0);
+                        changed = true;
                     }
                 } else {
                     if (suit.getFlightTimer() > 0 || suit.isTurbo()) {
