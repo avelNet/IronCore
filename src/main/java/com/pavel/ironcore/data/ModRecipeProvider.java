@@ -73,17 +73,6 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .unlockedBy("has_iron_block", has(Items.IRON_BLOCK))
                 .save(pWriter);
 
-                // Зарядная станция (Charging Station)
-                ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.CHARGING_STATION.get())
-                .pattern("CRC")
-                .pattern("RIR")
-                .pattern("CRC")
-                .define('I', Items.IRON_BLOCK)
-                .define('R', Items.REDSTONE)
-                .define('C', Items.COPPER_INGOT)
-                .unlockedBy("has_redstone", has(Items.REDSTONE))
-                .save(pWriter);
-
         // Ядро Stark Network (Arc Reactor Core)
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.ARC_REACTOR_CORE.get())
                 .pattern("TGT")

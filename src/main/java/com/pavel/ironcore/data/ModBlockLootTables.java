@@ -25,7 +25,6 @@ public class ModBlockLootTables extends BlockLootSubProvider {
         this.dropSelf(ModBlocks.ALLOY_SMELTER.get());
         this.dropSelf(ModBlocks.COAL_GENERATOR.get());
         this.dropSelf(ModBlocks.ASSEMBLY_TABLE.get());
-        this.dropSelf(ModBlocks.CHARGING_STATION.get());
         this.dropSelf(ModBlocks.SUIT_STATION.get());
         this.dropSelf(ModBlocks.ARC_REACTOR_CORE.get());
     }

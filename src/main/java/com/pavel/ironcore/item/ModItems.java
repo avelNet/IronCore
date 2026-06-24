@@ -42,7 +42,7 @@ public class ModItems {
             () -> new Mk3FrameItem(ModArmorMaterials.MK3, ArmorItem.Type.BOOTS, new Item.Properties()));
 
     public static final RegistryObject<Item> PALLADIUM_REACTOR = ITEMS.register("palladium_reactor",
-            () -> new ReactorItem(new Item.Properties().stacksTo(1), 50000, "palladium"));
+            () -> new ReactorItem(new Item.Properties().stacksTo(1), "palladium"));
 
     public static final RegistryObject<Item> CHLOROPHYLL_JUICE = ITEMS.register("chlorophyll_juice",
             () -> new Item(new Item.Properties().food(new net.minecraft.world.food.FoodProperties.Builder().alwaysEat().nutrition(1).saturationMod(0.1f).build())) {

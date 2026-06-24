@@ -59,7 +59,7 @@ public class StoryEvents {
                         event.setCancellationResult(net.minecraft.world.InteractionResult.SUCCESS);
                         event.setCanceled(true);
                     } else if (suit.hasEmbeddedReactor()) {
-                        player.displayClientMessage(Component.literal("§cРеактор уже интегрирован. Используйте Suit Station для замены."), true);
+                        player.displayClientMessage(Component.literal("§cРеактор уже интегрирован в тело."), true);
                     }
                 });
             }

@@ -26,11 +26,6 @@ public class ModBlockEntities {
                     BlockEntityType.Builder.of(AssemblyTableBlockEntity::new,
                             com.pavel.ironcore.block.ModBlocks.ASSEMBLY_TABLE.get()).build(null));
 
-    public static final RegistryObject<BlockEntityType<ChargingStationBlockEntity>> CHARGING_STATION_BE =
-            BLOCK_ENTITIES.register("charging_station", () ->
-                    BlockEntityType.Builder.of(ChargingStationBlockEntity::new,
-                            com.pavel.ironcore.block.ModBlocks.CHARGING_STATION.get()).build(null));
-
     public static final RegistryObject<BlockEntityType<SuitStationBlockEntity>> SUIT_STATION_BE =
             BLOCK_ENTITIES.register("suit_station", () ->
                     BlockEntityType.Builder.of(SuitStationBlockEntity::new,

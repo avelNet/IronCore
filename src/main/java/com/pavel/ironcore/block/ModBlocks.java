@@ -36,9 +36,6 @@ public class ModBlocks {
     public static final RegistryObject<Block> ASSEMBLY_TABLE = registerBlock("assembly_table", 
             () -> new AssemblyTableBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).noOcclusion()));
 
-    public static final RegistryObject<Block> CHARGING_STATION = registerBlock("charging_station", 
-            () -> new ChargingStationBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).noOcclusion()));
-
     public static final RegistryObject<Block> SUIT_STATION = registerBlock("suit_station",
             () -> new SuitStationBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).noOcclusion()));
 

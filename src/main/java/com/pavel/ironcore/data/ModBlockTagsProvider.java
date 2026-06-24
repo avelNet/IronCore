@@ -25,7 +25,6 @@ public class ModBlockTagsProvider extends BlockTagsProvider {
                         ModBlocks.ALLOY_SMELTER.get(),
                         ModBlocks.COAL_GENERATOR.get(),
                         ModBlocks.ASSEMBLY_TABLE.get(),
-                        ModBlocks.CHARGING_STATION.get(),
                         ModBlocks.SUIT_STATION.get(),
                         ModBlocks.ARC_REACTOR_CORE.get());
 
