@@ -42,7 +42,7 @@ public class Mk2FrameItem extends BaseSuitItem {
             } else if (enginesOverheated || enginesFrozen) {
                 player.setDeltaMovement(FlightPhysics.computeOverheatVelocity(player.getDeltaMovement()));
                 player.hasImpulse = true;
-            } else if (isBoosting && suit.getEnergy() > 1000) {
+            } else if (isBoosting && suit.getEnergy() > BOOST_MIN_ENERGY) {
                 Vec3 look = player.getLookAngle();
                 player.setDeltaMovement(FlightPhysics.computeBoostVelocity(player.getDeltaMovement(), look, FlightConfig.MK2, false));
                 player.hasImpulse = true;

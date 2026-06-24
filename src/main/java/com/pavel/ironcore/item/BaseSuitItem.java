@@ -24,6 +24,13 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 import java.util.function.Consumer;
 
 public abstract class BaseSuitItem extends ArmorItem implements GeoItem {
+    /**
+     * Минимальная энергия для горизонтального (буст) полёта — 10% от полного
+     * заряда (50000 FE). Ниже этого порога буст отключается: на низкой энергии
+     * двигатели не тянут горизонталь, остаётся только медленный спуск/завис.
+     */
+    public static final int BOOST_MIN_ENERGY = 5000;
+
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     public BaseSuitItem(ArmorMaterial material, ArmorItem.Type type, Properties properties) {

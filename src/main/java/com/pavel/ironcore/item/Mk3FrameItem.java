@@ -41,10 +41,10 @@ public class Mk3FrameItem extends BaseSuitItem {
             } else if (enginesOverheated) {
                 player.setDeltaMovement(FlightPhysics.computeOverheatVelocity(player.getDeltaMovement()));
                 player.hasImpulse = true;
-            } else if (suit.getEnergy() <= 1000 && suit.getEnergy() >= 4) {
+            } else if (suit.getEnergy() <= BOOST_MIN_ENERGY && suit.getEnergy() >= 4) {
                 player.setDeltaMovement(FlightPhysics.computeOverheatVelocity(player.getDeltaMovement()));
                 player.hasImpulse = true;
-            } else if (isBoosting && suit.getEnergy() > 1000) {
+            } else if (isBoosting && suit.getEnergy() > BOOST_MIN_ENERGY) {
                 Vec3 look = player.getLookAngle();
                 player.setDeltaMovement(FlightPhysics.computeBoostVelocity(player.getDeltaMovement(), look, FlightConfig.MK3, suit.isTurbo()));
                 player.hasImpulse = true;
@@ -86,7 +86,7 @@ public class Mk3FrameItem extends BaseSuitItem {
                 suit.setEnergy(suit.getEnergy() - energyDrain);
 
                 boolean isBoosting = suit.isBoostKeyHeld() && !suit.isMaskOpen();
-                if (isBoosting && suit.getEnergy() > 1000) {
+                if (isBoosting && suit.getEnergy() > BOOST_MIN_ENERGY) {
                     suit.setFlightTimer(suit.getFlightTimer() + 1);
                     suit.setHeat(suit.getHeat() + 0.04f);
                     if (suit.isAutoBoostEnabled() && suit.getFlightTimer() >= 100) {
