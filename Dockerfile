@@ -27,9 +27,12 @@ RUN apt-get update \
 
 WORKDIR /build
 
-# Сначала Gradle-обвязка и build-скрипты — отдельный слой, не инвалидируется
-# при изменениях только в src/
+# Сначала Gradle-обвязка, build-скрипты и конфиги — отдельный слой,
+# не инвалидируется при изменениях только в src/.
+# config/ обязателен: там лежит config/checkstyle/checkstyle.xml,
+# который требует задача checkstyleMain (часть :build).
 COPY gradle/      gradle/
+COPY config/      config/
 COPY gradlew gradlew.bat build.gradle settings.gradle gradle.properties ./
 RUN chmod +x gradlew
 
