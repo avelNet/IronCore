@@ -117,6 +117,7 @@ src/main/java/com/pavel/ironcore/
 - **Java 17** (Eclipse Temurin или OpenJDK)
 - **Git**
 
+**Linux / macOS:**
 ```bash
 git clone https://github.com/avelNet/IronCore.git
 cd IronCore
@@ -125,26 +126,53 @@ cd IronCore
 ./gradlew build
 ```
 
+**Windows (PowerShell / CMD):**
+```bat
+git clone https://github.com/avelNet/IronCore.git
+cd IronCore
+
+REM На Windows используется gradlew.bat
+gradlew.bat build
+```
+
 Готовый `.jar` — в `build/libs/`.
 
 ### Конфигурация окружения
 
+**Linux / macOS:**
 ```bash
 cp .env.example .env
-# Отредактируйте .env под свои пути
 ```
 
-### Docker (воспроизводимая сборка)
+**Windows:**
+```bat
+copy .env.example .env
+```
+
+### Docker (воспроизводимая сборка, кроссплатформенно)
+
+Требуется установленный **Docker Desktop** (Windows/macOS) или **Docker Engine** (Linux). Команда одинакова на всех ОС:
 
 ```bash
 docker compose up --build
 # Артефакт появится в ./build/libs/
 ```
 
+### Установка в Minecraft
+
+Скопируйте `build/libs/ironcore-1.2.jar` в папку `mods` клиента с Forge 47.2.0 и GeckoLib 4.4.9:
+
+| ОС | Путь к папке mods |
+|----|-------------------|
+| Windows | `%APPDATA%\.minecraft\mods` |
+| Linux | `~/.minecraft/mods` |
+| macOS | `~/Library/Application Support/minecraft/mods` |
+
 ### Статический анализ
 
 ```bash
-./gradlew checkstyleMain
+./gradlew checkstyleMain      # Linux / macOS
+gradlew.bat checkstyleMain    # Windows
 # Отчёт: build/reports/checkstyle/main.html
 ```
 
