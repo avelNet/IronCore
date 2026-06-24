@@ -38,6 +38,8 @@ public class ModCreativeTabs {
                         
                         // Энергетика
                         output.accept(ModItems.PALLADIUM_REACTOR.get());
+                        output.accept(ModItems.PALLADIUM_CORE.get());
+                        output.accept(ModItems.DEPLETED_PALLADIUM_CORE.get());
                         output.accept(ModItems.CHLOROPHYLL_JUICE.get());
 
                         // Индустрия

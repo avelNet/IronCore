@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "ironcore:item/coal_reactor"
+    "layer0": "ironcore:item/depleted_palladium_core"
   }
 }

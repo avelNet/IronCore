@@ -83,6 +83,17 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .unlockedBy("has_palladium_ingot", has(ModItems.PALLADIUM_INGOT.get()))
                 .save(pWriter);
 
+        // Палладиевый стержень (Palladium Core) — расходник дозаправки импланта
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.PALLADIUM_CORE.get())
+                .pattern(" I ")
+                .pattern("IPI")
+                .pattern(" R ")
+                .define('I', Items.IRON_INGOT)
+                .define('P', ModItems.PALLADIUM_INGOT.get())
+                .define('R', Items.REDSTONE)
+                .unlockedBy("has_palladium_ingot", has(ModItems.PALLADIUM_INGOT.get()))
+                .save(pWriter);
+
                 // Хлорофилловый сок (Простой крафт: Пузырек + любая листва)
         ShapelessRecipeBuilder.shapeless(RecipeCategory.FOOD, ModItems.CHLOROPHYLL_JUICE.get())
                 .requires(Items.GLASS_BOTTLE)
