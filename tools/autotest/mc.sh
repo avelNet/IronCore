@@ -55,7 +55,14 @@ case "${1:-}" in
     import -window root -display $DISP -crop 854x480+213+120 +repage "$f" && echo "$f"
     ;;
   cmd)
-    xdotool key t; sleep 0.6; xdotool type --delay 30 "$2"; sleep 0.3; xdotool key Return; sleep 0.8
+    # Right after an item use the client can drop the first keystrokes typed into chat, so the
+    # command arrives as a mangled "<Dev> ..." chat message — detect that and retry
+    for attempt in 1 2 3; do
+      before=$(grep -c '\[CHAT\] <Dev>' "$LOG")
+      xdotool key t; sleep 1.0; xdotool type --delay 40 "$2"; sleep 0.3; xdotool key Return; sleep 0.8
+      [ "$(grep -c '\[CHAT\] <Dev>' "$LOG")" -eq "$before" ] && break
+      sleep 2
+    done
     ;;
   key)
     shift; for k in "$@"; do xdotool keydown "$k"; sleep 0.1; xdotool keyup "$k"; sleep 0.1; done
