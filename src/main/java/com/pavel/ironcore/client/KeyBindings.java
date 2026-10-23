@@ -86,7 +86,10 @@ public class KeyBindings {
         
         if (isSprintDown != wasSprintDown) {
             ModMessages.sendToServer(new PacketSyncBoostState(isSprintDown));
-            
+            // Client-side copy for the HUD: the server never syncs this flag back
+            mc.player.getCapability(com.pavel.ironcore.capability.SuitCapabilityProvider.SUIT_CAPABILITY)
+                    .ifPresent(suit -> suit.setBoostKeyHeld(isSprintDown));
+
             if (isSprintDown) {
                 long currentTime = System.currentTimeMillis();
                 if (currentTime - lastSprintTime < 300 && !mc.player.isInWater()) {
