@@ -32,6 +32,18 @@ public class ModMessages {
                 .consumerMainThread(PacketSyncSuitData::handle)
                 .add();
 
+        net.messageBuilder(PacketFirstNightChoice.class, id(), NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(PacketFirstNightChoice::new)
+                .encoder(PacketFirstNightChoice::toBytes)
+                .consumerMainThread(PacketFirstNightChoice::handle)
+                .add();
+
+        net.messageBuilder(PacketFirstNightAnswer.class, id(), NetworkDirection.PLAY_TO_SERVER)
+                .decoder(PacketFirstNightAnswer::new)
+                .encoder(PacketFirstNightAnswer::toBytes)
+                .consumerMainThread(PacketFirstNightAnswer::handle)
+                .add();
+
         net.messageBuilder(PacketWeaponModule.class, id(), NetworkDirection.PLAY_TO_SERVER)
                 .decoder(PacketWeaponModule::new)
                 .encoder(PacketWeaponModule::toBytes)

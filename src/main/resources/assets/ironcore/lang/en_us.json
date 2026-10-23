@@ -82,5 +82,15 @@
   "item.ironcore.stark_blueprint.ingredients": "Titanium (Mk2) or Gold-Titanium Alloy (Mk3)",
   "item.ironcore.stark_blueprint.upgrade": "Suit Upgrade",
   "item.ironcore.stark_blueprint.base_slot": "Add a Mk1 or Mk2 suit piece",
-  "item.ironcore.stark_blueprint.additions_slot": "Add Titanium Ingot or Gold-Titanium Alloy"
+  "item.ironcore.stark_blueprint.additions_slot": "Add Titanium Ingot or Gold-Titanium Alloy",
+  "first_night.ironcore.ambush": "[SYSTEM]: Multiple biological threats detected!",
+  "first_night.ironcore.critical": "[SYSTEM]: Vital signs critical. Neural response slowing down...",
+  "first_night.ironcore.choice_title": "Survive at any cost?",
+  "first_night.ironcore.choice_subtitle": "Vital signs critical. An emergency adrenaline protocol is available.",
+  "first_night.ironcore.choice_timer": "Stabilization window: %s s",
+  "first_night.ironcore.accept": "Accept",
+  "first_night.ironcore.decline": "Decline",
+  "first_night.ironcore.accepted": "[SYSTEM]: \"IRON HEART\" protocol engaged. Finish the threat.",
+  "first_night.ironcore.cleared": "[SYSTEM]: Threat eliminated.",
+  "first_night.ironcore.reactor_hint": "[SYSTEM]: Your body won't survive another night like this. Craft a Palladium Reactor and implant it (right-click)."
 }

@@ -24,8 +24,8 @@ public class CameraEvents {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player != null) {
             mc.player.getCapability(SuitCapabilityProvider.SUIT_CAPABILITY).ifPresent(suit -> {
-                // СИИНЕМАТИК: Стадия 2 (падение на колено)
-                if (suit.getCinematicStage() == 2) {
+                // СИИНЕМАТИК: Стадия 2 (падение на колено) и критический момент Первой ночи
+                if (suit.getCinematicStage() == 2 || FirstNightChoiceScreen.isActive()) {
                     if (mc.options.getCameraType() != net.minecraft.client.CameraType.THIRD_PERSON_BACK) {
                         mc.options.setCameraType(net.minecraft.client.CameraType.THIRD_PERSON_BACK);
                     }

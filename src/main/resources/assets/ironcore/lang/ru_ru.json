@@ -82,5 +82,15 @@
   "item.ironcore.stark_blueprint.ingredients": "Титан (Mk2) или Золото-титановый сплав (Mk3)",
   "item.ironcore.stark_blueprint.upgrade": "Улучшение костюма",
   "item.ironcore.stark_blueprint.base_slot": "Положите часть костюма Mk1 или Mk2",
-  "item.ironcore.stark_blueprint.additions_slot": "Положите титановый слиток или сплав"
+  "item.ironcore.stark_blueprint.additions_slot": "Положите титановый слиток или сплав",
+  "first_night.ironcore.ambush": "[СИСТЕМА]: Зафиксированы множественные биологические угрозы!",
+  "first_night.ironcore.critical": "[СИСТЕМА]: Жизненные показатели критические. Нервные реакции замедляются...",
+  "first_night.ironcore.choice_title": "Выжить любой ценой?",
+  "first_night.ironcore.choice_subtitle": "Жизненные показатели критические. Доступен аварийный адреналиновый протокол.",
+  "first_night.ironcore.choice_timer": "Окно стабилизации: %s с",
+  "first_night.ironcore.accept": "Принять",
+  "first_night.ironcore.decline": "Отказаться",
+  "first_night.ironcore.accepted": "[СИСТЕМА]: Протокол «ЖЕЛЕЗНОЕ СЕРДЦЕ» активирован. Устраните угрозу.",
+  "first_night.ironcore.cleared": "[СИСТЕМА]: Угроза устранена.",
+  "first_night.ironcore.reactor_hint": "[СИСТЕМА]: Организм не переживёт ещё одну такую ночь. Скрафтите палладиевый реактор и вживите его (ПКМ)."
 }
