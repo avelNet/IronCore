@@ -44,6 +44,7 @@ public class IronCore {
         ModBlockEntities.register(modEventBus);
         ModCreativeTabs.register(modEventBus);
         ModMenuTypes.register(modEventBus);
+        com.pavel.ironcore.entity.ModEntities.register(modEventBus);
         
         modEventBus.addListener(this::commonSetup);
         modEventBus.addListener(this::clientSetup);
@@ -71,6 +72,13 @@ public class IronCore {
             event.register(KeyBindings.FLAMETHROWER_KEY);
             event.register(KeyBindings.AUTO_BOOST_KEY);
             event.register(KeyBindings.TOGGLE_MASK_KEY);
+            event.register(KeyBindings.WEAPON_MODULE_KEY);
+        }
+
+        @SubscribeEvent
+        public static void onRegisterRenderers(net.minecraftforge.client.event.EntityRenderersEvent.RegisterRenderers event) {
+            event.registerEntityRenderer(com.pavel.ironcore.entity.ModEntities.MICRO_MISSILE.get(),
+                    ctx -> new net.minecraft.client.renderer.entity.ThrownItemRenderer<>(ctx, 0.75f, true));
         }
     }
 

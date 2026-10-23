@@ -44,6 +44,14 @@ public class ModCommands {
 
     @SubscribeEvent
     public static void onRegisterCommands(RegisterCommandsEvent event) {
+        // Отладка: запустить засаду Первой ночи прямо сейчас (для операторов)
+        event.getDispatcher().register(Commands.literal("ironcore_debug")
+            .requires(source -> source.hasPermission(2))
+            .then(Commands.literal("first_night").executes(context -> {
+                com.pavel.ironcore.event.FirstNightEvents.forceStart(context.getSource().getPlayerOrException());
+                return 1;
+            })));
+
         event.getDispatcher().register(Commands.literal("ironcore_accept")
             .executes(context -> {
                 ServerPlayer player = context.getSource().getPlayerOrException();
