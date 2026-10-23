@@ -100,6 +100,10 @@ public class ModItems {
     public static final RegistryObject<Item> DEPLETED_PALLADIUM_CORE = ITEMS.register("depleted_palladium_core",
             () -> new Item(new Item.Properties().stacksTo(16)));
 
+    // Чертёж улучшения — шаблон кузнечного стола для Mk1→Mk2→Mk3 (вместо редстоуна: тот в 1.20 —
+    // материал отделки брони, и shift-клик клал его в слот добавки)
+    public static final RegistryObject<Item> STARK_BLUEPRINT = ITEMS.register("stark_blueprint", StarkBlueprintItem::new);
+
     // Модули костюма (ставятся в нагрудник через Suit Station)
     public static final RegistryObject<Item> MODULE_THERMAL_SHIELD = registerModule(SuitModule.THERMAL_SHIELD);
     public static final RegistryObject<Item> MODULE_COOLANT = registerModule(SuitModule.COOLANT);

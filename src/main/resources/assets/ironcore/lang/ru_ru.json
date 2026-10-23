@@ -76,5 +76,11 @@
   "weapon.ironcore.no_energy": "Недостаточно энергии импланта",
   "weapon.ironcore.locked": "Цель захвачена: %s",
   "weapon.ironcore.unibeam_cooldown": "Юнибим перезаряжается: %s с",
-  "entity.ironcore.micro_missile": "Микроракета"
+  "entity.ironcore.micro_missile": "Микроракета",
+  "item.ironcore.stark_blueprint": "Чертёж улучшения Stark",
+  "item.ironcore.stark_blueprint.applies_to": "Части костюма Mk1 и Mk2",
+  "item.ironcore.stark_blueprint.ingredients": "Титан (Mk2) или Золото-титановый сплав (Mk3)",
+  "item.ironcore.stark_blueprint.upgrade": "Улучшение костюма",
+  "item.ironcore.stark_blueprint.base_slot": "Положите часть костюма Mk1 или Mk2",
+  "item.ironcore.stark_blueprint.additions_slot": "Положите титановый слиток или сплав"
 }

@@ -34,6 +34,7 @@ public class ModItemModelProvider extends ItemModelProvider {
         simpleItem(ModItems.MODULE_MICRO_MISSILES);
         simpleItem(ModItems.MODULE_UNIBEAM);
         simpleItem(ModItems.MICRO_MISSILE);
+        simpleItem(ModItems.STARK_BLUEPRINT);
         
         // Items with custom textures that don't need complex models right now
 

@@ -76,5 +76,11 @@
   "weapon.ironcore.no_energy": "Not enough implant energy",
   "weapon.ironcore.locked": "Target locked: %s",
   "weapon.ironcore.unibeam_cooldown": "Unibeam recharging: %s s",
-  "entity.ironcore.micro_missile": "Micro-Missile"
+  "entity.ironcore.micro_missile": "Micro-Missile",
+  "item.ironcore.stark_blueprint": "Stark Upgrade Blueprint",
+  "item.ironcore.stark_blueprint.applies_to": "Mk1 and Mk2 suit pieces",
+  "item.ironcore.stark_blueprint.ingredients": "Titanium (Mk2) or Gold-Titanium Alloy (Mk3)",
+  "item.ironcore.stark_blueprint.upgrade": "Suit Upgrade",
+  "item.ironcore.stark_blueprint.base_slot": "Add a Mk1 or Mk2 suit piece",
+  "item.ironcore.stark_blueprint.additions_slot": "Add Titanium Ingot or Gold-Titanium Alloy"
 }

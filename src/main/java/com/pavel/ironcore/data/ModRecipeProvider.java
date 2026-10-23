@@ -101,6 +101,17 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .unlockedBy("has_palladium", has(ModItems.RAW_PALLADIUM.get()))
                 .save(pWriter);
 
+        // Чертёж улучшения (шаблон для апгрейда Mk1→Mk2→Mk3), 2 шт.
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.STARK_BLUEPRINT.get(), 2)
+                .pattern("PRP")
+                .pattern("RTR")
+                .pattern("PRP")
+                .define('P', Items.PAPER)
+                .define('R', Items.REDSTONE)
+                .define('T', ModItems.TITANIUM_INGOT.get())
+                .unlockedBy("has_titanium", has(ModItems.TITANIUM_INGOT.get()))
+                .save(pWriter);
+
         // --- МОДУЛИ КОСТЮМА (рамка из титана + тематический компонент) ---
         addModule(pWriter, ModItems.MODULE_THERMAL_SHIELD.get(), Items.MAGMA_CREAM, Items.OBSIDIAN);
         addModule(pWriter, ModItems.MODULE_COOLANT.get(), Items.PACKED_ICE, Items.REDSTONE);
@@ -161,7 +172,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
 
     private static void addSmithingUpgrade(Consumer<FinishedRecipe> pWriter, net.minecraft.world.item.Item base, net.minecraft.world.item.Item material, net.minecraft.world.item.Item result, String name) {
         SmithingTransformRecipeBuilder.smithing(
-                Ingredient.of(Items.REDSTONE),
+                Ingredient.of(ModItems.STARK_BLUEPRINT.get()),
                 Ingredient.of(base),
                 Ingredient.of(material),
                 RecipeCategory.COMBAT,

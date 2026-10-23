@@ -1,4 +1,4 @@
-// 1.20.1	2026-10-23T22:40:25.72494102	Item Models: ironcore
+// 1.20.1	2026-10-23T22:46:22.666514307	Item Models: ironcore
 ff16878e4cd6b5723bfbd903150e01e9d980625d assets/ironcore/models/item/chlorophyll_juice.json
 0fd2831b0dfdd17ae8873ac64db9037d2f2d1da1 assets/ironcore/models/item/depleted_palladium_core.json
 1e07865f500ab5d8090ebbfa1eced544420eef60 assets/ironcore/models/item/gold_titanium_alloy.json
@@ -27,4 +27,5 @@ d6d4b6c07ee66db474a842e5bbe7189c7d335fc9 assets/ironcore/models/item/palladium_i
 293281c52237fedaaac701f0e79fa6a913f3dd65 assets/ironcore/models/item/palladium_reactor.json
 4f421dd17708790d801b8a077ffd9652c17a7787 assets/ironcore/models/item/raw_palladium.json
 d2261aa488099802066889590c9f0196453dab86 assets/ironcore/models/item/raw_titanium.json
+20963aa327a873b1ae4136dad538d08f363d7a1a assets/ironcore/models/item/stark_blueprint.json
 6eb97fb290b4682d93d16ab7c0a0c23feba665ff assets/ironcore/models/item/titanium_ingot.json

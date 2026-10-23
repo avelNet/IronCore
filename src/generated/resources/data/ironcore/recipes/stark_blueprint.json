@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "P": {
+      "item": "minecraft:paper"
+    },
+    "R": {
+      "item": "minecraft:redstone"
+    },
+    "T": {
+      "item": "ironcore:titanium_ingot"
+    }
+  },
+  "pattern": [
+    "PRP",
+    "RTR",
+    "PRP"
+  ],
+  "result": {
+    "count": 2,
+    "item": "ironcore:stark_blueprint"
+  },
+  "show_notification": true
+}

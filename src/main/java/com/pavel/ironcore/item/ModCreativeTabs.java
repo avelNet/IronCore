@@ -42,6 +42,8 @@ public class ModCreativeTabs {
                         output.accept(ModItems.DEPLETED_PALLADIUM_CORE.get());
                         output.accept(ModItems.CHLOROPHYLL_JUICE.get());
 
+                        output.accept(ModItems.STARK_BLUEPRINT.get());
+
                         // Модули
                         output.accept(ModItems.MODULE_THERMAL_SHIELD.get());
                         output.accept(ModItems.MODULE_COOLANT.get());
