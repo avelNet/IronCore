@@ -55,5 +55,11 @@
   "tooltip.ironcore.modules": "Модули: %s/%s",
   "gui.ironcore.suit_station.modules": "Модули %s/%s",
   "gui.ironcore.suit_station.insert": "Вставьте нагрудник",
-  "gui.ironcore.suit_station.no_slots": "У Mk1 нет слотов модулей"
+  "gui.ironcore.suit_station.no_slots": "У Mk1 нет слотов модулей",
+  "jarvis.ironcore.first_contact": "Добро пожаловать домой, сэр. Stark Network в сети: зарядка импланта и ускорение мастерской включены.",
+  "jarvis.ironcore.welcome_back": "С возвращением, сэр.",
+  "jarvis.ironcore.status": "Имплант: %s%% · Токсичность: %s%% · Костюм: %s",
+  "jarvis.ironcore.toxicity_warning": "Отравление палладием критическое. Рекомендую хлорофилл, сэр.",
+  "jarvis.ironcore.low_energy": "Заряд импланта низкий — подзаряжаю от сети.",
+  "gui.ironcore.stark_network_boost": "Stark Network ×2"
 }

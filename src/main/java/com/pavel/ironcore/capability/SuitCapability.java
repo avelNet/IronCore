@@ -27,6 +27,12 @@ public class SuitCapability implements INBTSerializable<CompoundTag> {
     // Runtime only (not saved): flight was cut by a system failure and the player is falling
     private boolean emergencyFall = false;
 
+    // Runtime only: game time of the last Stark Network presence tick (for J.A.R.V.I.S. greetings)
+    private long lastNetworkTick = -1_000_000L; // not Long.MIN_VALUE: gameTime - MIN_VALUE overflows
+
+    public long getLastNetworkTick() { return lastNetworkTick; }
+    public void setLastNetworkTick(long tick) { this.lastNetworkTick = tick; }
+
     public boolean isEmergencyFall() { return emergencyFall; }
     public void setEmergencyFall(boolean value) { this.emergencyFall = value; }
 

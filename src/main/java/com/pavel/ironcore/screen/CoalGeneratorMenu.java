@@ -19,7 +19,7 @@ public class CoalGeneratorMenu extends AbstractMachineMenu {
     private final ContainerData data;
 
     public CoalGeneratorMenu(int pContainerId, Inventory inv, FriendlyByteBuf extraData) {
-        this(pContainerId, inv, inv.player.level().getBlockEntity(extraData.readBlockPos()), new SimpleContainerData(4));
+        this(pContainerId, inv, inv.player.level().getBlockEntity(extraData.readBlockPos()), new SimpleContainerData(6));
     }
 
     public CoalGeneratorMenu(int pContainerId, Inventory inv, BlockEntity entity, ContainerData data) {
@@ -56,19 +56,19 @@ public class CoalGeneratorMenu extends AbstractMachineMenu {
     }
 
     public int getScaledEnergy() {
-        int energy = this.data.get(2);
-        int maxEnergy = this.data.get(3);
+        int energy = getEnergy();
+        int maxEnergy = getMaxEnergy();
         int energyBarSize = 50;
 
         return maxEnergy != 0 && energy != 0 ? energy * energyBarSize / maxEnergy : 0;
     }
 
     public int getEnergy() {
-        return this.data.get(2);
+        return unpackInt(data, 2);
     }
 
     public int getMaxEnergy() {
-        return this.data.get(3);
+        return unpackInt(data, 4);
     }
 
     @Override

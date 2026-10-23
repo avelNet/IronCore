@@ -26,6 +26,9 @@ public class AlloySmelterBlockEntity extends AbstractEnergyMachineBlockEntity {
     private int maxProgress = 400;
 
     private static final int ENERGY_REQ = 100; // 100 FE за тик (Всего 40,000 FE)
+    // В зоне Stark Network печь продвигается на 2 за тик при том же расходе — вдвое быстрее и дешевле
+    private static final int NETWORK_SPEED = 2;
+    private boolean networked = false;
 
     public AlloySmelterBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.ALLOY_SMELTER_BE.get(), pos, state);
@@ -35,8 +38,12 @@ public class AlloySmelterBlockEntity extends AbstractEnergyMachineBlockEntity {
                 switch (index) {
                     case 0: return AlloySmelterBlockEntity.this.progress;
                     case 1: return AlloySmelterBlockEntity.this.maxProgress;
-                    case 2: return AlloySmelterBlockEntity.this.energyStorage.getEnergyStored();
-                    case 3: return AlloySmelterBlockEntity.this.energyStorage.getMaxEnergyStored();
+                    // Data slots sync as 16-bit shorts: 32-bit values go as low/high halves
+                    case 2: return AlloySmelterBlockEntity.this.energyStorage.getEnergyStored() & 0xFFFF;
+                    case 3: return AlloySmelterBlockEntity.this.energyStorage.getEnergyStored() >>> 16;
+                    case 4: return AlloySmelterBlockEntity.this.energyStorage.getMaxEnergyStored() & 0xFFFF;
+                    case 5: return AlloySmelterBlockEntity.this.energyStorage.getMaxEnergyStored() >>> 16;
+                    case 6: return AlloySmelterBlockEntity.this.networked ? 1 : 0;
                     default: return 0;
                 }
             }
@@ -51,7 +58,7 @@ public class AlloySmelterBlockEntity extends AbstractEnergyMachineBlockEntity {
 
             @Override
             public int getCount() {
-                return 4;
+                return 7;
             }
         };
     }
@@ -83,12 +90,16 @@ public class AlloySmelterBlockEntity extends AbstractEnergyMachineBlockEntity {
     public static void tick(Level level, BlockPos pos, BlockState state, AlloySmelterBlockEntity pEntity) {
         if (level.isClientSide()) return;
 
+        if (level.getGameTime() % 20 == 0) {
+            pEntity.networked = StarkNetwork.isCovered(level, pos);
+        }
+
         if (hasRecipe(pEntity)) {
             // Нехватка энергии — пауза, а не сброс: иначе от Coal Generator (60 FE/т < 100 FE/т)
             // прогресс обнулялся каждые пару тиков и сплав не выплавлялся никогда
             if (pEntity.energyStorage.getEnergyStored() >= ENERGY_REQ) {
                 pEntity.energyStorage.extractEnergy(ENERGY_REQ, false);
-                pEntity.progress++;
+                pEntity.progress += pEntity.networked ? NETWORK_SPEED : 1;
                 setChanged(level, pos, state);
                 if (pEntity.progress >= pEntity.maxProgress) {
                     craftItem(pEntity);

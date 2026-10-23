@@ -55,5 +55,11 @@
   "tooltip.ironcore.modules": "Modules: %s/%s",
   "gui.ironcore.suit_station.modules": "Modules %s/%s",
   "gui.ironcore.suit_station.insert": "Insert a chestplate",
-  "gui.ironcore.suit_station.no_slots": "Mk1 has no module slots"
+  "gui.ironcore.suit_station.no_slots": "Mk1 has no module slots",
+  "jarvis.ironcore.first_contact": "Welcome home, sir. Stark Network is online: implant charging and workshop acceleration enabled.",
+  "jarvis.ironcore.welcome_back": "Welcome back, sir.",
+  "jarvis.ironcore.status": "Implant: %s%% · Toxicity: %s%% · Suit: %s",
+  "jarvis.ironcore.toxicity_warning": "Palladium toxicity is critical. I'd recommend chlorophyll, sir.",
+  "jarvis.ironcore.low_energy": "Implant charge is low — recharging from the network.",
+  "gui.ironcore.stark_network_boost": "Stark Network ×2"
 }

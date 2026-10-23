@@ -20,7 +20,7 @@ public class AlloySmelterMenu extends AbstractMachineMenu {
     private final ContainerData data;
 
     public AlloySmelterMenu(int pContainerId, Inventory inv, FriendlyByteBuf extraData) {
-        this(pContainerId, inv, inv.player.level().getBlockEntity(extraData.readBlockPos()), new SimpleContainerData(4));
+        this(pContainerId, inv, inv.player.level().getBlockEntity(extraData.readBlockPos()), new SimpleContainerData(7));
     }
 
     public AlloySmelterMenu(int pContainerId, Inventory inv, BlockEntity entity, ContainerData data) {
@@ -54,20 +54,25 @@ public class AlloySmelterMenu extends AbstractMachineMenu {
         return maxProgress != 0 && progress != 0 ? progress * progressArrowSize / maxProgress : 0;
     }
 
+    /** Печь в зоне Stark Network (рядом запитанный Arc Reactor Core). */
+    public boolean isNetworked() {
+        return data.get(6) != 0;
+    }
+
     public int getScaledEnergy() {
-        int energy = this.data.get(2);
-        int maxEnergy = this.data.get(3);
+        int energy = getEnergy();
+        int maxEnergy = getMaxEnergy();
         int energyBarSize = 50; // Height of the energy bar
 
         return maxEnergy != 0 && energy != 0 ? energy * energyBarSize / maxEnergy : 0;
     }
 
     public int getEnergy() {
-        return this.data.get(2);
+        return unpackInt(data, 2);
     }
 
     public int getMaxEnergy() {
-        return this.data.get(3);
+        return unpackInt(data, 4);
     }
 
     @Override

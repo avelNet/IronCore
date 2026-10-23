@@ -47,6 +47,11 @@ public abstract class AbstractMachineMenu extends AbstractContainerMenu {
         return copyOfSourceStack;
     }
 
+    /** Reassembles an int sent as two 16-bit data slots (low half at {@code index}). */
+    protected static int unpackInt(net.minecraft.world.inventory.ContainerData data, int index) {
+        return (data.get(index) & 0xFFFF) | ((data.get(index + 1) & 0xFFFF) << 16);
+    }
+
     protected void addPlayerInventory(Inventory playerInventory) {
         for (int i = 0; i < 3; ++i) {
             for (int l = 0; l < 9; ++l) {
