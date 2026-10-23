@@ -2,14 +2,14 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "T": {
-      "item": "ironcore:titanium_ingot"
+    "D": {
+      "item": "minecraft:diamond_block"
     },
     "G": {
       "item": "ironcore:gold_titanium_alloy"
     },
-    "D": {
-      "item": "minecraft:diamond_block"
+    "T": {
+      "item": "ironcore:titanium_ingot"
     }
   },
   "pattern": [
