@@ -100,40 +100,51 @@ public class CoalGeneratorBlockEntity extends AbstractEnergyMachineBlockEntity {
         boolean isBurning = entity.burnTime > 0;
         boolean changed = false;
 
-        // Генерация энергии
+        // Генерация энергии. При полном буфере горение на паузе, чтобы топливо не сгорало впустую
+        boolean full = entity.energyStorage.getEnergyStored() >= entity.energyStorage.getMaxEnergyStored();
         if (entity.burnTime > 0) {
-            entity.burnTime--;
-            // Генерируем 60 FE за тик
-            if (entity.energyStorage.getEnergyStored() < entity.energyStorage.getMaxEnergyStored()) {
-                entity.energyStorage.generateEnergy(60);
+            if (!full) {
+                entity.burnTime--;
+                entity.energyStorage.generateEnergy(60); // 60 FE за тик
                 changed = true;
             }
-        } else {
+        } else if (!full) {
             // Пытаемся зажечь новое топливо
             ItemStack fuelStack = entity.itemHandler.getStackInSlot(0);
-            if (!fuelStack.isEmpty() && entity.energyStorage.getEnergyStored() < entity.energyStorage.getMaxEnergyStored()) {
+            if (!fuelStack.isEmpty()) {
                 int burnDuration = ForgeHooks.getBurnTime(fuelStack, RecipeType.SMELTING);
                 if (burnDuration > 0) {
                     entity.burnTime = burnDuration;
                     entity.maxBurnTime = burnDuration;
+                    // Ведро лавы оставляет пустое ведро, как в ванильной печи
+                    ItemStack remainder = fuelStack.getCraftingRemainingItem();
                     fuelStack.shrink(1);
+                    if (fuelStack.isEmpty() && !remainder.isEmpty()) {
+                        entity.itemHandler.setStackInSlot(0, remainder);
+                    }
                     changed = true;
                 }
             }
         }
 
-        // Передача энергии соседям (например, Alloy Smelter)
+        // Передача энергии соседям (например, Alloy Smelter) — поровну, иначе первый по порядку
+        // сторон приёмник (Arc Reactor Core на 500k FE) забирал всё, а остальные простаивали
         if (entity.energyStorage.getEnergyStored() > 0) {
+            java.util.List<IEnergyStorage> receivers = new java.util.ArrayList<>();
             for (Direction direction : Direction.values()) {
                 BlockEntity neighbor = level.getBlockEntity(pos.relative(direction));
                 if (neighbor != null) {
                     neighbor.getCapability(ForgeCapabilities.ENERGY, direction.getOpposite()).ifPresent(neighborEnergy -> {
-                        if (neighborEnergy.canReceive()) {
-                            int toSend = Math.min(entity.energyStorage.getEnergyStored(), 1000); // Max 1000 FE/t transfer
-                            int received = neighborEnergy.receiveEnergy(toSend, false);
-                            entity.energyStorage.extractEnergy(received, false);
-                        }
+                        if (neighborEnergy.canReceive()) receivers.add(neighborEnergy);
                     });
+                }
+            }
+            if (!receivers.isEmpty()) {
+                // Max 1000 FE/t на каждого соседа
+                int share = Math.max(1, Math.min(entity.energyStorage.getEnergyStored() / receivers.size(), 1000));
+                for (IEnergyStorage receiver : receivers) {
+                    int received = receiver.receiveEnergy(Math.min(share, entity.energyStorage.getEnergyStored()), false);
+                    entity.energyStorage.extractEnergy(received, false);
                 }
             }
         }

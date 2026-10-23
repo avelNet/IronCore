@@ -83,12 +83,16 @@ public class AlloySmelterBlockEntity extends AbstractEnergyMachineBlockEntity {
     public static void tick(Level level, BlockPos pos, BlockState state, AlloySmelterBlockEntity pEntity) {
         if (level.isClientSide()) return;
 
-        if (hasRecipe(pEntity) && pEntity.energyStorage.getEnergyStored() >= ENERGY_REQ) {
-            pEntity.energyStorage.extractEnergy(ENERGY_REQ, false);
-            pEntity.progress++;
-            setChanged(level, pos, state);
-            if (pEntity.progress >= pEntity.maxProgress) {
-                craftItem(pEntity);
+        if (hasRecipe(pEntity)) {
+            // Нехватка энергии — пауза, а не сброс: иначе от Coal Generator (60 FE/т < 100 FE/т)
+            // прогресс обнулялся каждые пару тиков и сплав не выплавлялся никогда
+            if (pEntity.energyStorage.getEnergyStored() >= ENERGY_REQ) {
+                pEntity.energyStorage.extractEnergy(ENERGY_REQ, false);
+                pEntity.progress++;
+                setChanged(level, pos, state);
+                if (pEntity.progress >= pEntity.maxProgress) {
+                    craftItem(pEntity);
+                }
             }
         } else if (pEntity.progress != 0) {
             // Only dirty the chunk when there was actually progress to reset, instead of
