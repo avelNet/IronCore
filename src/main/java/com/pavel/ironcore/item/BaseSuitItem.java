@@ -3,6 +3,12 @@ package com.pavel.ironcore.item;
 import com.pavel.ironcore.IronCore;
 import com.pavel.ironcore.capability.SuitCapabilityProvider;
 import com.pavel.ironcore.client.renderer.SuitRenderer;
+import com.pavel.ironcore.item.module.SuitModule;
+import com.pavel.ironcore.item.module.SuitModules;
+import net.minecraft.ChatFormatting;
+import net.minecraft.world.item.TooltipFlag;
+import org.jetbrains.annotations.Nullable;
+import java.util.List;
 import com.pavel.ironcore.network.ModMessages;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.network.chat.Component;
@@ -92,6 +98,19 @@ public abstract class BaseSuitItem extends ArmorItem implements GeoItem {
     }
 
     @Override
+    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
+        int slots = SuitModules.slotsFor(stack);
+        if (slots > 0) {
+            List<SuitModule> modules = SuitModules.installed(stack);
+            tooltip.add(Component.translatable("tooltip.ironcore.modules", modules.size(), slots).withStyle(ChatFormatting.AQUA));
+            for (SuitModule module : modules) {
+                tooltip.add(Component.literal(" • ").append(Component.translatable(module.translationKey())).withStyle(ChatFormatting.GRAY));
+            }
+        }
+        super.appendHoverText(stack, level, tooltip, flag);
+    }
+
+    @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return this.cache;
     }
@@ -145,6 +164,7 @@ public abstract class BaseSuitItem extends ArmorItem implements GeoItem {
 
                 changed |= applyServerLogic(player, suit, stack, level);
                 applyEmergencyGlide(player, suit);
+                SuitModules.tick(player, suit, stack);
             } else {
                 if (suit.getSuitTier().equals(getTierId())) {
                     handleUnequipped(player, suit);

@@ -90,6 +90,14 @@ public class SuitHUD {
         guiGraphics.fill(lx, ly + 12, lx + (int)(100 * energyPercent), ly + 14, 0xFF00AAFF); // Foreground
         guiGraphics.drawString(mc.font, "PWR: " + (int)(energyPercent * 100) + "%", lx, ly + 16, energyBarColor);
 
+        java.util.List<com.pavel.ironcore.item.module.SuitModule> modules = com.pavel.ironcore.item.module.SuitModules.installed(
+                mc.player.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.CHEST));
+        if (!modules.isEmpty()) {
+            StringBuilder tags = new StringBuilder("MOD:");
+            for (com.pavel.ironcore.item.module.SuitModule module : modules) tags.append(' ').append(module.hudTag());
+            guiGraphics.drawString(mc.font, tags.toString(), lx, ly + 28, 0x55FFFF);
+        }
+
         // --- RIGHT SIDE: FLIGHT DATA ---
         int rx = width - 100;
         int ry = height / 2 - 40;

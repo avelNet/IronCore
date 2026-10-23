@@ -1,6 +1,8 @@
 package com.pavel.ironcore.item;
 
 import com.pavel.ironcore.IronCore;
+import com.pavel.ironcore.item.module.ModuleItem;
+import com.pavel.ironcore.item.module.SuitModule;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -97,6 +99,17 @@ public class ModItems {
             
     public static final RegistryObject<Item> DEPLETED_PALLADIUM_CORE = ITEMS.register("depleted_palladium_core",
             () -> new Item(new Item.Properties().stacksTo(16)));
+
+    // Модули костюма (ставятся в нагрудник через Suit Station)
+    public static final RegistryObject<Item> MODULE_THERMAL_SHIELD = registerModule(SuitModule.THERMAL_SHIELD);
+    public static final RegistryObject<Item> MODULE_COOLANT = registerModule(SuitModule.COOLANT);
+    public static final RegistryObject<Item> MODULE_REBREATHER = registerModule(SuitModule.REBREATHER);
+    public static final RegistryObject<Item> MODULE_AUTO_REPAIR = registerModule(SuitModule.AUTO_REPAIR);
+    public static final RegistryObject<Item> MODULE_RADAR = registerModule(SuitModule.RADAR);
+
+    private static RegistryObject<Item> registerModule(SuitModule module) {
+        return ITEMS.register("module_" + module.id(), () -> new ModuleItem(module, new Item.Properties()));
+    }
 
     public static void register(IEventBus eventBus) {
         ITEMS.register(eventBus);

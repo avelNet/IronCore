@@ -42,6 +42,13 @@ public class ModCreativeTabs {
                         output.accept(ModItems.DEPLETED_PALLADIUM_CORE.get());
                         output.accept(ModItems.CHLOROPHYLL_JUICE.get());
 
+                        // Модули
+                        output.accept(ModItems.MODULE_THERMAL_SHIELD.get());
+                        output.accept(ModItems.MODULE_COOLANT.get());
+                        output.accept(ModItems.MODULE_REBREATHER.get());
+                        output.accept(ModItems.MODULE_AUTO_REPAIR.get());
+                        output.accept(ModItems.MODULE_RADAR.get());
+
                         // Индустрия
                         output.accept(ModBlocks.ALLOY_SMELTER.get());
                         output.accept(ModBlocks.COAL_GENERATOR.get());

@@ -64,16 +64,22 @@ public class KeyBindings {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null) return;
 
-        while (FLAMETHROWER_KEY.consumeClick()) {
-            long currentTime = System.currentTimeMillis();
-            if (currentTime - lastFireTime > 250) { 
-                boolean isMk3 = mc.player.getItemBySlot(EquipmentSlot.CHEST).getItem() == com.pavel.ironcore.item.ModItems.MK3_CHESTPLATE.get();
-
-                if (isMk3) {
+        boolean isMk3 = mc.player.getItemBySlot(EquipmentSlot.CHEST).getItem() == com.pavel.ironcore.item.ModItems.MK3_CHESTPLATE.get();
+        if (isMk3) {
+            // Репульсор — один выстрел на нажатие
+            while (FLAMETHROWER_KEY.consumeClick()) {
+                long currentTime = System.currentTimeMillis();
+                if (currentTime - lastFireTime > 250) {
                     ModMessages.sendToServer(new PacketRepulsorFire());
-                } else {
-                    ModMessages.sendToServer(new PacketFlamethrower());
+                    lastFireTime = currentTime;
                 }
+            }
+        } else {
+            // Огнемёт — непрерывная струя, пока клавиша зажата
+            while (FLAMETHROWER_KEY.consumeClick()) { }
+            long currentTime = System.currentTimeMillis();
+            if (FLAMETHROWER_KEY.isDown() && currentTime - lastFireTime > 200) {
+                ModMessages.sendToServer(new PacketFlamethrower());
                 lastFireTime = currentTime;
             }
         }
