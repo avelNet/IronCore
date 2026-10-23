@@ -88,6 +88,7 @@ public final class SuitModules {
 
     /** Эффекты установленных модулей. Вызывается каждый серверный тик при надетом полном костюме. */
     public static void tick(ServerPlayer player, SuitCapability suit, ItemStack chest) {
+        WeaponModules.tickCooldowns(suit);
         List<SuitModule> modules = installed(chest);
         if (modules.isEmpty()) return;
 

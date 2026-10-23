@@ -48,6 +48,8 @@ public class ModCreativeTabs {
                         output.accept(ModItems.MODULE_REBREATHER.get());
                         output.accept(ModItems.MODULE_AUTO_REPAIR.get());
                         output.accept(ModItems.MODULE_RADAR.get());
+                        output.accept(ModItems.MODULE_MICRO_MISSILES.get());
+                        output.accept(ModItems.MODULE_UNIBEAM.get());
 
                         // Индустрия
                         output.accept(ModBlocks.ALLOY_SMELTER.get());

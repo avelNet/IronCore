@@ -1,7 +1,8 @@
-// 1.20.1	2026-10-23T22:17:19.878809854	Item Models: ironcore
+// 1.20.1	2026-10-23T22:40:25.72494102	Item Models: ironcore
 ff16878e4cd6b5723bfbd903150e01e9d980625d assets/ironcore/models/item/chlorophyll_juice.json
 0fd2831b0dfdd17ae8873ac64db9037d2f2d1da1 assets/ironcore/models/item/depleted_palladium_core.json
 1e07865f500ab5d8090ebbfa1eced544420eef60 assets/ironcore/models/item/gold_titanium_alloy.json
+5b767f19bd15b871135abc28c0471ad5268d55f5 assets/ironcore/models/item/micro_missile.json
 bc6a0f479350f39815ea5620eeecd056d0a8276e assets/ironcore/models/item/mk1_boots.json
 b22a471f7fdcc8fb57b7b341e73628bab28a90f9 assets/ironcore/models/item/mk1_chestplate.json
 4e1ae365d55e3503faa0c6a77f561cbebcca5620 assets/ironcore/models/item/mk1_helmet.json
@@ -16,9 +17,11 @@ d5ac3a47661803a2d75f260f617ab77425d3cf03 assets/ironcore/models/item/mk2_legging
 d6ac4d3e05f1cfc4db8b90d58882f3f4b59f6fd6 assets/ironcore/models/item/mk3_leggings.json
 16fed784c96bddd1c63e62c6376fa53174123b8f assets/ironcore/models/item/module_auto_repair.json
 855e2809f9559c2910a826b31073244a736af96b assets/ironcore/models/item/module_coolant.json
+f84879abef4aec49dc75d984a0ba064281cff911 assets/ironcore/models/item/module_micro_missiles.json
 b7500af46cfdbb56fe6c78420abbd6896ed73c06 assets/ironcore/models/item/module_radar.json
 9746bf8b14eea7837dceb585bd6526b7703846ca assets/ironcore/models/item/module_rebreather.json
 eb552c7b005786a909c703ec56ca2a2affd6135c assets/ironcore/models/item/module_thermal_shield.json
+f09f22b4a9a46374e803cccee09bf4be9e29e51a assets/ironcore/models/item/module_unibeam.json
 2fb75c6105fc908054e75e94604b0d786430cf81 assets/ironcore/models/item/palladium_core.json
 d6d4b6c07ee66db474a842e5bbe7189c7d335fc9 assets/ironcore/models/item/palladium_ingot.json
 293281c52237fedaaac701f0e79fa6a913f3dd65 assets/ironcore/models/item/palladium_reactor.json

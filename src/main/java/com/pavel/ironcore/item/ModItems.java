@@ -106,6 +106,12 @@ public class ModItems {
     public static final RegistryObject<Item> MODULE_REBREATHER = registerModule(SuitModule.REBREATHER);
     public static final RegistryObject<Item> MODULE_AUTO_REPAIR = registerModule(SuitModule.AUTO_REPAIR);
     public static final RegistryObject<Item> MODULE_RADAR = registerModule(SuitModule.RADAR);
+    public static final RegistryObject<Item> MODULE_MICRO_MISSILES = registerModule(SuitModule.MICRO_MISSILES);
+    public static final RegistryObject<Item> MODULE_UNIBEAM = registerModule(SuitModule.UNIBEAM);
+
+    // Спрайт для рендера летящей микроракеты (не используется как предмет)
+    public static final RegistryObject<Item> MICRO_MISSILE = ITEMS.register("micro_missile",
+            () -> new Item(new Item.Properties()));
 
     private static RegistryObject<Item> registerModule(SuitModule module) {
         return ITEMS.register("module_" + module.id(), () -> new ModuleItem(module, new Item.Properties()));
