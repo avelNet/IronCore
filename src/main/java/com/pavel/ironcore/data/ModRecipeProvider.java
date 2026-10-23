@@ -107,6 +107,8 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
         addModule(pWriter, ModItems.MODULE_REBREATHER.get(), Items.KELP, Items.GLASS_PANE);
         addModule(pWriter, ModItems.MODULE_AUTO_REPAIR.get(), Items.ANVIL, Items.REDSTONE);
         addModule(pWriter, ModItems.MODULE_RADAR.get(), Items.ENDER_EYE, Items.COMPASS);
+        addModule(pWriter, ModItems.MODULE_MICRO_MISSILES.get(), Items.TNT, Items.FIREWORK_ROCKET);
+        addModule(pWriter, ModItems.MODULE_UNIBEAM.get(), Items.DIAMOND_BLOCK, ModItems.PALLADIUM_INGOT.get());
 
         // --- БРОНЯ MK1 ---
         ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.MK1_HELMET.get())

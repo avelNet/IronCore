@@ -61,5 +61,20 @@
   "jarvis.ironcore.status": "Implant: %s%% · Toxicity: %s%% · Suit: %s",
   "jarvis.ironcore.toxicity_warning": "Palladium toxicity is critical. I'd recommend chlorophyll, sir.",
   "jarvis.ironcore.low_energy": "Implant charge is low — recharging from the network.",
-  "gui.ironcore.stark_network_boost": "Stark Network ×2"
+  "gui.ironcore.stark_network_boost": "Stark Network ×2",
+  "item.ironcore.module_micro_missiles": "Micro-Missile Module",
+  "item.ironcore.module_unibeam": "Unibeam Module",
+  "item.ironcore.micro_missile": "Micro-Missile",
+  "module.ironcore.micro_missiles": "Micro-Missiles",
+  "module.ironcore.unibeam": "Unibeam",
+  "module.ironcore.micro_missiles.desc": "G: homing missile at the nearest target in sight. Damages mobs, not blocks (1500 FE, 1.5 s)",
+  "module.ironcore.unibeam.desc": "Shift+G: piercing chest beam, 24 damage, heats the suit +25% (6000 FE, 10 s)",
+  "tooltip.ironcore.module_category.weaponry": "Weapon module",
+  "key.ironcore.weapon_module": "Weapon module (Shift: Unibeam)",
+  "weapon.ironcore.none": "No weapon modules installed",
+  "weapon.ironcore.overheated": "Systems overheated",
+  "weapon.ironcore.no_energy": "Not enough implant energy",
+  "weapon.ironcore.locked": "Target locked: %s",
+  "weapon.ironcore.unibeam_cooldown": "Unibeam recharging: %s s",
+  "entity.ironcore.micro_missile": "Micro-Missile"
 }

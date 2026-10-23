@@ -21,6 +21,7 @@ public class KeyBindings {
     public static final String KEY_FLAMETHROWER = "key.ironcore.fire_weapon";
     public static final String KEY_AUTO_BOOST = "key.ironcore.toggle_auto_boost";
     public static final String KEY_TOGGLE_MASK = "key.ironcore.toggle_mask";
+    public static final String KEY_WEAPON_MODULE = "key.ironcore.weapon_module";
 
     public static final KeyMapping FLAMETHROWER_KEY = new KeyMapping(KEY_FLAMETHROWER, 
             KeyConflictContext.IN_GAME, InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_Z, KEY_CATEGORY_IRONCORE);
@@ -30,6 +31,9 @@ public class KeyBindings {
 
     public static final KeyMapping TOGGLE_MASK_KEY = new KeyMapping(KEY_TOGGLE_MASK,
             KeyConflictContext.IN_GAME, InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_V, KEY_CATEGORY_IRONCORE);
+
+    public static final KeyMapping WEAPON_MODULE_KEY = new KeyMapping(KEY_WEAPON_MODULE,
+            KeyConflictContext.IN_GAME, InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_G, KEY_CATEGORY_IRONCORE);
 
     public static void init() {
         MinecraftForge.EVENT_BUS.register(new KeyBindings());
@@ -82,6 +86,11 @@ public class KeyBindings {
                 ModMessages.sendToServer(new PacketFlamethrower());
                 lastFireTime = currentTime;
             }
+        }
+
+        // Боевой модуль: G — микроракета, Shift+G — юнибим (перезарядка на сервере)
+        while (WEAPON_MODULE_KEY.consumeClick()) {
+            ModMessages.sendToServer(new com.pavel.ironcore.network.PacketWeaponModule(mc.player.isShiftKeyDown()));
         }
 
         while (AUTO_BOOST_KEY.consumeClick()) {

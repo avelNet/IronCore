@@ -32,6 +32,12 @@ public class ModMessages {
                 .consumerMainThread(PacketSyncSuitData::handle)
                 .add();
 
+        net.messageBuilder(PacketWeaponModule.class, id(), NetworkDirection.PLAY_TO_SERVER)
+                .decoder(PacketWeaponModule::new)
+                .encoder(PacketWeaponModule::toBytes)
+                .consumerMainThread(PacketWeaponModule::handle)
+                .add();
+
         net.messageBuilder(PacketFlamethrower.class, id(), NetworkDirection.PLAY_TO_SERVER)
                 .decoder(PacketFlamethrower::new)
                 .encoder(PacketFlamethrower::toBytes)
