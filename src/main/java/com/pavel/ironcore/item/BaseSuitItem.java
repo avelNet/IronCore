@@ -5,6 +5,9 @@ import com.pavel.ironcore.capability.SuitCapabilityProvider;
 import com.pavel.ironcore.client.renderer.SuitRenderer;
 import com.pavel.ironcore.network.ModMessages;
 import net.minecraft.client.model.HumanoidModel;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -141,6 +144,7 @@ public abstract class BaseSuitItem extends ArmorItem implements GeoItem {
                 }
 
                 changed |= applyServerLogic(player, suit, stack, level);
+                applyEmergencyGlide(player, suit);
             } else {
                 if (suit.getSuitTier().equals(getTierId())) {
                     handleUnequipped(player, suit);
@@ -152,6 +156,26 @@ public abstract class BaseSuitItem extends ArmorItem implements GeoItem {
                 sync(player, suit);
             }
         });
+    }
+
+    /**
+     * Аварийное планирование: если полёт оборвался из-за отказа систем (иней, перегрев,
+     * энергия), после 20 блоков свободного падения костюм раскрывает Slow Falling.
+     */
+    protected void applyEmergencyGlide(ServerPlayer player, com.pavel.ironcore.capability.SuitCapability suit) {
+        if (!suit.isEmergencyFall()) return;
+        if (player.onGround() || player.getAbilities().flying || player.isInWater()) {
+            suit.setEmergencyFall(false);
+            return;
+        }
+        // Slow Falling resets fallDistance every tick, so once deployed keep refreshing it until landing
+        boolean deployed = player.hasEffect(MobEffects.SLOW_FALLING);
+        if (deployed || player.fallDistance >= 20.0f) {
+            if (!deployed) {
+                player.displayClientMessage(Component.literal("§eAUTO-DEPLOY: EMERGENCY GLIDE INITIATED!"), true);
+            }
+            player.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING, 40, 0, false, false, true));
+        }
     }
 
     protected void handleNoReactor(ServerPlayer player, com.pavel.ironcore.capability.SuitCapability suit) {

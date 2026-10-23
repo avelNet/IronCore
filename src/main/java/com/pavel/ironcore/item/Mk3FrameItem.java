@@ -81,6 +81,7 @@ public class Mk3FrameItem extends BaseSuitItem {
             if (!systemsFunctional) {
                 player.getAbilities().flying = false;
                 player.onUpdateAbilities();
+                suit.setEmergencyFall(true);
             } else {
                 int energyDrain = suit.isTurbo() ? 80 : 4;
                 suit.setEnergy(suit.getEnergy() - energyDrain);

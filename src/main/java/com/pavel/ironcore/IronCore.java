@@ -15,6 +15,8 @@ import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.entity.player.PlayerFlyableFallEvent;
+import net.minecraft.util.Mth;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -190,9 +192,9 @@ public class IronCore {
                         boolean hasMk3 = event.player.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.CHEST).getItem() == ModItems.MK3_CHESTPLATE.get();
                         
                         if (!hasMk1 && !hasMk2 && !hasMk3) {
+                            // Energy stays: it lives in the implant, not the armor. Zeroing maxEnergy here
+                            // made BaseSuitItem's first-init refill the implant on the next equip.
                             suit.setSuitTier("none");
-                            suit.setEnergy(0);
-                            suit.setMaxEnergy(0);
                             suit.setFlying(false);
                             if (!event.player.isCreative() && !event.player.isSpectator()) {
                                 event.player.getAbilities().mayfly = false;
@@ -210,29 +212,51 @@ public class IronCore {
         public static void onLivingFall(LivingFallEvent event) {
             if (event.getEntity() instanceof Player player) {
                 player.getCapability(SuitCapabilityProvider.SUIT_CAPABILITY).ifPresent(suit -> {
-                    // Системы должны быть активны (есть энергия и нет критического обледенения)
-                    if ((suit.getSuitTier().equals("mk1") || suit.getSuitTier().equals("mk2")) 
-                        && suit.getEnergy() > 0 && suit.getIcingLevel() < 100.0f) {
-                        
-                        float damage = event.getDistance() - 3.0f; // Ванильный порог урона
-                        if (damage > 0) {
-                            int energyCost = (int) (damage * 200); // 200 FE за каждое сердце урона
-                            
-                            if (suit.getEnergy() >= energyCost) {
-                                suit.setEnergy(suit.getEnergy() - energyCost);
-                                event.setDistance(0); // Отменяем урон
-                                player.displayClientMessage(net.minecraft.network.chat.Component.literal("§bSHOCK ABSORBERS: Impact mitigated!"), true);
-                            } else {
-                                // Если энергии мало, поглощаем сколько можем
-                                float absorbed = suit.getEnergy() / 200.0f;
-                                suit.setEnergy(0);
-                                event.setDistance(event.getDistance() - absorbed);
-                                player.displayClientMessage(net.minecraft.network.chat.Component.literal("§cSHOCK ABSORBERS: Energy depleted!"), true);
-                            }
-                        }
+                    float damage = event.getDistance() - 3.0f; // Ванильный порог урона
+                    if (damage > 0) {
+                        event.setDistance(absorbFallDamage(player, suit, damage) + 3.0f);
                     }
                 });
             }
+        }
+
+        /**
+         * Пока системы костюма исправны, у игрока mayfly=true, и ванилла вообще не наносит урон
+         * от падения (LivingFallEvent не вызывается) — вместо этого Forge шлёт это событие.
+         * Наносим урон сами, пропустив его через амортизаторы.
+         */
+        @SubscribeEvent
+        public static void onFlyableFall(PlayerFlyableFallEvent event) {
+            Player player = event.getEntity();
+            if (player.level().isClientSide || player.isCreative() || player.isSpectator()) return;
+            player.getCapability(SuitCapabilityProvider.SUIT_CAPABILITY).ifPresent(suit -> {
+                if (suit.getSuitTier().equals("none")) return;
+                // Forge 1.20.1 passes the distance as getMultiplier() for this event, so use vanilla's 1.0
+                float damage = Mth.ceil(event.getDistance() - 3.0f);
+                if (damage > 0) {
+                    float remaining = absorbFallDamage(player, suit, damage);
+                    if (remaining > 0) player.hurt(player.damageSources().fall(), remaining);
+                }
+            });
+        }
+
+        /** Амортизаторы: 200 FE за единицу урона. Возвращает непоглощённый урон. */
+        private static float absorbFallDamage(Player player, SuitCapability suit, float damage) {
+            // Системы должны быть активны (есть энергия и нет критического обледенения)
+            if (suit.getSuitTier().equals("none") || suit.getEnergy() <= 0 || suit.getIcingLevel() >= 100.0f) {
+                return damage;
+            }
+            int energyCost = (int) (damage * 200);
+            if (suit.getEnergy() >= energyCost) {
+                suit.setEnergy(suit.getEnergy() - energyCost);
+                player.displayClientMessage(net.minecraft.network.chat.Component.literal("§bSHOCK ABSORBERS: Impact mitigated!"), true);
+                return 0;
+            }
+            // Если энергии мало, поглощаем сколько можем
+            float absorbed = suit.getEnergy() / 200.0f;
+            suit.setEnergy(0);
+            player.displayClientMessage(net.minecraft.network.chat.Component.literal("§cSHOCK ABSORBERS: Energy depleted!"), true);
+            return damage - absorbed;
         }
 
         @SubscribeEvent
@@ -250,8 +274,11 @@ public class IronCore {
             event.getOriginal().getCapability(SuitCapabilityProvider.SUIT_CAPABILITY).ifPresent(oldSuit -> {
                 event.getEntity().getCapability(SuitCapabilityProvider.SUIT_CAPABILITY).ifPresent(newSuit -> {
                     // Copy only "body-permanent" data — implant, poisoning, story flags, preferences.
-                    // Suit tier, energy, heat etc. reset naturally (armor drops on death).
+                    // Suit tier, heat etc. reset naturally (armor drops on death).
                     newSuit.setEmbeddedReactor(oldSuit.hasEmbeddedReactor());
+                    // Energy lives in the implant, not in the armor (maxEnergy first: setEnergy clamps to it)
+                    newSuit.setMaxEnergy(oldSuit.getMaxEnergy());
+                    newSuit.setEnergy(oldSuit.getEnergy());
                     newSuit.setPalladiumPoisoning(oldSuit.getPalladiumPoisoning());
                     newSuit.setJarvisUnlocked(oldSuit.isJarvisUnlocked());
                     newSuit.setAutoBoostEnabled(oldSuit.isAutoBoostEnabled());

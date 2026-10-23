@@ -35,6 +35,24 @@ public class KeyBindings {
         MinecraftForge.EVENT_BUS.register(new KeyBindings());
     }
 
+    /**
+     * Apply the launch impulse locally right away. Otherwise the server's "flying=true" can reach
+     * us a tick before its velocity packet; vanilla LocalPlayer#aiStep then sees flying while still
+     * on the ground, cancels flight and reports that back — takeoff failed about half the time.
+     * Mirrors PacketBoostLaunch's checks (minus the server-only cooldown).
+     */
+    private static void predictLaunch(Minecraft mc) {
+        mc.player.getCapability(com.pavel.ironcore.capability.SuitCapabilityProvider.SUIT_CAPABILITY).ifPresent(suit -> {
+            String tier = suit.getSuitTier();
+            if ((tier.equals("mk2") || tier.equals("mk3")) && suit.getEnergy() >= 1000
+                    && suit.getIcingLevel() < 100.0f && !suit.isMaskOpen()) {
+                com.pavel.ironcore.flight.FlightConfig config = tier.equals("mk3")
+                        ? com.pavel.ironcore.flight.FlightConfig.MK3 : com.pavel.ironcore.flight.FlightConfig.MK2;
+                mc.player.setDeltaMovement(com.pavel.ironcore.flight.FlightPhysics.computeLaunchVelocity(mc.player.getLookAngle(), config));
+            }
+        });
+    }
+
     private static long lastSprintTime = 0;
     private static boolean wasSprintDown = false;
     private static long lastFireTime = 0;
@@ -86,11 +104,15 @@ public class KeyBindings {
         
         if (isSprintDown != wasSprintDown) {
             ModMessages.sendToServer(new PacketSyncBoostState(isSprintDown));
-            
+            // Client-side copy for the HUD: the server never syncs this flag back
+            mc.player.getCapability(com.pavel.ironcore.capability.SuitCapabilityProvider.SUIT_CAPABILITY)
+                    .ifPresent(suit -> suit.setBoostKeyHeld(isSprintDown));
+
             if (isSprintDown) {
                 long currentTime = System.currentTimeMillis();
                 if (currentTime - lastSprintTime < 300 && !mc.player.isInWater()) {
                     ModMessages.sendToServer(new PacketBoostLaunch());
+                    predictLaunch(mc);
                     com.pavel.ironcore.client.CameraEvents.triggerLaunchKick();
                 }
                 lastSprintTime = currentTime;
