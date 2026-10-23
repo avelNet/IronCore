@@ -30,6 +30,15 @@ public class SuitCapability implements INBTSerializable<CompoundTag> {
     // Runtime only: game time of the last Stark Network presence tick (for J.A.R.V.I.S. greetings)
     private long lastNetworkTick = -1_000_000L; // not Long.MIN_VALUE: gameTime - MIN_VALUE overflows
 
+    // Runtime only: weapon module cooldowns (server ticks left)
+    private int missileCooldown = 0;
+    private int unibeamCooldown = 0;
+
+    public int getMissileCooldown() { return missileCooldown; }
+    public void setMissileCooldown(int ticks) { this.missileCooldown = Math.max(0, ticks); }
+    public int getUnibeamCooldown() { return unibeamCooldown; }
+    public void setUnibeamCooldown(int ticks) { this.unibeamCooldown = Math.max(0, ticks); }
+
     public long getLastNetworkTick() { return lastNetworkTick; }
     public void setLastNetworkTick(long tick) { this.lastNetworkTick = tick; }
 

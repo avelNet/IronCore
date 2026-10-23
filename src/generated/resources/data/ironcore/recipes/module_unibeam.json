@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "C": {
+      "item": "minecraft:diamond_block"
+    },
+    "S": {
+      "item": "ironcore:palladium_ingot"
+    },
+    "T": {
+      "item": "ironcore:titanium_ingot"
+    }
+  },
+  "pattern": [
+    "TST",
+    "SCS",
+    "TST"
+  ],
+  "result": {
+    "item": "ironcore:module_unibeam"
+  },
+  "show_notification": true
+}

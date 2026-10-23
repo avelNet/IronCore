@@ -9,9 +9,11 @@ public enum SuitModule {
     COOLANT("coolant", Category.SUPPORT, "COOL"),
     REBREATHER("rebreather", Category.UTILITY, "AIR"),
     AUTO_REPAIR("auto_repair", Category.SUPPORT, "REP"),
-    RADAR("radar", Category.UTILITY, "RAD");
+    RADAR("radar", Category.UTILITY, "RAD"),
+    MICRO_MISSILES("micro_missiles", Category.WEAPONRY, "MSL"),
+    UNIBEAM("unibeam", Category.WEAPONRY, "UNI");
 
-    public enum Category { UTILITY, SUPPORT }
+    public enum Category { WEAPONRY, UTILITY, SUPPORT }
 
     private final String id;
     private final Category category;
