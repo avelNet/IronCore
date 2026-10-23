@@ -51,6 +51,10 @@ public class AlloySmelterScreen extends AbstractContainerScreen<AlloySmelterMenu
         int x = (width - imageWidth) / 2;
         int y = (height - imageHeight) / 2;
 
+        if (menu.isNetworked()) {
+            guiGraphics.drawString(this.font, Component.translatable("gui.ironcore.stark_network_boost"), x + 8, y + 6, 0x1E7FA8, false);
+        }
+
         if(isHovering(15, 18, 16, 50, mouseX, mouseY)) {
             guiGraphics.renderTooltip(this.font, Component.literal(menu.getEnergy() + " / " + menu.getMaxEnergy() + " FE"), mouseX, mouseY);
         }

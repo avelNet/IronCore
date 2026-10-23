@@ -47,8 +47,11 @@ public class CoalGeneratorBlockEntity extends AbstractEnergyMachineBlockEntity {
                 switch (index) {
                     case 0: return CoalGeneratorBlockEntity.this.burnTime;
                     case 1: return CoalGeneratorBlockEntity.this.maxBurnTime;
-                    case 2: return CoalGeneratorBlockEntity.this.energyStorage.getEnergyStored();
-                    case 3: return CoalGeneratorBlockEntity.this.energyStorage.getMaxEnergyStored();
+                    // Data slots sync as 16-bit shorts: 32-bit values go as low/high halves
+                    case 2: return CoalGeneratorBlockEntity.this.energyStorage.getEnergyStored() & 0xFFFF;
+                    case 3: return CoalGeneratorBlockEntity.this.energyStorage.getEnergyStored() >>> 16;
+                    case 4: return CoalGeneratorBlockEntity.this.energyStorage.getMaxEnergyStored() & 0xFFFF;
+                    case 5: return CoalGeneratorBlockEntity.this.energyStorage.getMaxEnergyStored() >>> 16;
                     default: return 0;
                 }
             }
@@ -63,7 +66,7 @@ public class CoalGeneratorBlockEntity extends AbstractEnergyMachineBlockEntity {
 
             @Override
             public int getCount() {
-                return 4;
+                return 6;
             }
         };
     }
