@@ -101,6 +101,13 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .unlockedBy("has_palladium", has(ModItems.RAW_PALLADIUM.get()))
                 .save(pWriter);
 
+        // --- МОДУЛИ КОСТЮМА (рамка из титана + тематический компонент) ---
+        addModule(pWriter, ModItems.MODULE_THERMAL_SHIELD.get(), Items.MAGMA_CREAM, Items.OBSIDIAN);
+        addModule(pWriter, ModItems.MODULE_COOLANT.get(), Items.PACKED_ICE, Items.REDSTONE);
+        addModule(pWriter, ModItems.MODULE_REBREATHER.get(), Items.KELP, Items.GLASS_PANE);
+        addModule(pWriter, ModItems.MODULE_AUTO_REPAIR.get(), Items.ANVIL, Items.REDSTONE);
+        addModule(pWriter, ModItems.MODULE_RADAR.get(), Items.ENDER_EYE, Items.COMPASS);
+
         // --- БРОНЯ MK1 ---
         ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.MK1_HELMET.get())
                 .pattern("III")
@@ -158,6 +165,19 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 RecipeCategory.COMBAT,
                 result
         ).unlocks("has_material", has(material)).save(pWriter, com.pavel.ironcore.IronCore.MODID + ":" + name + "_smithing");
+    }
+
+    /** Модуль: T — титан, C — ядро модуля, S — вторичный компонент. */
+    private static void addModule(Consumer<FinishedRecipe> pWriter, net.minecraft.world.item.Item module, net.minecraft.world.item.Item core, net.minecraft.world.item.Item secondary) {
+        ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, module)
+                .pattern("TST")
+                .pattern("SCS")
+                .pattern("TST")
+                .define('T', ModItems.TITANIUM_INGOT.get())
+                .define('C', core)
+                .define('S', secondary)
+                .unlockedBy("has_titanium", has(ModItems.TITANIUM_INGOT.get()))
+                .save(pWriter);
     }
 
     protected static void oreSmelting(Consumer<FinishedRecipe> pFinishedRecipeConsumer, List<net.minecraft.world.level.ItemLike> pIngredients, RecipeCategory pCategory, net.minecraft.world.level.ItemLike pResult, float pExperience, int pCookingTime, String pGroup) {

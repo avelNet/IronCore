@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "C": {
+      "item": "minecraft:magma_cream"
+    },
+    "S": {
+      "item": "minecraft:obsidian"
+    },
+    "T": {
+      "item": "ironcore:titanium_ingot"
+    }
+  },
+  "pattern": [
+    "TST",
+    "SCS",
+    "TST"
+  ],
+  "result": {
+    "item": "ironcore:module_thermal_shield"
+  },
+  "show_notification": true
+}

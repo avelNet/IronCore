@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "C": {
+      "item": "minecraft:kelp"
+    },
+    "S": {
+      "item": "minecraft:glass_pane"
+    },
+    "T": {
+      "item": "ironcore:titanium_ingot"
+    }
+  },
+  "pattern": [
+    "TST",
+    "SCS",
+    "TST"
+  ],
+  "result": {
+    "item": "ironcore:module_rebreather"
+  },
+  "show_notification": true
+}

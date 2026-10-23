@@ -26,6 +26,11 @@ public class ModItemModelProvider extends ItemModelProvider {
         simpleItem(ModItems.PALLADIUM_CORE);
         simpleItem(ModItems.DEPLETED_PALLADIUM_CORE);
         simpleItem(ModItems.CHLOROPHYLL_JUICE);
+        simpleItem(ModItems.MODULE_THERMAL_SHIELD);
+        simpleItem(ModItems.MODULE_COOLANT);
+        simpleItem(ModItems.MODULE_REBREATHER);
+        simpleItem(ModItems.MODULE_AUTO_REPAIR);
+        simpleItem(ModItems.MODULE_RADAR);
         
         // Items with custom textures that don't need complex models right now
 
