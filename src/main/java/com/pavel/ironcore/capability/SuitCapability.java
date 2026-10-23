@@ -24,6 +24,11 @@ public class SuitCapability implements INBTSerializable<CompoundTag> {
 
     private int launchCooldown = 0;
     private boolean jarvisUnlocked = false;
+    // Runtime only (not saved): flight was cut by a system failure and the player is falling
+    private boolean emergencyFall = false;
+
+    public boolean isEmergencyFall() { return emergencyFall; }
+    public void setEmergencyFall(boolean value) { this.emergencyFall = value; }
 
     public int getEnergy() { return energy; }
     public void setEnergy(int energy) { this.energy = Math.max(0, Math.min(energy, maxEnergy)); }

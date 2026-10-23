@@ -77,6 +77,7 @@ public class Mk2FrameItem extends BaseSuitItem {
             if (!systemsFunctional) {
                 player.getAbilities().flying = false;
                 player.onUpdateAbilities();
+                suit.setEmergencyFall(true);
             } else {
                 if (player.tickCount % 4 == 0) suit.setEnergy(suit.getEnergy() - 1);
                 if (suit.isBoostKeyHeld() && !suit.isMaskOpen()) suit.setHeat(suit.getHeat() + 0.04f);
